@@ -672,8 +672,19 @@
                     </div>
                 </section>
 
-                <!-- VIEW: PUBLIC RAK VIEW -->
+                <!-- VIEW: PUBLIC RAK VIEW (TAMPILAN PUBLIK) -->
                 <section id="view-public-rack" class="hidden max-w-3xl mx-auto space-y-6">
+                    <!-- Banner mode publik -->
+                    <div class="glass-panel p-4 rounded-2xl border-l-4 border-l-cyan-400 flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-qrcode"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white">Tampilan Publik — Informasi Rak</h3>
+                            <p class="text-xs text-slate-300">Halaman ini hanya menampilkan isi rak. Untuk mengelola, login sebagai admin.</p>
+                        </div>
+                    </div>
+
                     <div class="glass-panel p-6 rounded-2xl">
                         <div class="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-white/10 pb-4 mb-4 gap-4">
                             <div>
@@ -809,18 +820,47 @@
         let activeTab = 'dashboard';
         let chartInstance = null;
         let allMedicinesData = [];
+        let isPublicMode = false;
 
+        // ==================== BOOTSTRAP ====================
         window.addEventListener('DOMContentLoaded', async () => {
             await loadCredentialsHierarchy();
             initSupabase();
-            await checkAuthAndSetup();
-            handleDeepLink();
+
+            const hash = window.location.hash;
+            const isPublicRack = hash.startsWith('#rak/');
+
+            if (isPublicRack) {
+                // Mode publik: sembunyikan UI admin, tampilkan hanya view rak
+                applyPublicModeUI(true);
+                await loadPublicRackView(decodeURIComponent(hash.replace('#rak/', '')));
+                // Auth check di background tanpa mengubah tampilan
+                checkAuthAndSetupSilent();
+            } else {
+                applyPublicModeUI(false);
+                await checkAuthAndSetup();
+                handleDeepLink();
+            }
         });
 
         window.addEventListener('hashchange', () => {
-            handleDeepLink();
+            const hash = window.location.hash;
+            const isPublicRack = hash.startsWith('#rak/');
+
+            if (isPublicRack) {
+                applyPublicModeUI(true);
+                loadPublicRackView(decodeURIComponent(hash.replace('#rak/', '')));
+            } else {
+                applyPublicModeUI(false);
+                if (currentUser) {
+                    switchTab('dashboard');
+                } else {
+                    switchTab('auth');
+                }
+            }
         });
 
+        // ==================== KONFIGURASI KREDENSIAL ====================
         async function loadCredentialsHierarchy() {
             let configToUse = { ...APP_CONFIG };
             try {
@@ -925,9 +965,65 @@
             reader.readAsText(file);
         }
 
+        // ==================== MODE PUBLIK (HIDE UI ADMIN) ====================
+        function applyPublicModeUI(isPublic) {
+            isPublicMode = isPublic;
+
+            const sidebar = document.getElementById('sidebar');
+            const userMenu = document.getElementById('user-menu');
+            const connectionStatus = document.getElementById('connection-status');
+            const headerTitle = document.getElementById('header-warehouse-name');
+
+            if (isPublic) {
+                // Sembunyikan seluruh UI admin
+                if (sidebar) sidebar.classList.add('hidden');
+                if (userMenu) userMenu.classList.add('hidden');
+                if (connectionStatus) connectionStatus.classList.add('hidden');
+                if (headerTitle) headerTitle.innerText = 'Tampilan Publik — Scan QR Rak';
+
+                // Sembunyikan semua view admin termasuk auth & dashboard
+                const views = ['auth', 'dashboard', 'medicines', 'racks', 'batches', 'stock-in',
+                               'stock-out', 'mutation', 'history', 'expiry-alerts', 'import-export', 'settings'];
+                views.forEach(v => {
+                    const el = document.getElementById(`view-${v}`);
+                    if (el) el.classList.add('hidden');
+                });
+
+                // Bersihkan active tab
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active-tab'));
+
+                // Tampilkan view publik rak
+                const pubView = document.getElementById('view-public-rack');
+                if (pubView) pubView.classList.remove('hidden');
+            } else {
+                // Mode admin normal
+                if (headerTitle) headerTitle.innerText = 'Sistem Manajemen Obat & QR Code FEFO';
+                if (connectionStatus) connectionStatus.classList.remove('hidden');
+                const pubView = document.getElementById('view-public-rack');
+                if (pubView) pubView.classList.add('hidden');
+            }
+        }
+
+        // Auth check versi silent (tidak mengubah tampilan publik)
+        async function checkAuthAndSetupSilent() {
+            if (!supabaseClient) return;
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    currentUser = session.user;
+                    // Jangan panggil updateUserUI() agar tampilan publik tetap bersih
+                }
+            } catch (e) {
+                // Diamkan saja
+            }
+        }
+
+        // ==================== AUTHENTIKASI ====================
         async function checkAuthAndSetup() {
             if(!supabaseClient) {
-                switchTab('auth');
+                if (!window.location.hash.startsWith('#rak/')) {
+                    switchTab('auth');
+                }
                 return;
             }
 
@@ -935,6 +1031,9 @@
                 const { data: profiles, error } = await supabaseClient.from('profiles').select('id').limit(1);
 
                 if(profiles && profiles.length === 0) {
+                    // Jangan tampilkan form registrasi jika di public view
+                    if (window.location.hash.startsWith('#rak/')) return;
+
                     document.getElementById('auth-title').innerText = 'Registrasi Admin Pertama';
                     document.getElementById('auth-subtitle').innerText = 'Buat akun administrator gudang utama';
                     document.getElementById('fullname-group').classList.remove('hidden');
@@ -945,26 +1044,21 @@
                     if(session) {
                         currentUser = session.user;
                         updateUserUI();
-                        if(!window.location.hash.startsWith('#rak/')) {
+                        // HANYA tampilkan dashboard jika BUKAN di public view
+                        if (!window.location.hash.startsWith('#rak/')) {
                             switchTab('dashboard');
                         }
                     } else {
-                        switchTab('auth');
+                        // HANYA tampilkan auth jika BUKAN di public view
+                        if (!window.location.hash.startsWith('#rak/')) {
+                            switchTab('auth');
+                        }
                     }
                 }
             } catch (e) {
-                switchTab('auth');
-            }
-        }
-
-        // ====== PERBAIKAN BUG #1: DECODE KODE RAK DARI URL HASH ======
-        function handleDeepLink() {
-            const hash = window.location.hash;
-            if(hash.startsWith('#rak/')) {
-                // Decode kode rak agar cocok dengan data di database
-                // (mis. "#rak/Rak%201" -> "Rak 1")
-                const rackCode = decodeURIComponent(hash.replace('#rak/', ''));
-                loadPublicRackView(rackCode);
+                if (!window.location.hash.startsWith('#rak/')) {
+                    switchTab('auth');
+                }
             }
         }
 
@@ -1019,7 +1113,13 @@
                     currentUser = data.user;
                     updateUserUI();
                     showToast('Berhasil masuk!', 'success');
-                    switchTab('dashboard');
+
+                    // Jika ada hash #rak/, tetap tampilkan view publik
+                    if (window.location.hash.startsWith('#rak/')) {
+                        // Tetap di public view — jangan switchTab
+                    } else {
+                        switchTab('dashboard');
+                    }
                 }
             }
         }
@@ -1040,9 +1140,21 @@
             document.getElementById('user-display-name').innerText = currentUser.email.split('@')[0];
         }
 
+        // ==================== NAVIGASI TAB ====================
         function switchTab(tabName) {
+            // Jika tab public-rack, aktifkan mode publik
+            if (tabName === 'public-rack') {
+                applyPublicModeUI(true);
+                return;
+            } else if (isPublicMode) {
+                // Jika keluar dari public-rack, kembalikan UI admin
+                applyPublicModeUI(false);
+            }
+
             activeTab = tabName;
-            const views = ['auth', 'dashboard', 'medicines', 'racks', 'batches', 'stock-in', 'stock-out', 'mutation', 'history', 'expiry-alerts', 'import-export', 'settings', 'public-rack'];
+            const views = ['auth', 'dashboard', 'medicines', 'racks', 'batches', 'stock-in',
+                           'stock-out', 'mutation', 'history', 'expiry-alerts', 'import-export',
+                           'settings', 'public-rack'];
             views.forEach(v => {
                 const el = document.getElementById(`view-${v}`);
                 if(el) el.classList.add('hidden');
@@ -1066,19 +1178,19 @@
             if(tabName === 'expiry-alerts') loadExpiryAlerts();
         }
 
-        // ====== PERBAIKAN BUG #2: DASHBOARD HITUNG OBAT EXPIRED + LIST GABUNGAN ======
+        // ==================== DASHBOARD ====================
         async function loadDashboardData() {
             if(!supabaseClient) return;
 
             try {
-                // --- 1. Total jenis obat aktif ---
+                // 1. Total jenis obat aktif
                 const { count: medCount } = await supabaseClient
                     .from('medicines')
                     .select('*', { count: 'exact', head: true })
                     .eq('is_active', true);
                 document.getElementById('stat-total-medicines').innerText = medCount || 0;
 
-                // --- 2. Total rak + rak terisi ---
+                // 2. Total rak + rak terisi
                 const { data: racks } = await supabaseClient.from('racks').select('id');
                 const totalRacks = racks ? racks.length : 0;
                 document.getElementById('stat-total-racks').innerText = totalRacks;
@@ -1094,7 +1206,7 @@
                 document.getElementById('stat-filled-racks').innerText = filledCount;
                 document.getElementById('stat-empty-racks').innerText = `${emptyCount} Rak kosong`;
 
-                // --- 3. Query mendekati expired (0-30 hari ke depan) ---
+                // 3. Query mendekati expired (0-30 hari ke depan)
                 const todayStr = new Date().toISOString().split('T')[0];
                 const in30DaysStr = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
                     .toISOString().split('T')[0];
@@ -1107,7 +1219,7 @@
                     .order('expired_date', { ascending: true })
                     .limit(5);
 
-                // --- 4. Query SUDAH expired (< hari ini) ---
+                // 4. Query SUDAH expired (< hari ini)
                 const { data: expired } = await supabaseClient
                     .from('batches')
                     .select('batch_number, expired_date, medicines(name)')
@@ -1118,7 +1230,7 @@
                 document.getElementById('stat-expiring-soon').innerText = expiring ? expiring.length : 0;
                 document.getElementById('stat-expired-count').innerText = expired ? expired.length : 0;
 
-                // --- 5. Render list prioritas: expired dulu, lalu yang mendekati ---
+                // 5. Render list prioritas: expired dulu, lalu yang mendekati
                 const listContainer = document.getElementById('dash-priority-expiry-list');
                 const combined = [
                     ...(expired || []).map(b => ({ ...b, _state: 'EXPIRED' })),
@@ -1197,7 +1309,7 @@
             });
         }
 
-        // MASTER OBAT CRUD
+        // ==================== MASTER OBAT CRUD ====================
         async function loadMedicinesData() {
             if(!supabaseClient) return;
             const { data, error } = await supabaseClient.from('medicines').select('*').order('created_at', { ascending: false });
@@ -1297,7 +1409,7 @@
             loadMedicinesData();
         }
 
-        // MANAJEMEN RAK
+        // ==================== MANAJEMEN RAK ====================
         async function loadRacksData() {
             if(!supabaseClient) return;
             const { data } = await supabaseClient.from('racks').select('*').order('code');
@@ -1361,13 +1473,11 @@
             loadRacksData();
         }
 
-        // ====== PERBAIKAN BUG #1: ENCODE KODE RAK DI URL QR ======
         function showQRModal(code, name) {
             const container = document.getElementById('qrcode-container');
             container.innerHTML = '';
 
-            // Encode kode rak agar aman jika mengandung spasi / karakter khusus
-            // (mis. "Rak 1" -> "Rak%201")
+            // Encode kode rak agar aman jika mengandung spasi/karakter khusus
             const safeCode = encodeURIComponent(code);
             const fullUrl = `${window.location.origin}${window.location.pathname}#rak/${safeCode}`;
 
@@ -1386,7 +1496,7 @@
             document.getElementById('modal-qr').classList.add('hidden');
         }
 
-        // BATCH & STOK
+        // ==================== BATCH & STOK ====================
         async function loadBatchesTable() {
             if(!supabaseClient) return;
             const { data } = await supabaseClient.from('rack_inventory').select(`
@@ -1414,7 +1524,7 @@
             `).join('');
         }
 
-        // TRANSAKSI
+        // ==================== TRANSAKSI ====================
         async function populateSelectOptions() {
             if(!supabaseClient) return;
             const { data: meds } = await supabaseClient.from('medicines').select('id, name, code').eq('is_active', true);
@@ -1622,56 +1732,80 @@
             showToast('Fitur impor data obat massal via Excel siap.', 'info');
         }
 
-        // ====== PERBAIKAN BUG #1: SESUAIKAN FIELD location_description ======
+        // ==================== PUBLIC RAK VIEW ====================
         async function loadPublicRackView(rackCode) {
-            switchTab('public-rack');
+            // Aktifkan mode publik
+            applyPublicModeUI(true);
+
             document.getElementById('pub-rack-code').innerText = rackCode;
-
-            if (!supabaseClient) return;
-
-            const { data, error } = await supabaseClient.rpc('fn_get_public_rack_info', { p_rack_code: rackCode });
-            if(error || !data || data.status === 'error') {
-                showToast('Rak tidak ditemukan!', 'error');
-                return;
-            }
-
-            document.getElementById('pub-rack-name').innerText = data.rack.name;
-            // Konsisten dengan field location_description di tabel racks
-            document.getElementById('pub-rack-location').innerText =
-                data.rack.location_description || data.rack.location || 'Tanpa keterangan lokasi';
+            document.getElementById('pub-rack-name').innerText = 'Memuat...';
+            document.getElementById('pub-rack-location').innerText = 'Memuat...';
 
             const tbody = document.getElementById('pub-rack-items-body');
-            if(data.items.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-4 text-center text-xs text-slate-400">Rak ini saat ini kosong.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-4 text-center text-xs text-slate-400">Memuat isi rak...</td></tr>`;
+
+            if (!supabaseClient) {
+                showToast('Koneksi Supabase belum siap.', 'error');
                 return;
             }
 
-            tbody.innerHTML = data.items.map(item => `
-                <tr class="hover:bg-white/5 transition">
-                    <td class="px-4 py-3 font-medium text-white">${item.medicine_name} <span class="text-xs text-slate-400">(${item.dosage || '-'})</span></td>
-                    <td class="px-4 py-3 font-mono text-cyan-300 text-xs">${item.batch_number}</td>
-                    <td class="px-4 py-3 font-semibold text-white">${item.quantity} ${item.unit}</td>
-                    <td class="px-4 py-3 text-xs">${item.expired_date}</td>
-                    <td class="px-4 py-3">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
-                            item.status === 'EXPIRED' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
-                            item.status === 'WARNING' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
-                            'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                        }">${item.status}</span>
-                    </td>
-                </tr>
-            `).join('');
+            try {
+                const { data, error } = await supabaseClient.rpc('fn_get_public_rack_info', { p_rack_code: rackCode });
+
+                if(error || !data || data.status === 'error') {
+                    document.getElementById('pub-rack-name').innerText = 'Rak tidak ditemukan';
+                    document.getElementById('pub-rack-location').innerText = `Kode yang dicari: ${rackCode}`;
+                    tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-4 text-center text-xs text-rose-300">Data rak tidak ditemukan. Periksa kembali QR code.</td></tr>`;
+                    showToast('Rak tidak ditemukan!', 'error');
+                    return;
+                }
+
+                document.getElementById('pub-rack-name').innerText = data.rack.name;
+                document.getElementById('pub-rack-location').innerText =
+                    data.rack.location_description || data.rack.location || 'Tanpa keterangan lokasi';
+
+                if(!data.items || data.items.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-4 text-center text-xs text-slate-400">Rak ini saat ini kosong.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = data.items.map(item => `
+                    <tr class="hover:bg-white/5 transition">
+                        <td class="px-4 py-3 font-medium text-white">${item.medicine_name} <span class="text-xs text-slate-400">(${item.dosage || '-'})</span></td>
+                        <td class="px-4 py-3 font-mono text-cyan-300 text-xs">${item.batch_number}</td>
+                        <td class="px-4 py-3 font-semibold text-white">${item.quantity} ${item.unit}</td>
+                        <td class="px-4 py-3 text-xs">${item.expired_date}</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+                                item.status === 'EXPIRED' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
+                                item.status === 'WARNING' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
+                                'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                            }">${item.status}</span>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error('Public rack error:', err);
+                tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-4 text-center text-xs text-rose-300">Gagal memuat data rak.</td></tr>`;
+            }
         }
 
         function triggerAdminEditFromRack() {
             if(!currentUser) {
-                showToast('Silakan masuk sebagai admin.', 'warning');
+                showToast('Silakan login sebagai admin untuk mengelola.', 'warning');
+                // Keluar dari mode publik dan tampilkan login
+                window.location.hash = '';
+                applyPublicModeUI(false);
                 switchTab('auth');
             } else {
+                // Admin sudah login — tampilkan halaman manajemen rak
+                window.location.hash = '';
+                applyPublicModeUI(false);
                 switchTab('racks');
             }
         }
 
+        // ==================== TOAST ====================
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
