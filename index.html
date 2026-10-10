@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GudangFarmasi Pro - Sistem Manajemen Obat & QR Code</title>
-    <!-- Tailwind CSS -->
+    <title>Aplikasi Manajemen Gudang Obat Farmasi</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Supabase JS Client v2 -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- QRCode Generator -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- HTML5 QR Code Scanner -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <!-- SheetJS (Excel Import/Export) -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <!-- jsPDF & AutoTable -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Html5Qrcode Scanner -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <!-- SheetJS (Excel) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- jsPDF & autoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <!-- Supabase JS Client v2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
         tailwind.config = {
@@ -28,10 +28,10 @@
                 extend: {
                     colors: {
                         glass: {
-                            bg: 'rgba(15, 23, 42, 0.75)',
-                            card: 'rgba(30, 41, 59, 0.65)',
-                            border: 'rgba(255, 255, 255, 0.12)',
-                            hover: 'rgba(51, 65, 85, 0.5)'
+                            bg: 'rgba(255, 255, 255, 0.25)',
+                            border: 'rgba(255, 255, 255, 0.18)',
+                            card: 'rgba(255, 255, 255, 0.45)',
+                            darkBg: 'rgba(15, 23, 42, 0.65)'
                         }
                     }
                 }
@@ -40,630 +40,670 @@
     </script>
     <style>
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 35%, #311042 70%, #0284c7 100%);
             background-attachment: fixed;
-            color: #f8fafc;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #f8fafc;
         }
         .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .glass-input {
             background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: #ffffff;
         }
         .glass-input:focus {
-            border-color: #3b82f6;
+            border-color: #38bdf8;
             outline: none;
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
         }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
+        ::-webkit-scrollbar-track {
             background: rgba(15, 23, 42, 0.5);
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(100, 116, 139, 0.5);
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        .active-tab {
+            background: rgba(255, 255, 255, 0.18) !important;
+            border-left: 4px solid #38bdf8;
+            font-weight: 600;
         }
     </style>
 </head>
-<body class="custom-scrollbar">
+<body class="antialiased">
 
-    <!-- NOTIFIKASI TOAST -->
-    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-md"></div>
-
-    <!-- MAIN WRAPPER -->
+    <!-- APLIKASI WRAPPER -->
     <div id="app" class="min-h-screen flex flex-col">
 
-        <!-- HEADER TOP -->
-        <header class="glass-panel sticky top-0 z-40 px-6 py-3 flex justify-between items-center border-b border-white/10">
-            <div class="flex items-center gap-3">
-                <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow-lg shadow-blue-500/30">
-                    <i class="fa-solid fa-pills text-xl"></i>
+        <!-- NAVIGASI UTAMA / HEADER -->
+        <header class="glass-panel sticky top-0 z-40 px-6 py-4 flex items-center justify-between border-b border-white/10">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                    <i class="fa-solid fa-pills"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg leading-tight tracking-wide text-white">GudangFarmasi Pro</h1>
-                    <p class="text-xs text-slate-400">Sistem Manajemen Obat & QR Code</p>
+                    <h1 class="text-xl font-bold tracking-wide text-white">GudangFarmasi Pro</h1>
+                    <p class="text-xs text-cyan-300" id="header-warehouse-name">Sistem Manajemen Obat & QR Code FEFO</p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
-                <div id="connection-status" class="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span id="connection-text">Terhubung ke Supabase</span>
+            <!-- STATUS KONEKSI SUPABASE & USER PROFILE -->
+            <div class="flex items-center space-x-4">
+                <div id="connection-status" class="flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                    <span id="conn-text">Memeriksa Koneksi...</span>
                 </div>
 
-                <div id="user-profile-badge" class="hidden flex items-center gap-3 border-l border-white/10 pl-4">
+                <div id="user-menu" class="hidden flex items-center space-x-3 border-l border-white/10 pl-4">
                     <div class="text-right">
-                        <div id="badge-username" class="text-sm font-semibold text-white">Admin</div>
-                        <div id="badge-role" class="text-xs text-blue-400">Administrator</div>
+                        <div class="text-sm font-semibold text-white" id="user-display-name">Admin Gudang</div>
+                        <div class="text-xs text-slate-400" id="user-display-role">Administrator</div>
                     </div>
-                    <button onclick="handleLogout()" title="Logout" class="p-2 rounded-lg bg-red-500/20 text-red-300 hover:bg-red-500/30 border border-red-500/30 transition">
+                    <button onclick="handleLogout()" class="p-2 rounded-lg bg-red-500/20 text-red-300 hover:bg-red-500/30 border border-red-500/30 transition" title="Logout">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </button>
                 </div>
             </div>
         </header>
 
+        <!-- MAIN LAYOUT -->
         <div class="flex-1 flex overflow-hidden">
-            <!-- SIDEBAR NAV (Untuk Admin yang terautentikasi) -->
-            <aside id="sidebar" class="hidden w-64 glass-panel border-r border-white/10 flex-col justify-between p-4 custom-scrollbar overflow-y-auto">
-                <div class="space-y-6">
-                    <div>
-                        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-3">Menu Utama</div>
-                        <nav class="space-y-1">
-                            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-white/10">
-                                <i class="fa-solid fa-chart-pie w-5 text-blue-400"></i> Dashboard
-                            </button>
-                            <button onclick="switchTab('master-obat')" id="nav-master-obat" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-white/10">
-                                <i class="fa-solid fa-prescription-bottle-medical w-5 text-emerald-400"></i> Master Obat
-                            </button>
-                            <button onclick="switchTab('manajemen-rak')" id="nav-manajemen-rak" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-white/10">
-                                <i class="fa-solid fa-cubes w-5 text-purple-400"></i> Manajemen Rak
-                            </button>
-                            <button onclick="switchTab('batch-stok')" id="nav-batch-stok" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-white/10">
-                                <i class="fa-solid fa-boxes-stacked w-5 text-amber-400"></i> Batch & Stok
-                            </button>
-                        </nav>
-                    </div>
 
-                    <div>
-                        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-3">Transaksi</div>
-                        <nav class="space-y-1">
-                            <button onclick="switchTab('stok-masuk')" id="nav-stok-masuk" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-white/10">
-                                <i class="fa-solid fa-file-circle-plus w-5 text-cyan-400"></i> Stok Masuk
-                            </button>
-                            <button onclick="switchTab('stok-keluar')" id="nav-stok-keluar" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-white/10">
-                                <i class="fa-solid fa-file-circle-minus w-5 text-rose-400"></i> Stok Keluar (FEFO)
-                            </button>
-                            <button onclick="switchTab('mutasi-rak')" id="nav-mutasi-rak" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-white/10">
-                                <i class="fa-solid fa-arrows-rotate w-5 text-indigo-400"></i> Mutasi Antar-Rak
-                            </button>
-                            <button onclick="switchTab('riwayat-transaksi')" id="nav-riwayat-transaksi" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-white/10">
-                                <i class="fa-solid fa-clock-rotate-left w-5 text-teal-400"></i> Riwayat Transaksi
-                            </button>
-                        </nav>
-                    </div>
+            <!-- SIDEBAR NAVIGASI ADMIN -->
+            <aside id="sidebar" class="hidden md:flex flex-col w-64 glass-panel border-r border-white/10 p-4 space-y-2 overflow-y-auto">
+                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 mb-1">Menu Utama</div>
+                
+                <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/10 transition active-tab" id="tab-btn-dashboard">
+                    <i class="fa-solid fa-chart-line text-cyan-400 w-5"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="switchTab('medicines')" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/10 transition" id="tab-btn-medicines">
+                    <i class="fa-solid fa-capsules text-blue-400 w-5"></i>
+                    <span>Master Obat</span>
+                </button>
+                <button onclick="switchTab('racks')" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/10 transition" id="tab-btn-racks">
+                    <i class="fa-solid fa-cubes text-purple-400 w-5"></i>
+                    <span>Manajemen Rak</span>
+                </button>
+                <button onclick="switchTab('batches')" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/10 transition" id="tab-btn-batches">
+                    <i class="fa-solid fa-boxes-stacked text-amber-400 w-5"></i>
+                    <span>Batch & Stok</span>
+                </button>
 
-                    <div>
-                        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-3">Peringatan & Laporan</div>
-                        <nav class="space-y-1">
-                            <button onclick="switchTab('peringatan-expired')" id="nav-peringatan-expired" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-white/10">
-                                <i class="fa-solid fa-triangle-exclamation w-5 text-orange-400"></i> Peringatan Expired
-                            </button>
-                            <button onclick="switchTab('impor-ekspor')" id="nav-impor-ekspor" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-white/10">
-                                <i class="fa-solid fa-file-excel w-5 text-green-400"></i> Impor & Ekspor
-                            </button>
-                            <button onclick="switchTab('pengaturan-kredensial')" id="nav-pengaturan-kredensial" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-white/10">
-                                <i class="fa-solid fa-gear w-5 text-slate-400"></i> Pengaturan Kredensial
-                            </button>
-                        </nav>
-                    </div>
-                </div>
+                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 pt-4 mb-1">Transaksi</div>
+                <button onclick="switchTab('stock-in')" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/10 transition" id="tab-btn-stock-in">
+                    <i class="fa-solid fa-arrow-down-to-bracket text-emerald-400 w-5"></i>
+                    <span>Stok Masuk</span>
+                </button>
+                <button onclick="switchTab('stock-out')" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/10 transition" id="tab-btn-stock-out">
+                    <i class="fa-solid fa-arrow-up-from-bracket text-rose-400 w-5"></i>
+                    <span>Stok Keluar (FEFO)</span>
+                </button>
+                <button onclick="switchTab('mutation')" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/10 transition" id="tab-btn-mutation">
+                    <i class="fa-solid fa-right-left text-indigo-400 w-5"></i>
+                    <span>Mutasi Antar-Rak</span>
+                </button>
+                <button onclick="switchTab('history')" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/10 transition" id="tab-btn-history">
+                    <i class="fa-solid fa-clock-rotate-left text-teal-400 w-5"></i>
+                    <span>Riwayat Transaksi</span>
+                </button>
 
-                <div class="pt-4 border-t border-white/10 text-xs text-slate-400 text-center">
-                    GudangFarmasi Pro v2.0
-                </div>
+                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 pt-4 mb-1">Peringatan & Laporan</div>
+                <button onclick="switchTab('expiry-alerts')" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/10 transition" id="tab-btn-expiry-alerts">
+                    <i class="fa-solid fa-triangle-exclamation text-orange-400 w-5"></i>
+                    <span>Peringatan Expired</span>
+                </button>
+                <button onclick="switchTab('import-export')" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/10 transition" id="tab-btn-import-export">
+                    <i class="fa-solid fa-file-excel text-emerald-500 w-5"></i>
+                    <span>Impor & Ekspor</span>
+                </button>
+                <button onclick="switchTab('settings')" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/10 transition" id="tab-btn-settings">
+                    <i class="fa-solid fa-gear text-slate-400 w-5"></i>
+                    <span>Pengaturan Kredensial</span>
+                </button>
             </aside>
 
-            <!-- MAIN CONTENT AREA -->
-            <main class="flex-1 p-6 custom-scrollbar overflow-y-auto">
+            <!-- KONTEN UTAMA -->
+            <main class="flex-1 overflow-y-auto p-4 md:p-8" id="main-content">
+                
+                <!-- CONTAINER NOTIFIKASI TOAST -->
+                <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
 
-                <!-- VIEW 1: AUTH / LOGIN & REGISTRASI -->
-                <section id="auth-view" class="max-w-md mx-auto my-12 glass-panel p-8 rounded-2xl shadow-2xl">
+                <!-- VIEW: AUTENTIKASI / LOGIN MODAL -->
+                <section id="view-auth" class="max-w-md mx-auto my-12 glass-panel p-8 rounded-2xl shadow-2xl">
                     <div class="text-center mb-6">
-                        <div class="inline-flex p-4 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 mb-3">
-                            <i class="fa-solid fa-user-shield text-3xl"></i>
+                        <div class="w-16 h-16 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto mb-3 text-3xl border border-cyan-500/30">
+                            <i class="fa-solid fa-user-shield"></i>
                         </div>
-                        <h2 id="auth-title" class="text-2xl font-bold text-white">Otentikasi Admin</h2>
-                        <p id="auth-subtitle" class="text-sm text-slate-400 mt-1">Masukkan username atau email & password untuk masuk</p>
+                        <h2 class="text-2xl font-bold text-white" id="auth-title">Otentikasi Admin</h2>
+                        <p class="text-sm text-slate-300 mt-1" id="auth-subtitle">Masukkan username atau email & password untuk masuk</p>
                     </div>
 
                     <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
-                        <div id="full-name-container" class="hidden">
+                        <div id="fullname-group" class="hidden">
                             <label class="block text-xs font-semibold text-slate-300 mb-1">Nama Lengkap Admin</label>
-                            <input type="text" id="auth-fullname" class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="Contoh: Admin Utama Gudang">
+                            <input type="text" id="auth-fullname" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm" placeholder="Apt. Uul Ratnasari, S.Farm">
                         </div>
-
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 mb-1">Username / Email Admin</label>
-                            <input type="text" id="auth-username" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="Contoh: admin atau admin@gudang.com">
+                            <input type="text" id="auth-username" required class="w-full glass-input px-4 py-2.5 rounded-xl text-sm" placeholder="admin atau admin@gudang.com">
                         </div>
-
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
-                            <input type="password" id="auth-password" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="••••••••">
+                            <input type="password" id="auth-password" required class="w-full glass-input px-4 py-2.5 rounded-xl text-sm" placeholder="••••••••">
                         </div>
-
-                        <div id="confirm-password-container" class="hidden">
+                        <div id="confirm-password-group" class="hidden">
                             <label class="block text-xs font-semibold text-slate-300 mb-1">Konfirmasi Password</label>
-                            <input type="password" id="auth-confirm-password" class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="••••••••">
+                            <input type="password" id="auth-confirm-password" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm" placeholder="••••••••">
                         </div>
 
-                        <button type="submit" id="auth-submit-btn" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/30 transition">
+                        <button type="submit" id="auth-submit-btn" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold text-sm shadow-lg shadow-cyan-500/30 transition duration-200">
                             Masuk Ke Sistem
                         </button>
                     </form>
                 </section>
 
-                <!-- VIEW 2: TAMPILAN PUBLIC RAK (SCAN QR / DIRECT LINK) -->
-                <section id="public-rack-view" class="hidden max-w-4xl mx-auto space-y-6">
-                    <div class="glass-panel p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div>
-                            <div class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30 mb-2">
-                                Halaman Publik Informasi Rak
-                            </div>
-                            <h2 id="public-rack-code" class="text-3xl font-extrabold text-white">RAK-000</h2>
-                            <p id="public-rack-name" class="text-slate-300 text-sm mt-0.5">Memuat data rak...</p>
-                        </div>
-                        <button onclick="handlePublicEditClick()" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold flex items-center gap-2 shadow-lg shadow-blue-500/30 transition">
-                            <i class="fa-solid fa-pen-to-square"></i> Ubah / Kelola (Admin)
-                        </button>
-                    </div>
-
-                    <div class="glass-panel p-6 rounded-2xl space-y-4">
-                        <h3 class="font-bold text-lg text-white border-b border-white/10 pb-3">Daftar Obat & Batch Di Rak Ini</h3>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm text-slate-300">
-                                <thead class="text-xs uppercase bg-slate-800/50 text-slate-400 border-b border-white/10">
-                                    <tr>
-                                        <th class="p-3">Kode Obat</th>
-                                        <th class="p-3">Nama Obat</th>
-                                        <th class="p-3">Nomor Batch</th>
-                                        <th class="p-3">Tanggal Expired</th>
-                                        <th class="p-3 text-right">Stok</th>
-                                        <th class="p-3 text-center">Status Expired</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="public-rack-items-body">
-                                    <tr>
-                                        <td colspan="6" class="p-4 text-center text-slate-500">Memuat rincian stok...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- VIEW 3: DASHBOARD ADMIN -->
-                <section id="tab-dashboard" class="tab-content hidden space-y-6">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-2xl font-bold text-white">Dashboard Ikhtisar Gudang</h2>
-                        <button onclick="renderDashboard()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-medium text-slate-300">
-                            <i class="fa-solid fa-rotate-right mr-1"></i> Refresh Data
-                        </button>
-                    </div>
-
-                    <!-- STATS GRID -->
+                <!-- VIEW: DASHBOARD -->
+                <section id="view-dashboard" class="hidden space-y-6">
+                    <!-- TOP STATS CARDS -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="glass-panel p-5 rounded-2xl flex items-center gap-4">
-                            <div class="p-3.5 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                                <i class="fa-solid fa-capsules text-2xl"></i>
-                            </div>
+                        <div class="glass-panel p-5 rounded-2xl flex items-center justify-between border-l-4 border-l-cyan-500">
                             <div>
-                                <div class="text-xs text-slate-400 font-medium">Total Jenis Obat</div>
-                                <div id="stat-total-medicines" class="text-2xl font-bold text-white">0</div>
+                                <p class="text-xs font-medium text-slate-400">Total Jenis Obat</p>
+                                <h3 class="text-2xl font-bold text-white mt-1" id="stat-total-medicines">0</h3>
+                                <p class="text-xs text-slate-400 mt-1">Master obat aktif</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-capsules"></i>
                             </div>
                         </div>
 
-                        <div class="glass-panel p-5 rounded-2xl flex items-center gap-4">
-                            <div class="p-3.5 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
-                                <i class="fa-solid fa-cubes text-2xl"></i>
-                            </div>
+                        <div class="glass-panel p-5 rounded-2xl flex items-center justify-between border-l-4 border-l-purple-500">
                             <div>
-                                <div class="text-xs text-slate-400 font-medium">Total Rak (Terisi/Kosong)</div>
-                                <div id="stat-total-racks" class="text-2xl font-bold text-white">0 / 0</div>
+                                <p class="text-xs font-medium text-slate-400">Total Rak / Terisi</p>
+                                <h3 class="text-2xl font-bold text-white mt-1"><span id="stat-filled-racks">0</span>/<span id="stat-total-racks">0</span></h3>
+                                <p class="text-xs text-slate-400 mt-1" id="stat-empty-racks">0 Rak kosong</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-cubes"></i>
                             </div>
                         </div>
 
-                        <div class="glass-panel p-5 rounded-2xl flex items-center gap-4">
-                            <div class="p-3.5 rounded-xl bg-orange-500/20 text-orange-400 border border-orange-500/30">
-                                <i class="fa-solid fa-clock-triangle-exclamation text-2xl"></i>
-                            </div>
+                        <div class="glass-panel p-5 rounded-2xl flex items-center justify-between border-l-4 border-l-amber-500">
                             <div>
-                                <div class="text-xs text-slate-400 font-medium">Mendekati Expired (&lt;30hr)</div>
-                                <div id="stat-near-expired" class="text-2xl font-bold text-orange-400">0</div>
+                                <p class="text-xs font-medium text-slate-400">Mendekati Expired</p>
+                                <h3 class="text-2xl font-bold text-amber-400 mt-1" id="stat-expiring-soon">0</h3>
+                                <p class="text-xs text-slate-400 mt-1">&lt; 30 Hari kedaluwarsa</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-clock"></i>
                             </div>
                         </div>
 
-                        <div class="glass-panel p-5 rounded-2xl flex items-center gap-4">
-                            <div class="p-3.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30">
-                                <i class="fa-solid fa-skull-crossbones text-2xl"></i>
-                            </div>
+                        <div class="glass-panel p-5 rounded-2xl flex items-center justify-between border-l-4 border-l-rose-500">
                             <div>
-                                <div class="text-xs text-slate-400 font-medium">Sudah Expired</div>
-                                <div id="stat-expired" class="text-2xl font-bold text-rose-400">0</div>
+                                <p class="text-xs font-medium text-slate-400">Sudah Kedaluwarsa</p>
+                                <h3 class="text-2xl font-bold text-rose-400 mt-1" id="stat-expired-count">0</h3>
+                                <p class="text-xs text-slate-400 mt-1">Perlu karantina/retur</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-skull-crossbones"></i>
                             </div>
                         </div>
                     </div>
 
-                    <!-- RINGKASAN STOK LOW & PRIORITAS EXPIRED -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Stok Menipis -->
-                        <div class="glass-panel p-6 rounded-2xl space-y-4">
-                            <h3 class="font-bold text-lg text-white flex items-center gap-2">
-                                <i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Obat Stok Menipis
-                            </h3>
-                            <div class="overflow-x-auto max-h-60 custom-scrollbar">
-                                <table class="w-full text-left text-sm text-slate-300">
-                                    <thead class="text-xs uppercase bg-slate-800/50 text-slate-400 sticky top-0">
-                                        <tr>
-                                            <th class="p-2">Nama Obat</th>
-                                            <th class="p-2">Stok Aktif</th>
-                                            <th class="p-2">Batas Min</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="dash-low-stock-body">
-                                        <tr><td colspan="3" class="p-3 text-center text-slate-500">Tidak ada obat stok menipis.</td></tr>
-                                    </tbody>
-                                </table>
+                    <!-- CHARTS & SUMMARY -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="glass-panel p-6 rounded-2xl lg:col-span-2">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-base font-semibold text-white">Grafik Transaksi Stok Bulanan</h3>
+                                <span class="text-xs text-slate-400">Tahun Ini</span>
+                            </div>
+                            <div class="h-64">
+                                <canvas id="chart-transactions"></canvas>
                             </div>
                         </div>
 
-                        <!-- Expired Priority -->
-                        <div class="glass-panel p-6 rounded-2xl space-y-4">
-                            <h3 class="font-bold text-lg text-white flex items-center gap-2">
-                                <i class="fa-solid fa-calendar-xmark text-rose-400"></i> Prioritas Kedaluwarsa Terdekat
+                        <div class="glass-panel p-6 rounded-2xl flex flex-col">
+                            <h3 class="text-base font-semibold text-white mb-4 flex items-center justify-between">
+                                <span>Prioritas Expired Terdekat</span>
+                                <i class="fa-solid fa-triangle-exclamation text-amber-400 text-sm"></i>
                             </h3>
-                            <div class="overflow-x-auto max-h-60 custom-scrollbar">
-                                <table class="w-full text-left text-sm text-slate-300">
-                                    <thead class="text-xs uppercase bg-slate-800/50 text-slate-400 sticky top-0">
-                                        <tr>
-                                            <th class="p-2">Obat / Batch</th>
-                                            <th class="p-2">Tgl Expired</th>
-                                            <th class="p-2">Sisa Hari</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="dash-expired-priority-body">
-                                        <tr><td colspan="3" class="p-3 text-center text-slate-500">Tidak ada batch yang kritis.</td></tr>
-                                    </tbody>
-                                </table>
+                            <div class="flex-1 overflow-y-auto space-y-3 max-h-64 pr-1" id="dash-priority-expiry-list">
+                                <p class="text-xs text-slate-400 text-center py-4">Memuat data kedaluwarsa...</p>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- VIEW 4: MASTER OBAT -->
-                <section id="tab-master-obat" class="tab-content hidden space-y-6">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-2xl font-bold text-white">Master Obat</h2>
-                        <button onclick="openModal('modal-add-medicine')" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm flex items-center gap-2 shadow-lg shadow-blue-600/30">
-                            <i class="fa-solid fa-plus"></i> Tambah Obat Baru
+                <!-- VIEW: MASTER OBAT -->
+                <section id="view-medicines" class="hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Master Obat</h2>
+                            <p class="text-xs text-slate-300">Kelola katalog obat, jenis, dan batas stok minimal</p>
+                        </div>
+                        <button onclick="openMedicineModal()" class="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white font-medium text-xs shadow-lg transition flex items-center space-x-2">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Tambah Obat Baru</span>
                         </button>
                     </div>
 
-                    <div class="glass-panel p-6 rounded-2xl space-y-4">
-                        <div class="flex flex-col sm:flex-row gap-3 justify-between">
-                            <input type="text" id="search-medicine" oninput="renderMasterObat()" placeholder="Cari nama atau kode obat..." class="px-4 py-2 rounded-xl glass-input text-sm w-full sm:w-72">
+                    <div class="glass-panel rounded-2xl overflow-hidden border border-white/10">
+                        <div class="p-4 border-b border-white/10 flex items-center justify-between">
+                            <input type="text" id="med-search" oninput="filterMedicinesTable()" placeholder="Cari kode, nama, atau kategori..." class="glass-input px-4 py-2 rounded-xl text-xs w-64">
                         </div>
-
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm text-slate-300">
-                                <thead class="text-xs uppercase bg-slate-800/50 text-slate-400 border-b border-white/10">
+                            <table class="w-full text-left text-sm text-slate-200">
+                                <thead class="text-xs text-slate-400 uppercase bg-white/5 border-b border-white/10">
                                     <tr>
-                                        <th class="p-3">Kode</th>
-                                        <th class="p-3">Nama Obat</th>
-                                        <th class="p-3">Kategori</th>
-                                        <th class="p-3">Bentuk / Satuan</th>
-                                        <th class="p-3">Stok Min</th>
-                                        <th class="p-3">Status</th>
-                                        <th class="p-3 text-center">Aksi</th>
+                                        <th class="px-4 py-3">Kode</th>
+                                        <th class="px-4 py-3">Nama Obat</th>
+                                        <th class="px-4 py-3">Kategori</th>
+                                        <th class="px-4 py-3">Bentuk & Satuan</th>
+                                        <th class="px-4 py-3">Stok Min</th>
+                                        <th class="px-4 py-3 text-right">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody id="master-obat-table-body">
-                                    <tr><td colspan="7" class="p-4 text-center text-slate-500">Memuat data obat...</td></tr>
+                                <tbody id="medicines-table-body" class="divide-y divide-white/5">
+                                    <tr><td colspan="6" class="px-4 py-4 text-center text-xs text-slate-400">Memuat data obat...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </section>
 
-                <!-- VIEW 5: MANAJEMEN RAK -->
-                <section id="tab-manajemen-rak" class="tab-content hidden space-y-6">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-2xl font-bold text-white">Manajemen Rak Gudang</h2>
-                        <button onclick="openModal('modal-add-rack')" class="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-medium text-sm flex items-center gap-2 shadow-lg shadow-purple-600/30">
-                            <i class="fa-solid fa-plus"></i> Tambah Rak Baru
+                <!-- VIEW: MANAJEMEN RAK -->
+                <section id="view-racks" class="hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Manajemen Rak Gudang</h2>
+                            <p class="text-xs text-slate-300">Pengaturan kode lokasi rak dan cetak QR Code unik</p>
+                        </div>
+                        <button onclick="openRackModal()" class="px-4 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-medium text-xs shadow-lg transition flex items-center space-x-2">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Tambah Rak Baru</span>
                         </button>
                     </div>
 
-                    <div id="rack-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- RACK CARDS DYNAMICALLY RENDERED HERE -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="racks-card-container">
+                        <p class="text-xs text-slate-400 py-4 col-span-full text-center">Memuat data rak...</p>
                     </div>
                 </section>
 
-                <!-- VIEW 6: BATCH & STOK -->
-                <section id="tab-batch-stok" class="tab-content hidden space-y-6">
-                    <h2 class="text-2xl font-bold text-white">Rincian Batch & Stok Per Rak</h2>
-                    <div class="glass-panel p-6 rounded-2xl space-y-4">
+                <!-- VIEW: BATCH & STOK -->
+                <section id="view-batches" class="hidden space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Batch & Stok Per Rak</h2>
+                        <p class="text-xs text-slate-300">Pantau persebaran batch obat dan jumlah di setiap rak</p>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl overflow-hidden">
+                        <div class="p-4 border-b border-white/10">
+                            <input type="text" id="batch-search" oninput="loadBatchesTable()" placeholder="Cari batch, obat, atau rak..." class="glass-input px-4 py-2 rounded-xl text-xs w-64">
+                        </div>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm text-slate-300">
-                                <thead class="text-xs uppercase bg-slate-800/50 text-slate-400 border-b border-white/10">
+                            <table class="w-full text-left text-sm text-slate-200">
+                                <thead class="text-xs text-slate-400 uppercase bg-white/5 border-b border-white/10">
                                     <tr>
-                                        <th class="p-3">Obat</th>
-                                        <th class="p-3">No. Batch</th>
-                                        <th class="p-3">Rak</th>
-                                        <th class="p-3">Jumlah Stok</th>
-                                        <th class="p-3">Tgl Expired</th>
-                                        <th class="p-3">Status</th>
+                                        <th class="px-4 py-3">Obat</th>
+                                        <th class="px-4 py-3">No Batch</th>
+                                        <th class="px-4 py-3">Lokasi Rak</th>
+                                        <th class="px-4 py-3">Tanggal Expired</th>
+                                        <th class="px-4 py-3">Jumlah Stok</th>
+                                        <th class="px-4 py-3">Status Batch</th>
                                     </tr>
                                 </thead>
-                                <tbody id="batch-stok-table-body">
-                                    <tr><td colspan="6" class="p-4 text-center text-slate-500">Memuat data batch & stok...</td></tr>
+                                <tbody id="batches-table-body" class="divide-y divide-white/5">
+                                    <tr><td colspan="6" class="px-4 py-4 text-center text-xs text-slate-400">Memuat data batch...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </section>
 
-                <!-- VIEW 7: STOK MASUK -->
-                <section id="tab-stok-masuk" class="tab-content hidden max-w-2xl mx-auto space-y-6">
-                    <div class="glass-panel p-6 rounded-2xl space-y-6">
-                        <h2 class="text-xl font-bold text-white border-b border-white/10 pb-3">Pencatatan Transaksi Stok Masuk</h2>
-                        <form id="form-stok-masuk" onsubmit="handleStokMasuk(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-300 mb-1">Pilih Obat</label>
-                                <select id="in-medicine-id" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm">
-                                    <option value="">-- Pilih Obat --</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-300 mb-1">Pilih Rak Tujuan</label>
-                                <select id="in-rack-id" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm">
-                                    <option value="">-- Pilih Rak --</option>
-                                </select>
+                <!-- VIEW: STOK MASUK -->
+                <section id="view-stock-in" class="hidden max-w-2xl mx-auto space-y-6">
+                    <div class="glass-panel p-6 rounded-2xl space-y-4">
+                        <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-arrow-down-to-bracket text-emerald-400"></i>
+                            <span>Penerimaan Stok Masuk</span>
+                        </h2>
+                        <form onsubmit="handleStockInSubmit(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">No. Transaksi / Dokumen</label>
+                                    <input type="text" id="in-trans-no" required class="w-full glass-input px-4 py-2 rounded-xl text-xs" placeholder="IN-20261010-001">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Pilih Obat</label>
+                                    <select id="in-medicine-id" required class="w-full glass-input px-4 py-2 rounded-xl text-xs"></select>
+                                </div>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Nomor Batch Produsen</label>
-                                    <input type="text" id="in-batch-no" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="Contoh: BATCH-001">
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Pilih Rak Tujuan</label>
+                                    <select id="in-rack-id" required class="w-full glass-input px-4 py-2 rounded-xl text-xs"></select>
                                 </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Nomor Batch</label>
+                                    <input type="text" id="in-batch-no" required class="w-full glass-input px-4 py-2 rounded-xl text-xs" placeholder="BTC-2026-X1">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-300 mb-1">Tanggal Expired</label>
-                                    <input type="date" id="in-expired-date" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Jumlah Masuk</label>
-                                    <input type="number" min="1" id="in-qty" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="100">
+                                    <input type="date" id="in-expired-date" required class="w-full glass-input px-4 py-2 rounded-xl text-xs">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Dokumen / No. Faktur</label>
-                                    <input type="text" id="in-doc" class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="FKT-2026-001">
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Jumlah</label>
+                                    <input type="number" id="in-quantity" min="1" required class="w-full glass-input px-4 py-2 rounded-xl text-xs" placeholder="100">
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-300 mb-1">Keterangan Tambahan</label>
-                                <textarea id="in-notes" rows="2" class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="Penerimaan dari Supplier..."></textarea>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Catatan / PBF Supplier</label>
+                                <textarea id="in-notes" rows="2" class="w-full glass-input px-4 py-2 rounded-xl text-xs" placeholder="Pengadaan dari PT. Kimia Farma..."></textarea>
                             </div>
-                            <button type="submit" class="w-full py-3 px-4 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-sm shadow-lg shadow-cyan-600/30">
-                                Simpan Transaksi Stok Masuk
+                            <button type="submit" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs shadow-lg transition">
+                                Simpan Stok Masuk
                             </button>
                         </form>
                     </div>
                 </section>
 
-                <!-- VIEW 8: STOK KELUAR (FEFO) -->
-                <section id="tab-stok-keluar" class="tab-content hidden max-w-2xl mx-auto space-y-6">
-                    <div class="glass-panel p-6 rounded-2xl space-y-6">
-                        <h2 class="text-xl font-bold text-white border-b border-white/10 pb-3">Pencatatan Stok Keluar (Aturan FEFO)</h2>
-                        <form id="form-stok-keluar" onsubmit="handleStokKeluar(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-300 mb-1">Pilih Obat</label>
-                                <select id="out-medicine-id" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm">
-                                    <option value="">-- Pilih Obat --</option>
-                                </select>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Jumlah Keluar Ditargetkan</label>
-                                    <input type="number" min="1" id="out-qty" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="50">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Tujuan / Penerima</label>
-                                    <input type="text" id="out-dest" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="Poli Rawat Jalan">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-300 mb-1">Keterangan / Catatan</label>
-                                <textarea id="out-notes" rows="2" class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="Pengeluaran resep rutin..."></textarea>
-                            </div>
-                            <button type="submit" class="w-full py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold text-sm shadow-lg shadow-rose-600/30">
-                                Eksekusi Pengeluaran FEFO
-                            </button>
-                        </form>
-                    </div>
-                </section>
-
-                <!-- VIEW 9: MUTASI RAK -->
-                <section id="tab-mutasi-rak" class="tab-content hidden max-w-2xl mx-auto space-y-6">
-                    <div class="glass-panel p-6 rounded-2xl space-y-6">
-                        <h2 class="text-xl font-bold text-white border-b border-white/10 pb-3">Mutasi Stok Antar-Rak</h2>
-                        <form id="form-mutasi" onsubmit="handleMutasi(event)" class="space-y-4">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Rak Asal</label>
-                                    <select id="mut-src-rack" onchange="loadRackInventoryOptions()" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm">
-                                        <option value="">-- Pilih Rak Asal --</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Rak Tujuan</label>
-                                    <select id="mut-dest-rack" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm">
-                                        <option value="">-- Pilih Rak Tujuan --</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-300 mb-1">Pilih Barang / Batch Di Rak Asal</label>
-                                <select id="mut-item-select" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm">
-                                    <option value="">-- Pilih Rak Asal Terlebih Dahulu --</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-300 mb-1">Jumlah Dipindahkan</label>
-                                <input type="number" min="1" id="mut-qty" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="10">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-300 mb-1">Alasan Mutasi</label>
-                                <input type="text" id="mut-notes" class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="Penataan ulang rak gudang">
-                            </div>
-                            <button type="submit" class="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30">
-                                Proses Mutasi Antar-Rak
-                            </button>
-                        </form>
-                    </div>
-                </section>
-
-                <!-- VIEW 10: RIWAYAT TRANSAKSI -->
-                <section id="tab-riwayat-transaksi" class="tab-content hidden space-y-6">
-                    <h2 class="text-2xl font-bold text-white">Riwayat Seluruh Transaksi</h2>
+                <!-- VIEW: STOK KELUAR (FEFO) -->
+                <section id="view-stock-out" class="hidden max-w-2xl mx-auto space-y-6">
                     <div class="glass-panel p-6 rounded-2xl space-y-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                                <i class="fa-solid fa-arrow-up-from-bracket text-rose-400"></i>
+                                <span>Pengeluaran Stok FEFO</span>
+                            </h2>
+                            <p class="text-xs text-slate-300 mt-1">Sistem otomatis mengambil batch dengan tanggal kedaluwarsa paling awal terlebih dahulu.</p>
+                        </div>
+                        <form onsubmit="handleStockOutSubmit(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">No. Transaksi / Resep</label>
+                                    <input type="text" id="out-trans-no" required class="w-full glass-input px-4 py-2 rounded-xl text-xs" placeholder="OUT-20261010-001">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Pilih Obat</label>
+                                    <select id="out-medicine-id" required class="w-full glass-input px-4 py-2 rounded-xl text-xs"></select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Jumlah Dibutuhkan</label>
+                                <input type="number" id="out-quantity" min="1" required class="w-full glass-input px-4 py-2 rounded-xl text-xs" placeholder="50">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Catatan / Tujuan Pengeluaran</label>
+                                <textarea id="out-notes" rows="2" class="w-full glass-input px-4 py-2 rounded-xl text-xs" placeholder="Permintaan Poli Rawat Jalan..."></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-3 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-semibold text-xs shadow-lg transition">
+                                Proses Pengeluaran FEFO
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- VIEW: MUTASI RAK -->
+                <section id="view-mutation" class="hidden max-w-2xl mx-auto space-y-6">
+                    <div class="glass-panel p-6 rounded-2xl space-y-4">
+                        <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-right-left text-indigo-400"></i>
+                            <span>Mutasi Obat Antar-Rak</span>
+                        </h2>
+                        <form onsubmit="handleMutationSubmit(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">No. Mutasi</label>
+                                    <input type="text" id="mut-trans-no" required class="w-full glass-input px-4 py-2 rounded-xl text-xs" placeholder="MUT-20261010-001">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Pilih Obat</label>
+                                    <select id="mut-medicine-id" required class="w-full glass-input px-4 py-2 rounded-xl text-xs" onchange="loadBatchesForMutation()"></select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Pilih Batch & Rak Asal</label>
+                                    <select id="mut-source-batch-rack" required class="w-full glass-input px-4 py-2 rounded-xl text-xs"></select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Pilih Rak Tujuan</label>
+                                    <select id="mut-dest-rack-id" required class="w-full glass-input px-4 py-2 rounded-xl text-xs"></select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Jumlah Mutasi</label>
+                                <input type="number" id="mut-quantity" min="1" required class="w-full glass-input px-4 py-2 rounded-xl text-xs" placeholder="20">
+                            </div>
+                            <button type="submit" class="w-full py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white font-semibold text-xs shadow-lg transition">
+                                Pindahkan Stok
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- VIEW: RIWAYAT TRANSAKSI -->
+                <section id="view-history" class="hidden space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Riwayat Transaksi Stok</h2>
+                        <p class="text-xs text-slate-300">Log lengkap penerimaan, pengeluaran, dan mutasi obat</p>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl overflow-hidden">
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm text-slate-300">
-                                <thead class="text-xs uppercase bg-slate-800/50 text-slate-400 border-b border-white/10">
+                            <table class="w-full text-left text-sm text-slate-200">
+                                <thead class="text-xs text-slate-400 uppercase bg-white/5 border-b border-white/10">
                                     <tr>
-                                        <th class="p-3">No. Transaksi</th>
-                                        <th class="p-3">Tipe</th>
-                                        <th class="p-3">Tanggal</th>
-                                        <th class="p-3">Catatan / Dokumen</th>
-                                        <th class="p-3">Detail Items</th>
+                                        <th class="px-4 py-3">No. Transaksi</th>
+                                        <th class="px-4 py-3">Tipe</th>
+                                        <th class="px-4 py-3">Tanggal</th>
+                                        <th class="px-4 py-3">Dokumen/Catatan</th>
+                                        <th class="px-4 py-3">Detail Item</th>
                                     </tr>
                                 </thead>
-                                <tbody id="riwayat-table-body">
-                                    <tr><td colspan="5" class="p-4 text-center text-slate-500">Memuat riwayat transaksi...</td></tr>
+                                <tbody id="history-table-body" class="divide-y divide-white/5">
+                                    <tr><td colspan="5" class="px-4 py-4 text-center text-xs text-slate-400">Memuat riwayat transaksi...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </section>
 
-                <!-- VIEW 11: PERINGATAN EXPIRED -->
-                <section id="tab-peringatan-expired" class="tab-content hidden space-y-6">
-                    <h2 class="text-2xl font-bold text-white">Peringatan Kedaluwarsa & Karantina</h2>
-                    <div class="glass-panel p-6 rounded-2xl space-y-4">
+                <!-- VIEW: PERINGATAN EXPIRED -->
+                <section id="view-expiry-alerts" class="hidden space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
+                            <span>Peringatan Kedaluwarsa</span>
+                        </h2>
+                        <p class="text-xs text-slate-300 mt-1">Daftar obat kedaluwarsa atau kurang dari 30 hari lagi</p>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl overflow-hidden">
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm text-slate-300">
-                                <thead class="text-xs uppercase bg-slate-800/50 text-slate-400 border-b border-white/10">
+                            <table class="w-full text-left text-sm text-slate-200">
+                                <thead class="text-xs text-slate-400 uppercase bg-white/5 border-b border-white/10">
                                     <tr>
-                                        <th class="p-3">Obat</th>
-                                        <th class="p-3">No. Batch</th>
-                                        <th class="p-3">Tgl Expired</th>
-                                        <th class="p-3">Status</th>
-                                        <th class="p-3">Sisa Hari</th>
+                                        <th class="px-4 py-3">Obat</th>
+                                        <th class="px-4 py-3">No Batch</th>
+                                        <th class="px-4 py-3">Rak</th>
+                                        <th class="px-4 py-3">Tgl Expired</th>
+                                        <th class="px-4 py-3">Stok</th>
+                                        <th class="px-4 py-3">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody id="expired-alerts-table-body">
-                                    <tr><td colspan="5" class="p-4 text-center text-slate-500">Memuat data expired...</td></tr>
+                                <tbody id="expiry-alerts-body" class="divide-y divide-white/5">
+                                    <tr><td colspan="6" class="px-4 py-4 text-center text-xs text-slate-400">Memuat peringatan...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </section>
 
-                <!-- VIEW 12: IMPOR & EKSPOR -->
-                <section id="tab-impor-ekspor" class="tab-content hidden space-y-6">
-                    <h2 class="text-2xl font-bold text-white">Impor & Ekspor Data Excel/PDF</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Impor Excel -->
-                        <div class="glass-panel p-6 rounded-2xl space-y-4">
-                            <h3 class="font-bold text-lg text-white">Impor Data Excel</h3>
-                            <p class="text-xs text-slate-400">Unduh template Excel resmi terlebih dahulu untuk mengisi data obat dan stok.</p>
-                            <button onclick="downloadExcelTemplate()" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-blue-600/30 transition">
-                                <i class="fa-solid fa-file-excel text-lg"></i> Unduh Template Excel Resmi
-                            </button>
-                            <div class="pt-4 border-t border-white/10 space-y-3">
-                                <input type="file" id="excel-file-input" accept=".xlsx, .xls" class="block w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500">
-                                <button onclick="handleExcelImport()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold">
-                                    Proses Impor File Excel
-                                </button>
-                            </div>
-                        </div>
+                <!-- VIEW: IMPOR & EKSPOR -->
+                <section id="view-import-export" class="hidden max-w-3xl mx-auto space-y-6">
+                    <div class="glass-panel p-6 rounded-2xl space-y-6">
+                        <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-file-excel text-emerald-400"></i>
+                            <span>Impor & Ekspor Data Laporan</span>
+                        </h2>
 
-                        <!-- Ekspor PDF & Excel -->
-                        <div class="glass-panel p-6 rounded-2xl space-y-4">
-                            <h3 class="font-bold text-lg text-white">Ekspor Laporan Gudang</h3>
-                            <p class="text-xs text-slate-400">Cetak laporan inventaris aktif ke dalam format Excel atau dokumen PDF siap cetak.</p>
-                            <div class="flex gap-3 pt-4 border-t border-white/10">
-                                <button onclick="exportDataExcel()" class="flex-1 py-2.5 rounded-xl bg-green-600 hover:bg-green-500 text-white text-sm font-semibold flex justify-center items-center gap-2">
-                                    <i class="fa-solid fa-file-excel"></i> Ekspor Excel
-                                </button>
-                                <button onclick="exportDataPDF()" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-semibold flex justify-center items-center gap-2">
-                                    <i class="fa-solid fa-file-pdf"></i> Ekspor PDF
-                                </button>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="glass-card p-5 rounded-xl space-y-3">
+                                <h3 class="text-sm font-semibold text-cyan-300">Ekspor Laporan PDF & Excel</h3>
+                                <p class="text-xs text-slate-300">Unduh data stok obat dan inventaris dalam format Excel (.xlsx) atau PDF.</p>
+                                <div class="flex flex-col space-y-2">
+                                    <button onclick="exportToExcel()" class="py-2.5 px-4 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition flex items-center justify-center space-x-2">
+                                        <i class="fa-solid fa-file-excel"></i>
+                                        <span>Unduh Excel Stok</span>
+                                    </button>
+                                    <button onclick="exportToPDF()" class="py-2.5 px-4 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-xs font-semibold transition flex items-center justify-center space-x-2">
+                                        <i class="fa-solid fa-file-pdf"></i>
+                                        <span>Unduh PDF Stok</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="glass-card p-5 rounded-xl space-y-3">
+                                <h3 class="text-sm font-semibold text-purple-300">Impor Data Excel Master Obat</h3>
+                                <p class="text-xs text-slate-300">Unggah file Excel berisi data obat untuk menambahkan secara massal.</p>
+                                <label class="py-2.5 px-4 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/30 text-xs font-semibold transition flex items-center justify-center space-x-2 cursor-pointer">
+                                    <i class="fa-solid fa-file-import"></i>
+                                    <span>Pilih File Excel Master</span>
+                                    <input type="file" accept=".xlsx, .xls" onchange="importMedicinesExcel(event)" class="hidden">
+                                </label>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- VIEW 13: PENGATURAN KREDENSIAL -->
-                <section id="tab-pengaturan-kredensial" class="tab-content hidden max-w-2xl mx-auto space-y-6">
+                <!-- VIEW: PENGATURAN KREDENSIAL -->
+                <section id="view-settings" class="hidden max-w-2xl mx-auto space-y-6">
                     <div class="glass-panel p-6 rounded-2xl space-y-6">
-                        <h2 class="text-xl font-bold text-white border-b border-white/10 pb-3">Pengaturan Kredensial Supabase & Cloudinary</h2>
-                        
-                        <form id="form-config" onsubmit="saveCredentials(event)" class="space-y-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                                <i class="fa-solid fa-key text-cyan-400"></i>
+                                <span>Konfigurasi Kredensial & Cadangan GitHub</span>
+                            </h2>
+                            <p class="text-xs text-slate-300 mt-1">
+                                Kredensial ini tersimpan di <code class="text-cyan-300">localStorage</code> atau dapat diunduh dalam format <code class="text-cyan-300">config.json</code> untuk ditaruh di repository GitHub.
+                            </p>
+                        </div>
+
+                        <!-- Supabase Config -->
+                        <div class="space-y-4 pt-2 border-t border-white/10">
+                            <h3 class="text-sm font-semibold text-cyan-300 flex items-center space-x-2">
+                                <i class="fa-solid fa-database"></i>
+                                <span>Kredensial Supabase</span>
+                            </h3>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-300 mb-1">Supabase URL</label>
-                                <input type="text" id="cfg-supabase-url" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="https://xyz.supabase.co">
+                                <label class="block text-xs font-medium text-slate-300 mb-1">Supabase URL</label>
+                                <input type="text" id="cfg-supabase-url" class="w-full glass-input px-4 py-2 rounded-xl text-xs font-mono" placeholder="https://xyz.supabase.co">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-300 mb-1">Supabase Anon Key</label>
-                                <input type="password" id="cfg-supabase-key" required class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="eyJhbGciOi...">
+                                <label class="block text-xs font-medium text-slate-300 mb-1">Supabase Anon Key</label>
+                                <textarea id="cfg-supabase-key" rows="2" class="w-full glass-input px-4 py-2 rounded-xl text-xs font-mono" placeholder="eyJhbGci..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Cloudinary Config -->
+                        <div class="space-y-4 pt-2 border-t border-white/10">
+                            <h3 class="text-sm font-semibold text-purple-300 flex items-center space-x-2">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <span>Kredensial Cloudinary (Gambar & Lampiran)</span>
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1">Cloud Name</label>
+                                    <input type="text" id="cfg-cloudinary-cloud" class="w-full glass-input px-4 py-2 rounded-xl text-xs font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1">Upload Preset</label>
+                                    <input type="text" id="cfg-cloudinary-preset" class="w-full glass-input px-4 py-2 rounded-xl text-xs font-mono">
+                                </div>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-300 mb-1">Cloudinary Cloud Name (Opsional)</label>
-                                <input type="text" id="cfg-cloudinary-name" class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="demo-cloud">
+                                <label class="block text-xs font-medium text-slate-300 mb-1">Cloudinary API Key (Opsional)</label>
+                                <input type="text" id="cfg-cloudinary-key" class="w-full glass-input px-4 py-2 rounded-xl text-xs font-mono">
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-300 mb-1">Cloudinary Upload Preset (Opsional)</label>
-                                <input type="text" id="cfg-cloudinary-preset" class="w-full px-4 py-2.5 rounded-xl glass-input text-sm" placeholder="ml_default">
+                        </div>
+
+                        <div class="pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center space-x-2">
+                                <label class="px-4 py-2 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/30 text-xs font-semibold cursor-pointer transition flex items-center space-x-2">
+                                    <i class="fa-solid fa-file-import"></i>
+                                    <span>Impor config.json</span>
+                                    <input type="file" accept=".json" onchange="importConfigFile(event)" class="hidden">
+                                </label>
+                                <button onclick="downloadConfigFile()" class="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition flex items-center space-x-2">
+                                    <i class="fa-solid fa-file-arrow-down"></i>
+                                    <span>Unduh config.json</span>
+                                </button>
                             </div>
 
-                            <div class="flex flex-col sm:flex-row gap-2 pt-3">
-                                <button type="submit" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm">
-                                    Simpan Konfigurasi
-                                </button>
-                                
-                                <input type="file" id="cfg-file-import" accept=".json" class="hidden" onchange="importConfigFile(event)">
-                                <button type="button" onclick="document.getElementById('cfg-file-import').click()" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm flex items-center justify-center gap-1.5">
-                                    <i class="fa-solid fa-file-import"></i> Impor config.json
-                                </button>
+                            <button onclick="saveSettingsToApp()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold text-xs shadow-lg transition flex items-center space-x-2">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Simpan Ke Browser</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
 
-                                <button type="button" onclick="downloadConfigJSON()" class="py-2.5 px-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold text-sm flex items-center justify-center gap-1.5">
-                                    <i class="fa-solid fa-file-export"></i> Unduh config.json
-                                </button>
+                <!-- VIEW: PUBLIC RAK VIEW -->
+                <section id="view-public-rack" class="hidden max-w-3xl mx-auto space-y-6">
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-white/10 pb-4 mb-4 gap-4">
+                            <div>
+                                <span class="text-xs px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-mono" id="pub-rack-code">RAK-001</span>
+                                <h2 class="text-2xl font-bold text-white mt-1" id="pub-rack-name">Nama Rak</h2>
+                                <p class="text-xs text-slate-300 mt-1" id="pub-rack-location">Lokasi Rak</p>
                             </div>
-                        </form>
+                            <button onclick="triggerAdminEditFromRack()" class="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 font-medium text-sm flex items-center space-x-2 transition">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                                <span>Kelola (Admin)</span>
+                            </button>
+                        </div>
+
+                        <h3 class="text-sm font-semibold text-slate-300 mb-3">Daftar Obat Pada Rak Ini</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-200">
+                                <thead class="text-xs text-slate-400 uppercase bg-white/5 border-b border-white/10">
+                                    <tr>
+                                        <th class="px-4 py-3">Obat</th>
+                                        <th class="px-4 py-3">No Batch</th>
+                                        <th class="px-4 py-3">Jumlah</th>
+                                        <th class="px-4 py-3">Tgl Expired</th>
+                                        <th class="px-4 py-3">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pub-rack-items-body" class="divide-y divide-white/5">
+                                    <tr><td colspan="5" class="px-4 py-4 text-center text-xs text-slate-400">Memuat isi rak...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </section>
 
@@ -671,163 +711,198 @@
         </div>
     </div>
 
-    <!-- MODAL: TAMBAH OBAT -->
-    <div id="modal-add-medicine" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4">
-        <div class="glass-panel max-w-md w-full p-6 rounded-2xl space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="font-bold text-lg text-white">Tambah Master Obat</h3>
-                <button onclick="closeModal('modal-add-medicine')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form onsubmit="handleAddMedicine(event)" class="space-y-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Kode Obat (Unik)</label>
-                    <input type="text" id="m-code" required class="w-full px-4 py-2 rounded-xl glass-input text-sm" placeholder="OBT-0001">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Nama Obat</label>
-                    <input type="text" id="m-name" required class="w-full px-4 py-2 rounded-xl glass-input text-sm" placeholder="Paracetamol 500mg">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Kategori</label>
-                    <input type="text" id="m-category" class="w-full px-4 py-2 rounded-xl glass-input text-sm" placeholder="Analgesik / Antipiretik">
+    <!-- MODAL ADD/EDIT MEDICINE -->
+    <div id="modal-medicine" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
+        <div class="glass-panel p-6 rounded-2xl w-full max-w-lg space-y-4">
+            <h3 class="text-lg font-bold text-white" id="modal-med-title">Tambah Obat Baru</h3>
+            <form onsubmit="saveMedicine(event)" class="space-y-3">
+                <input type="hidden" id="med-id">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">Kode Obat</label>
+                        <input type="text" id="med-code" required class="w-full glass-input px-3 py-2 rounded-xl text-xs" placeholder="OBT-001">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">Nama Obat</label>
+                        <input type="text" id="med-name" required class="w-full glass-input px-3 py-2 rounded-xl text-xs" placeholder="Paracetamol">
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Bentuk Sediaan</label>
-                        <input type="text" id="m-form" class="w-full px-4 py-2 rounded-xl glass-input text-sm" placeholder="Tablet">
+                        <label class="block text-xs text-slate-300 mb-1">Kategori</label>
+                        <input type="text" id="med-category" required class="w-full glass-input px-3 py-2 rounded-xl text-xs" placeholder="Analgetik">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Satuan Stok</label>
-                        <input type="text" id="m-unit" required class="w-full px-4 py-2 rounded-xl glass-input text-sm" placeholder="Tablet">
+                        <label class="block text-xs text-slate-300 mb-1">Bentuk Sediaan</label>
+                        <input type="text" id="med-form" required class="w-full glass-input px-3 py-2 rounded-xl text-xs" placeholder="Tablet">
                     </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Batas Stok Minimum</label>
-                    <input type="number" id="m-min-stock" value="10" required class="w-full px-4 py-2 rounded-xl glass-input text-sm">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">Satuan</label>
+                        <input type="text" id="med-unit" required class="w-full glass-input px-3 py-2 rounded-xl text-xs" placeholder="Strip">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">Stok Minimal</label>
+                        <input type="number" id="med-min-stock" required class="w-full glass-input px-3 py-2 rounded-xl text-xs" placeholder="10">
+                    </div>
                 </div>
-                <button type="submit" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm">Simpan Obat</button>
+                <div class="flex justify-end space-x-2 pt-3">
+                    <button type="button" onclick="closeMedicineModal()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium">Batal</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-xs font-semibold text-white">Simpan</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL: TAMBAH RAK -->
-    <div id="modal-add-rack" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4">
-        <div class="glass-panel max-w-md w-full p-6 rounded-2xl space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="font-bold text-lg text-white">Tambah Rak Baru</h3>
-                <button onclick="closeModal('modal-add-rack')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+    <!-- MODAL ADD/EDIT RACK -->
+    <div id="modal-rack" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
+        <div class="glass-panel p-6 rounded-2xl w-full max-w-md space-y-4">
+            <h3 class="text-lg font-bold text-white" id="modal-rack-title">Tambah Rak Baru</h3>
+            <form onsubmit="saveRack(event)" class="space-y-3">
+                <input type="hidden" id="rack-id">
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Kode Rak</label>
+                    <input type="text" id="rack-code" required class="w-full glass-input px-3 py-2 rounded-xl text-xs" placeholder="RAK-A1">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Nama Rak</label>
+                    <input type="text" id="rack-name" required class="w-full glass-input px-3 py-2 rounded-xl text-xs" placeholder="Rak Obat Generik">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Deskripsi Lokasi</label>
+                    <textarea id="rack-location" rows="2" class="w-full glass-input px-3 py-2 rounded-xl text-xs" placeholder="Lantai 1, Sektor Barat"></textarea>
+                </div>
+                <div class="flex justify-end space-x-2 pt-3">
+                    <button type="button" onclick="closeRackModal()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium">Batal</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-purple-500 hover:bg-purple-600 text-xs font-semibold text-white">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL QR CODE RAK -->
+    <div id="modal-qr" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
+        <div class="glass-panel p-6 rounded-2xl w-full max-w-sm text-center space-y-4">
+            <h3 class="text-lg font-bold text-white" id="qr-modal-title">QR Code Rak</h3>
+            <div id="qrcode-container" class="bg-white p-4 rounded-xl inline-block mx-auto shadow-lg"></div>
+            <p class="text-xs text-slate-300 font-mono" id="qr-modal-url"></p>
+            <div class="flex justify-center space-x-2 pt-2">
+                <button onclick="closeQRModal()" class="px-4 py-2 rounded-xl bg-white/10 text-xs">Tutup</button>
+                <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-cyan-500 text-xs font-semibold text-white">Cetak QR</button>
             </div>
-            <form onsubmit="handleAddRack(event)" class="space-y-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Kode Rak (Unik)</label>
-                    <input type="text" id="r-code" required class="w-full px-4 py-2 rounded-xl glass-input text-sm" placeholder="RAK-001">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Nama Rak / Label</label>
-                    <input type="text" id="r-name" required class="w-full px-4 py-2 rounded-xl glass-input text-sm" placeholder="Rak Paracetamol">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Lokasi Keterangan</label>
-                    <input type="text" id="r-location" class="w-full px-4 py-2 rounded-xl glass-input text-sm" placeholder="Lantai 1 Koridor A">
-                </div>
-                <button type="submit" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm">Simpan Rak</button>
-            </form>
         </div>
     </div>
 
-    <!-- JAVASCRIPT UTAMA APLIKASI -->
+    <!-- JAVASCRIPT ENGINE -->
     <script>
-        // CONFIG DEFAULTS
-        let APP_CONFIG = {
-            SUPABASE_URL: "https://your-supabase-url.supabase.co",
-            SUPABASE_ANON_KEY: "your-anon-key",
-            CLOUDINARY_CLOUD_NAME: "",
-            CLOUDINARY_UPLOAD_PRESET: ""
+        const APP_CONFIG = {
+            SUPABASE_URL: "https://your-supabase-project.supabase.co",
+            SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            CLOUDINARY_CLOUD_NAME: "your_cloud_name",
+            CLOUDINARY_UPLOAD_PRESET: "your_upload_preset",
+            CLOUDINARY_API_KEY: "your_api_key"
         };
 
         let supabaseClient = null;
         let currentUser = null;
+        let activeTab = 'dashboard';
+        let chartInstance = null;
+        let allMedicinesData = [];
 
-        // INISIALISASI SAAT APPS DIBUKA
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadCredentials();
+        window.addEventListener('DOMContentLoaded', async () => {
+            await loadCredentialsHierarchy();
             initSupabase();
-            checkRoute();
+            await checkAuthAndSetup();
+            handleDeepLink();
         });
 
-        // 1. KREDENSIAL & CONFIG AUTOMATIC SEARCH
-        async function loadCredentials() {
-            // Priority 1: Baca dari localStorage jika pernah disimpan
-            const saved = localStorage.getItem('app_config');
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    if (parsed.SUPABASE_URL && !parsed.SUPABASE_URL.includes("your-supabase-url")) {
-                        APP_CONFIG = { ...APP_CONFIG, ...parsed };
-                    }
-                } catch(e){}
-            }
+        window.addEventListener('hashchange', () => {
+            handleDeepLink();
+        });
 
-            // Priority 2: Otomatis mencoba fetch config.json jika berjalan di Server / GitHub Pages
+        async function loadCredentialsHierarchy() {
+            let configToUse = { ...APP_CONFIG };
             try {
-                const res = await fetch('./config.json?v=' + Date.now());
-                if (res.ok) {
-                    const fetched = await res.json();
-                    if (fetched.SUPABASE_URL && !fetched.SUPABASE_URL.includes("your-supabase-url")) {
-                        APP_CONFIG.SUPABASE_URL = fetched.SUPABASE_URL;
-                    }
-                    if (fetched.SUPABASE_ANON_KEY && !fetched.SUPABASE_ANON_KEY.includes("your-anon-key")) {
-                        APP_CONFIG.SUPABASE_ANON_KEY = fetched.SUPABASE_ANON_KEY;
-                    }
-                    if (fetched.CLOUDINARY_CLOUD_NAME) APP_CONFIG.CLOUDINARY_CLOUD_NAME = fetched.CLOUDINARY_CLOUD_NAME;
-                    if (fetched.CLOUDINARY_UPLOAD_PRESET) APP_CONFIG.CLOUDINARY_UPLOAD_PRESET = fetched.CLOUDINARY_UPLOAD_PRESET;
+                const response = await fetch('./config.json');
+                if (response.ok) {
+                    const fetchedConfig = await response.json();
+                    configToUse = { ...configToUse, ...fetchedConfig };
                 }
-            } catch (err) {
-                console.warn("File config.json tidak dapat dibaca via fetch (Lokal/File Protocol).");
-            }
+            } catch (e) {}
 
-            // Isikan ke form pengaturan jika elemen tersedia
-            populateConfigInputs();
-        }
+            const localUrl = localStorage.getItem('SUPABASE_URL');
+            const localKey = localStorage.getItem('SUPABASE_ANON_KEY');
+            const localCloud = localStorage.getItem('CLOUDINARY_CLOUD_NAME');
+            const localPreset = localStorage.getItem('CLOUDINARY_UPLOAD_PRESET');
+            const localApiKey = localStorage.getItem('CLOUDINARY_API_KEY');
 
-        function populateConfigInputs() {
-            if (document.getElementById('cfg-supabase-url')) {
-                document.getElementById('cfg-supabase-url').value = APP_CONFIG.SUPABASE_URL.includes("your-supabase-url") ? '' : APP_CONFIG.SUPABASE_URL;
-                document.getElementById('cfg-supabase-key').value = APP_CONFIG.SUPABASE_ANON_KEY.includes("your-anon-key") ? '' : APP_CONFIG.SUPABASE_ANON_KEY;
-                document.getElementById('cfg-cloudinary-name').value = APP_CONFIG.CLOUDINARY_CLOUD_NAME || '';
-                document.getElementById('cfg-cloudinary-preset').value = APP_CONFIG.CLOUDINARY_UPLOAD_PRESET || '';
-            }
+            if (localUrl) configToUse.SUPABASE_URL = localUrl;
+            if (localKey) configToUse.SUPABASE_ANON_KEY = localKey;
+            if (localCloud) configToUse.CLOUDINARY_CLOUD_NAME = localCloud;
+            if (localPreset) configToUse.CLOUDINARY_UPLOAD_PRESET = localPreset;
+            if (localApiKey) configToUse.CLOUDINARY_API_KEY = localApiKey;
+
+            document.getElementById('cfg-supabase-url').value = configToUse.SUPABASE_URL || '';
+            document.getElementById('cfg-supabase-key').value = configToUse.SUPABASE_ANON_KEY || '';
+            document.getElementById('cfg-cloudinary-cloud').value = configToUse.CLOUDINARY_CLOUD_NAME || '';
+            document.getElementById('cfg-cloudinary-preset').value = configToUse.CLOUDINARY_UPLOAD_PRESET || '';
+            document.getElementById('cfg-cloudinary-key').value = configToUse.CLOUDINARY_API_KEY || '';
+
+            window.ACTIVE_CONFIG = configToUse;
         }
 
         function initSupabase() {
-            try {
-                if (APP_CONFIG.SUPABASE_URL && !APP_CONFIG.SUPABASE_URL.includes("your-supabase-url")) {
-                    supabaseClient = supabase.createClient(APP_CONFIG.SUPABASE_URL, APP_CONFIG.SUPABASE_ANON_KEY);
-                    document.getElementById('connection-status').className = "flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-                    document.getElementById('connection-text').innerText = "Terhubung ke Supabase";
-                } else {
-                    document.getElementById('connection-status').className = "flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30";
-                    document.getElementById('connection-text').innerText = "Belum Diatur";
-                }
-            } catch (err) {
-                showToast('Gagal inisialisasi Supabase: ' + err.message, 'error');
+            const url = window.ACTIVE_CONFIG?.SUPABASE_URL || document.getElementById('cfg-supabase-url').value.trim();
+            const key = window.ACTIVE_CONFIG?.SUPABASE_ANON_KEY || document.getElementById('cfg-supabase-key').value.trim();
+            
+            if (window.supabase && url && !url.includes('your-supabase-project')) {
+                supabaseClient = window.supabase.createClient(url, key);
+                document.getElementById('connection-status').className = 'flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+                document.getElementById('conn-text').innerText = 'Terhubung Supabase';
+            } else {
+                document.getElementById('connection-status').className = 'flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30';
+                document.getElementById('conn-text').innerText = 'Mode Lokal / Kredensial Belum Diset';
             }
         }
 
-        function saveCredentials(e) {
-            e.preventDefault();
-            APP_CONFIG.SUPABASE_URL = document.getElementById('cfg-supabase-url').value.trim();
-            APP_CONFIG.SUPABASE_ANON_KEY = document.getElementById('cfg-supabase-key').value.trim();
-            APP_CONFIG.CLOUDINARY_CLOUD_NAME = document.getElementById('cfg-cloudinary-name').value.trim();
-            APP_CONFIG.CLOUDINARY_UPLOAD_PRESET = document.getElementById('cfg-cloudinary-preset').value.trim();
+        function saveSettingsToApp() {
+            const url = document.getElementById('cfg-supabase-url').value.trim();
+            const key = document.getElementById('cfg-supabase-key').value.trim();
+            const cCloud = document.getElementById('cfg-cloudinary-cloud').value.trim();
+            const cPreset = document.getElementById('cfg-cloudinary-preset').value.trim();
+            const cKey = document.getElementById('cfg-cloudinary-key').value.trim();
 
-            localStorage.setItem('app_config', JSON.stringify(APP_CONFIG));
-            initSupabase();
-            showToast('Konfigurasi berhasil disimpan!', 'success');
-            checkRoute();
+            localStorage.setItem('SUPABASE_URL', url);
+            localStorage.setItem('SUPABASE_ANON_KEY', key);
+            localStorage.setItem('CLOUDINARY_CLOUD_NAME', cCloud);
+            localStorage.setItem('CLOUDINARY_UPLOAD_PRESET', cPreset);
+            localStorage.setItem('CLOUDINARY_API_KEY', cKey);
+
+            showToast('Kredensial berhasil disimpan di LocalStorage!', 'success');
+            setTimeout(() => { location.reload(); }, 1000);
         }
 
-        // UNGGAN / IMPOR FILE CONFIG.JSON SECARA LOKAL
+        function downloadConfigFile() {
+            const configObj = {
+                SUPABASE_URL: document.getElementById('cfg-supabase-url').value.trim(),
+                SUPABASE_ANON_KEY: document.getElementById('cfg-supabase-key').value.trim(),
+                CLOUDINARY_CLOUD_NAME: document.getElementById('cfg-cloudinary-cloud').value.trim(),
+                CLOUDINARY_UPLOAD_PRESET: document.getElementById('cfg-cloudinary-preset').value.trim(),
+                CLOUDINARY_API_KEY: document.getElementById('cfg-cloudinary-key').value.trim()
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configObj, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "config.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+
+            showToast('File config.json diunduh.', 'success');
+        }
+
         function importConfigFile(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -836,148 +911,111 @@
             reader.onload = function(e) {
                 try {
                     const parsed = JSON.parse(e.target.result);
-                    if (parsed.SUPABASE_URL) APP_CONFIG.SUPABASE_URL = parsed.SUPABASE_URL;
-                    if (parsed.SUPABASE_ANON_KEY) APP_CONFIG.SUPABASE_ANON_KEY = parsed.SUPABASE_ANON_KEY;
-                    if (parsed.CLOUDINARY_CLOUD_NAME) APP_CONFIG.CLOUDINARY_CLOUD_NAME = parsed.CLOUDINARY_CLOUD_NAME;
-                    if (parsed.CLOUDINARY_UPLOAD_PRESET) APP_CONFIG.CLOUDINARY_UPLOAD_PRESET = parsed.CLOUDINARY_UPLOAD_PRESET;
+                    if (parsed.SUPABASE_URL) document.getElementById('cfg-supabase-url').value = parsed.SUPABASE_URL;
+                    if (parsed.SUPABASE_ANON_KEY) document.getElementById('cfg-supabase-key').value = parsed.SUPABASE_ANON_KEY;
+                    if (parsed.CLOUDINARY_CLOUD_NAME) document.getElementById('cfg-cloudinary-cloud').value = parsed.CLOUDINARY_CLOUD_NAME;
+                    if (parsed.CLOUDINARY_UPLOAD_PRESET) document.getElementById('cfg-cloudinary-preset').value = parsed.CLOUDINARY_UPLOAD_PRESET;
+                    if (parsed.CLOUDINARY_API_KEY) document.getElementById('cfg-cloudinary-key').value = parsed.CLOUDINARY_API_KEY;
 
-                    populateConfigInputs();
-                    localStorage.setItem('app_config', JSON.stringify(APP_CONFIG));
-                    initSupabase();
-                    showToast('File config.json berhasil diimpor & diterapkan!', 'success');
-                    checkRoute();
+                    showToast('Format config.json berhasil diimpor.', 'success');
                 } catch (err) {
-                    showToast('Format config.json salah: ' + err.message, 'error');
+                    showToast('Format file JSON tidak valid.', 'error');
                 }
             };
             reader.readAsText(file);
         }
 
-        function downloadConfigJSON() {
-            const blob = new Blob([JSON.stringify(APP_CONFIG, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'config.json';
-            a.click();
-        }
-
-        // 2. ROUTING & STATE MANAGEMENT
-        async function checkRoute() {
-            const hash = window.location.hash;
-            if (hash.startsWith('#rack/')) {
-                const rackCode = hash.replace('#rack/', '');
-                showPublicRackView(rackCode);
+        async function checkAuthAndSetup() {
+            if(!supabaseClient) {
+                switchTab('auth');
                 return;
             }
 
-            if (!supabaseClient) {
-                switchTab('pengaturan-kredensial');
-                return;
-            }
-
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                showAdminUI();
-                switchTab('dashboard');
-            } else {
-                checkInitialAdmin();
-            }
-        }
-
-        async function checkInitialAdmin() {
             try {
-                const { data, error } = await supabaseClient.from('profiles').select('id').limit(1);
-                if (error || !data || data.length === 0) {
-                    showAuthForm(true);
+                const { data: profiles, error } = await supabaseClient.from('profiles').select('id').limit(1);
+
+                if(profiles && profiles.length === 0) {
+                    document.getElementById('auth-title').innerText = 'Registrasi Admin Pertama';
+                    document.getElementById('auth-subtitle').innerText = 'Buat akun administrator gudang utama';
+                    document.getElementById('fullname-group').classList.remove('hidden');
+                    document.getElementById('confirm-password-group').classList.remove('hidden');
+                    document.getElementById('auth-submit-btn').innerText = 'Daftarkan Admin Utama';
                 } else {
-                    showAuthForm(false);
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if(session) {
+                        currentUser = session.user;
+                        updateUserUI();
+                        if(!window.location.hash.startsWith('#rak/')) {
+                            switchTab('dashboard');
+                        }
+                    } else {
+                        switchTab('auth');
+                    }
                 }
-            } catch(e) {
-                showAuthForm(false);
+            } catch (e) {
+                switchTab('auth');
             }
         }
 
-        function showAuthForm(isInitialSignup) {
-            document.getElementById('auth-view').classList.remove('hidden');
-            document.getElementById('sidebar').classList.add('hidden');
-            document.getElementById('user-profile-badge').classList.add('hidden');
-            
-            if (isInitialSignup) {
-                document.getElementById('auth-title').innerText = "Registrasi Admin Pertama";
-                document.getElementById('auth-subtitle').innerText = "Buat akun administrator gudang utama";
-                document.getElementById('full-name-container').classList.remove('hidden');
-                document.getElementById('confirm-password-container').classList.remove('hidden');
-                document.getElementById('auth-submit-btn').innerText = "Daftarkan Admin Utama";
-            } else {
-                document.getElementById('auth-title').innerText = "Otentikasi Admin";
-                document.getElementById('auth-subtitle').innerText = "Masukkan username atau email & password untuk masuk";
-                document.getElementById('full-name-container').classList.add('hidden');
-                document.getElementById('confirm-password-container').classList.add('hidden');
-                document.getElementById('auth-submit-btn').innerText = "Masuk Ke Sistem";
+        function handleDeepLink() {
+            const hash = window.location.hash;
+            if(hash.startsWith('#rak/')) {
+                const rackCode = hash.replace('#rak/', '');
+                loadPublicRackView(rackCode);
             }
         }
 
-        function showAdminUI() {
-            document.getElementById('auth-view').classList.add('hidden');
-            document.getElementById('public-rack-view').classList.add('hidden');
-            document.getElementById('sidebar').classList.remove('hidden');
-            document.getElementById('sidebar').classList.add('flex');
-            document.getElementById('user-profile-badge').classList.remove('hidden');
-            document.getElementById('badge-username').innerText = currentUser.email.split('@')[0];
-        }
-
-        // 3. AUTHENTICATION HANDLERS
         async function handleAuthSubmit(e) {
             e.preventDefault();
             const rawUsername = document.getElementById('auth-username').value.trim();
             const password = document.getElementById('auth-password').value;
-            const isSignup = !document.getElementById('confirm-password-container').classList.contains('hidden');
+            const fullname = document.getElementById('auth-fullname').value.trim();
 
-            let email = rawUsername.includes('@') ? rawUsername : `${rawUsername}@gudang.local`;
+            const isFirstSetup = !document.getElementById('fullname-group').classList.contains('hidden');
+            const email = rawUsername.includes('@') ? rawUsername : `${rawUsername}@gudang.local`;
+            const username = rawUsername.includes('@') ? rawUsername.split('@')[0] : rawUsername;
 
-            if (isSignup) {
-                const fullName = document.getElementById('auth-fullname').value.trim();
+            if(isFirstSetup) {
                 const confirmPassword = document.getElementById('auth-confirm-password').value;
-
-                if (password !== confirmPassword) {
-                    showToast('Konfirmasi password tidak cocok!', 'error');
+                if(password !== confirmPassword) {
+                    showToast('Password dan konfirmasi password tidak cocok!', 'error');
                     return;
                 }
 
                 const { data, error } = await supabaseClient.auth.signUp({
-                    email,
-                    password,
-                    options: { data: { full_name: fullName } }
+                    email: email,
+                    password: password,
                 });
 
-                if (error) {
+                if(error) {
                     showToast('Gagal registrasi: ' + error.message, 'error');
                     return;
                 }
 
-                if (data.user) {
-                    const cleanUsername = rawUsername.includes('@') ? rawUsername.split('@')[0] : rawUsername;
-                    await supabaseClient.from('profiles').insert([{
-                        id: data.user.id,
-                        username: cleanUsername,
-                        full_name: fullName,
-                        role: 'ADMIN'
-                    }]);
-                    showToast('Registrasi Admin berhasil!', 'success');
-                    currentUser = data.user;
-                    showAdminUI();
-                    switchTab('dashboard');
+                const { data: res, error: fnErr } = await supabaseClient.rpc('fn_register_initial_admin', {
+                    p_user_id: data.user.id,
+                    p_username: username,
+                    p_full_name: fullname
+                });
+
+                if(fnErr) {
+                    showToast('Gagal mendaftar profil: ' + fnErr.message, 'error');
+                } else {
+                    showToast('Admin berhasil mendaftar! Silakan login.', 'success');
+                    location.reload();
                 }
             } else {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) {
-                    showToast('Login gagal: Username/email atau password salah.', 'error');
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if(error) {
+                    showToast('Username/email atau password salah!', 'error');
                 } else {
                     currentUser = data.user;
+                    updateUserUI();
                     showToast('Berhasil masuk!', 'success');
-                    showAdminUI();
                     switchTab('dashboard');
                 }
             }
@@ -986,687 +1024,611 @@
         async function handleLogout() {
             if (supabaseClient) await supabaseClient.auth.signOut();
             currentUser = null;
-            location.hash = '';
-            location.reload();
+            document.getElementById('user-menu').classList.add('hidden');
+            document.getElementById('sidebar').classList.add('hidden');
+            switchTab('auth');
+            showToast('Sesi telah diakhiri.', 'info');
         }
 
-        // 4. TAB SWITCHING & SAFE RENDERING
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-white/10', 'text-white'));
+        function updateUserUI() {
+            if(!currentUser) return;
+            document.getElementById('user-menu').classList.remove('hidden');
+            document.getElementById('sidebar').classList.remove('hidden');
+            document.getElementById('user-display-name').innerText = currentUser.email.split('@')[0];
+        }
 
-            const targetTab = document.getElementById(`tab-${tabId}`);
-            if (targetTab) targetTab.classList.remove('hidden');
+        function switchTab(tabName) {
+            activeTab = tabName;
+            const views = ['auth', 'dashboard', 'medicines', 'racks', 'batches', 'stock-in', 'stock-out', 'mutation', 'history', 'expiry-alerts', 'import-export', 'settings', 'public-rack'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if(el) el.classList.add('hidden');
+            });
 
-            const activeBtn = document.getElementById(`nav-${tabId}`);
-            if (activeBtn) activeBtn.classList.add('bg-white/10', 'text-white');
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active-tab'));
+            const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+            if(activeBtn) activeBtn.classList.add('active-tab');
+
+            const target = document.getElementById(`view-${tabName}`);
+            if(target) target.classList.remove('hidden');
+
+            if(tabName === 'dashboard') loadDashboardData();
+            if(tabName === 'medicines') loadMedicinesData();
+            if(tabName === 'racks') loadRacksData();
+            if(tabName === 'batches') loadBatchesTable();
+            if(tabName === 'stock-in') populateSelectOptions();
+            if(tabName === 'stock-out') populateSelectOptions();
+            if(tabName === 'mutation') populateSelectOptions();
+            if(tabName === 'history') loadHistoryData();
+            if(tabName === 'expiry-alerts') loadExpiryAlerts();
+        }
+
+        async function loadDashboardData() {
+            if(!supabaseClient) return;
 
             try {
-                if (tabId === 'dashboard') renderDashboard();
-                else if (tabId === 'master-obat') renderMasterObat();
-                else if (tabId === 'manajemen-rak') renderManajemenRak();
-                else if (tabId === 'batch-stok') renderBatchStok();
-                else if (tabId === 'stok-masuk') populateDropdownsStokMasuk();
-                else if (tabId === 'stok-keluar') populateDropdownsStokKeluar();
-                else if (tabId === 'mutasi-rak') populateDropdownsMutasi();
-                else if (tabId === 'riwayat-transaksi') renderRiwayat();
-                else if (tabId === 'peringatan-expired') renderExpiredAlerts();
-            } catch (err) {
-                console.error("Error rendering tab:", tabId, err);
-            }
+                const { count: medCount } = await supabaseClient.from('medicines').select('*', { count: 'exact', head: true }).eq('is_active', true);
+                document.getElementById('stat-total-medicines').innerText = medCount || 0;
+
+                const { data: racks } = await supabaseClient.from('racks').select('id');
+                const totalRacks = racks ? racks.length : 0;
+                document.getElementById('stat-total-racks').innerText = totalRacks;
+
+                const { data: expiring } = await supabaseClient.from('batches')
+                    .select('batch_number, expired_date, medicines(name)')
+                    .gte('expired_date', new Date().toISOString().split('T')[0])
+                    .lte('expired_date', new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0])
+                    .order('expired_date', { ascending: true })
+                    .limit(5);
+
+                document.getElementById('stat-expiring-soon').innerText = expiring ? expiring.length : 0;
+
+                const listContainer = document.getElementById('dash-priority-expiry-list');
+                if(expiring && expiring.length > 0) {
+                    listContainer.innerHTML = expiring.map(b => `
+                        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-white">${b.medicines ? b.medicines.name : 'Obat'}</div>
+                                <div class="text-[10px] text-amber-300 font-mono">Batch: ${b.batch_number}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs font-semibold text-amber-400">${b.expired_date}</div>
+                                <div class="text-[10px] text-slate-400">Mendekati Expired</div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Tidak ada obat mendekati expired.</p>`;
+                }
+            } catch(e) {}
+
+            renderChart();
         }
 
-        // 5. RENDER FUNCTIONS
-        async function renderDashboard() {
-            try {
-                const [medsRes, racksRes, batchesRes, inventoryRes] = await Promise.all([
-                    supabaseClient.from('medicines').select('id, min_stock, name'),
-                    supabaseClient.from('racks').select('id'),
-                    supabaseClient.from('batches').select('id, expired_date, status, batch_number, medicine_id(name)'),
-                    supabaseClient.from('rack_inventory').select('quantity, medicine_id(id, name, min_stock)')
-                ]);
+        function renderChart() {
+            const ctx = document.getElementById('chart-transactions');
+            if(!ctx) return;
+            if(chartInstance) chartInstance.destroy();
 
-                const meds = medsRes.data || [];
-                const racks = racksRes.data || [];
-                const batches = batchesRes.data || [];
-                const inventory = inventoryRes.data || [];
-
-                document.getElementById('stat-total-medicines').innerText = meds.length;
-                document.getElementById('stat-total-racks').innerText = `${racks.length} Rak`;
-
-                const today = new Date();
-                let nearExpired = 0;
-                let expired = 0;
-                const expiredList = [];
-
-                batches.forEach(b => {
-                    const exp = new Date(b.expired_date);
-                    const diffDays = Math.ceil((exp - today) / (1000 * 60 * 60 * 24));
-                    if (diffDays < 0) {
-                        expired++;
-                        expiredList.push({ name: b.medicine_id?.name || 'Obat', exp: b.expired_date, days: diffDays });
-                    } else if (diffDays <= 30) {
-                        nearExpired++;
-                        expiredList.push({ name: b.medicine_id?.name || 'Obat', exp: b.expired_date, days: diffDays });
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                    datasets: [
+                        {
+                            label: 'Stok Masuk',
+                            data: [12, 19, 15, 25, 22, 30, 28, 35, 40, 20, 0, 0],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Stok Keluar (FEFO)',
+                            data: [8, 12, 10, 18, 15, 22, 20, 25, 30, 15, 0, 0],
+                            borderColor: '#f43f5e',
+                            backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#94a3b8' } } },
+                    scales: {
+                        x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
                     }
-                });
-
-                document.getElementById('stat-near-expired').innerText = nearExpired;
-                document.getElementById('stat-expired').innerText = expired;
-
-                // Render Low Stock Table
-                const stockMap = {};
-                inventory.forEach(item => {
-                    const medId = item.medicine_id?.id;
-                    if (medId) {
-                        stockMap[medId] = (stockMap[medId] || 0) + item.quantity;
-                    }
-                });
-
-                const lowStockList = meds.filter(m => (stockMap[m.id] || 0) <= m.min_stock);
-                const lowStockBody = document.getElementById('dash-low-stock-body');
-                if (lowStockList.length === 0) {
-                    lowStockBody.innerHTML = `<tr><td colspan="3" class="p-3 text-center text-slate-500">Stok seluruh obat aman.</td></tr>`;
-                } else {
-                    lowStockBody.innerHTML = lowStockList.map(m => `
-                        <tr class="border-b border-white/5">
-                            <td class="p-2 font-medium">${m.name}</td>
-                            <td class="p-2 text-rose-400 font-bold">${stockMap[m.id] || 0}</td>
-                            <td class="p-2 text-slate-400">${m.min_stock}</td>
-                        </tr>
-                    `).join('');
                 }
-
-                // Render Expired Priority
-                const expBody = document.getElementById('dash-expired-priority-body');
-                if (expiredList.length === 0) {
-                    expBody.innerHTML = `<tr><td colspan="3" class="p-3 text-center text-slate-500">Tidak ada batch kritis.</td></tr>`;
-                } else {
-                    expBody.innerHTML = expiredList.slice(0, 5).map(i => `
-                        <tr class="border-b border-white/5">
-                            <td class="p-2 font-medium">${i.name}</td>
-                            <td class="p-2">${i.exp}</td>
-                            <td class="p-2"><span class="px-2 py-0.5 rounded text-xs ${i.days < 0 ? 'bg-red-500/20 text-red-300' : 'bg-orange-500/20 text-orange-300'}">${i.days < 0 ? 'Expired' : i.days + ' hr'}</span></td>
-                        </tr>
-                    `).join('');
-                }
-            } catch (e) {
-                console.error(e);
-            }
+            });
         }
 
-        async function renderMasterObat() {
-            const searchQuery = document.getElementById('search-medicine')?.value || '';
-            let query = supabaseClient.from('medicines').select('*').order('created_at', { ascending: false });
-            if (searchQuery) query = query.ilike('name', `%${searchQuery}%`);
-            
-            const { data } = await query;
-            const body = document.getElementById('master-obat-table-body');
-            if (!data || data.length === 0) {
-                body.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500">Belum ada master obat. Silakan tambah baru.</td></tr>`;
+        // MASTER OBAT CRUD
+        async function loadMedicinesData() {
+            if(!supabaseClient) return;
+            const { data, error } = await supabaseClient.from('medicines').select('*').order('created_at', { ascending: false });
+            if(error) return;
+            allMedicinesData = data || [];
+            renderMedicinesTable(allMedicinesData);
+        }
+
+        function renderMedicinesTable(data) {
+            const tbody = document.getElementById('medicines-table-body');
+            if(data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-4 text-center text-xs text-slate-400">Tidak ada data obat.</td></tr>`;
                 return;
             }
-            body.innerHTML = data.map(m => `
-                <tr class="border-b border-white/5 hover:bg-white/5">
-                    <td class="p-3 font-mono text-blue-400">${m.code}</td>
-                    <td class="p-3 font-semibold text-white">${m.name}</td>
-                    <td class="p-3 text-slate-400">${m.category || '-'}</td>
-                    <td class="p-3">${m.dosage_form || '-'} / ${m.unit}</td>
-                    <td class="p-3">${m.min_stock}</td>
-                    <td class="p-3"><span class="px-2 py-1 rounded-full text-xs ${m.is_active ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">${m.is_active ? 'Aktif' : 'Non-aktif'}</span></td>
-                    <td class="p-3 text-center">
-                        <button onclick="archiveMedicine('${m.id}', ${m.is_active})" class="p-1.5 rounded bg-amber-500/20 text-amber-300 hover:bg-amber-500/30" title="Ubah Status Aktif"><i class="fa-solid fa-box-archive"></i></button>
+            tbody.innerHTML = data.map(m => `
+                <tr class="hover:bg-white/5 transition">
+                    <td class="px-4 py-3 font-mono text-cyan-300 text-xs">${m.code}</td>
+                    <td class="px-4 py-3 font-medium text-white">${m.name}</td>
+                    <td class="px-4 py-3 text-xs">${m.category}</td>
+                    <td class="px-4 py-3 text-xs">${m.form} (${m.unit})</td>
+                    <td class="px-4 py-3 font-semibold text-xs text-amber-300">${m.min_stock}</td>
+                    <td class="px-4 py-3 text-right space-x-2">
+                        <button onclick="editMedicine('${m.id}')" class="text-cyan-400 hover:text-cyan-300"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteMedicine('${m.id}')" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        async function archiveMedicine(id, currentStatus) {
-            const { error } = await supabaseClient.from('medicines').update({ is_active: !currentStatus }).eq('id', id);
-            if (error) {
-                showToast('Gagal mengubah status obat: ' + error.message, 'error');
-            } else {
-                showToast('Status obat berhasil diperbarui!', 'success');
-                renderMasterObat();
-            }
+        function filterMedicinesTable() {
+            const q = document.getElementById('med-search').value.toLowerCase();
+            const filtered = allMedicinesData.filter(m => 
+                m.name.toLowerCase().includes(q) || 
+                m.code.toLowerCase().includes(q) || 
+                m.category.toLowerCase().includes(q)
+            );
+            renderMedicinesTable(filtered);
         }
 
-        async function renderManajemenRak() {
+        function openMedicineModal() {
+            document.getElementById('med-id').value = '';
+            document.getElementById('med-code').value = '';
+            document.getElementById('med-name').value = '';
+            document.getElementById('med-category').value = '';
+            document.getElementById('med-form').value = '';
+            document.getElementById('med-unit').value = '';
+            document.getElementById('med-min-stock').value = 10;
+            document.getElementById('modal-med-title').innerText = 'Tambah Obat Baru';
+            document.getElementById('modal-medicine').classList.remove('hidden');
+        }
+
+        function closeMedicineModal() {
+            document.getElementById('modal-medicine').classList.add('hidden');
+        }
+
+        async function saveMedicine(e) {
+            e.preventDefault();
+            const id = document.getElementById('med-id').value;
+            const payload = {
+                code: document.getElementById('med-code').value.trim(),
+                name: document.getElementById('med-name').value.trim(),
+                category: document.getElementById('med-category').value.trim(),
+                form: document.getElementById('med-form').value.trim(),
+                unit: document.getElementById('med-unit').value.trim(),
+                min_stock: parseInt(document.getElementById('med-min-stock').value)
+            };
+
+            if(id) {
+                await supabaseClient.from('medicines').update(payload).eq('id', id);
+                showToast('Obat berhasil diperbarui!', 'success');
+            } else {
+                await supabaseClient.from('medicines').insert(payload);
+                showToast('Obat baru ditambahkan!', 'success');
+            }
+            closeMedicineModal();
+            loadMedicinesData();
+        }
+
+        async function editMedicine(id) {
+            const m = allMedicinesData.find(x => x.id === id);
+            if(!m) return;
+            document.getElementById('med-id').value = m.id;
+            document.getElementById('med-code').value = m.code;
+            document.getElementById('med-name').value = m.name;
+            document.getElementById('med-category').value = m.category;
+            document.getElementById('med-form').value = m.form;
+            document.getElementById('med-unit').value = m.unit;
+            document.getElementById('med-min-stock').value = m.min_stock;
+            document.getElementById('modal-med-title').innerText = 'Ubah Data Obat';
+            document.getElementById('modal-medicine').classList.remove('hidden');
+        }
+
+        async function deleteMedicine(id) {
+            if(!confirm('Hapus obat ini?')) return;
+            await supabaseClient.from('medicines').delete().eq('id', id);
+            showToast('Obat dihapus.', 'info');
+            loadMedicinesData();
+        }
+
+        // MANAJEMEN RAK
+        async function loadRacksData() {
+            if(!supabaseClient) return;
             const { data } = await supabaseClient.from('racks').select('*').order('code');
-            const grid = document.getElementById('rack-cards-grid');
-            if (!data || data.length === 0) {
-                grid.innerHTML = `<div class="col-span-full p-8 glass-panel text-center text-slate-500 rounded-2xl">Belum ada rak yang terdaftar.</div>`;
+            const container = document.getElementById('racks-card-container');
+            if(!data || data.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 py-4 col-span-full text-center">Belum ada data rak.</p>`;
                 return;
             }
 
-            grid.innerHTML = data.map(r => `
-                <div class="glass-panel p-5 rounded-2xl space-y-4 border border-white/10">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <span class="text-xs font-mono px-2 py-1 rounded bg-purple-500/20 text-purple-300">${r.code}</span>
-                            <h3 class="font-bold text-lg text-white mt-2">${r.name}</h3>
-                            <p class="text-xs text-slate-400">${r.location || 'Lokasi umum'}</p>
+            container.innerHTML = data.map(r => `
+                <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-mono border border-purple-500/30">${r.code}</span>
+                            <button onclick="showQRModal('${r.code}', '${r.name}')" class="text-cyan-400 hover:text-cyan-300 text-xs flex items-center space-x-1">
+                                <i class="fa-solid fa-qrcode"></i>
+                                <span>QR Rak</span>
+                            </button>
                         </div>
-                        <div id="qrcode-${r.code}" class="bg-white p-1 rounded"></div>
+                        <h3 class="text-lg font-bold text-white mt-2">${r.name}</h3>
+                        <p class="text-xs text-slate-300 mt-1">${r.location_description || 'Tanpa keterangan lokasi'}</p>
                     </div>
-                    <div class="pt-3 border-t border-white/10 flex justify-between items-center text-xs">
-                        <a href="#rack/${r.code}" class="text-blue-400 hover:underline"><i class="fa-solid fa-qrcode mr-1"></i> Buka Link QR</a>
-                        <button onclick="copyRackLink('${r.code}')" class="text-slate-300 hover:text-white"><i class="fa-solid fa-copy"></i> Salin Link</button>
+                    <div class="pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+                        <span class="text-slate-400">Status Active</span>
+                        <button onclick="deleteRack('${r.id}')" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
-
-            data.forEach(r => {
-                const url = `${window.location.origin}${window.location.pathname}#rack/${r.code}`;
-                const container = document.getElementById(`qrcode-${r.code}`);
-                if (container) {
-                    container.innerHTML = '';
-                    new QRCode(container, { text: url, width: 64, height: 64 });
-                }
-            });
         }
 
-        async function renderBatchStok() {
-            const { data } = await supabaseClient.from('rack_inventory').select('quantity, medicine_id(name, unit), batch_id(batch_number, expired_date, status), rack_id(code, name)');
-            const body = document.getElementById('batch-stok-table-body');
-            if (!data || data.length === 0) {
-                body.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">Stok di rak masih kosong.</td></tr>`;
+        function openRackModal() {
+            document.getElementById('rack-id').value = '';
+            document.getElementById('rack-code').value = '';
+            document.getElementById('rack-name').value = '';
+            document.getElementById('rack-location').value = '';
+            document.getElementById('modal-rack').classList.remove('hidden');
+        }
+
+        function closeRackModal() {
+            document.getElementById('modal-rack').classList.add('hidden');
+        }
+
+        async function saveRack(e) {
+            e.preventDefault();
+            const payload = {
+                code: document.getElementById('rack-code').value.trim(),
+                name: document.getElementById('rack-name').value.trim(),
+                location_description: document.getElementById('rack-location').value.trim()
+            };
+
+            await supabaseClient.from('racks').insert(payload);
+            showToast('Rak baru ditambahkan!', 'success');
+            closeRackModal();
+            loadRacksData();
+        }
+
+        async function deleteRack(id) {
+            if(!confirm('Hapus rak ini?')) return;
+            await supabaseClient.from('racks').delete().eq('id', id);
+            showToast('Rak dihapus.', 'info');
+            loadRacksData();
+        }
+
+        function showQRModal(code, name) {
+            const container = document.getElementById('qrcode-container');
+            container.innerHTML = '';
+            const fullUrl = `${window.location.origin}${window.location.pathname}#rak/${code}`;
+
+            new QRCode(container, {
+                text: fullUrl,
+                width: 160,
+                height: 160
+            });
+
+            document.getElementById('qr-modal-title').innerText = `QR Code: ${name}`;
+            document.getElementById('qr-modal-url').innerText = fullUrl;
+            document.getElementById('modal-qr').classList.remove('hidden');
+        }
+
+        function closeQRModal() {
+            document.getElementById('modal-qr').classList.add('hidden');
+        }
+
+        // BATCH & STOK
+        async function loadBatchesTable() {
+            if(!supabaseClient) return;
+            const { data } = await supabaseClient.from('rack_inventory').select(`
+                quantity,
+                medicines (name, unit),
+                racks (name, code),
+                batches (batch_number, expired_date, status)
+            `);
+
+            const tbody = document.getElementById('batches-table-body');
+            if(!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-4 text-center text-xs text-slate-400">Tidak ada stok aktif.</td></tr>`;
                 return;
             }
 
-            body.innerHTML = data.map(i => `
-                <tr class="border-b border-white/5 hover:bg-white/5">
-                    <td class="p-3 font-semibold text-white">${i.medicine_id?.name || '-'}</td>
-                    <td class="p-3 font-mono">${i.batch_id?.batch_number || '-'}</td>
-                    <td class="p-3"><span class="px-2 py-0.5 rounded text-xs bg-purple-500/20 text-purple-300">${i.rack_id?.code || '-'}</span></td>
-                    <td class="p-3 font-bold text-emerald-400">${i.quantity} ${i.medicine_id?.unit || ''}</td>
-                    <td class="p-3">${i.batch_id?.expired_date || '-'}</td>
-                    <td class="p-3"><span class="px-2 py-0.5 rounded text-xs bg-emerald-500/20 text-emerald-300">${i.batch_id?.status || 'ACTIVE'}</span></td>
+            tbody.innerHTML = data.map(i => `
+                <tr class="hover:bg-white/5 transition">
+                    <td class="px-4 py-3 font-medium text-white">${i.medicines ? i.medicines.name : '-'}</td>
+                    <td class="px-4 py-3 font-mono text-xs text-cyan-300">${i.batches ? i.batches.batch_number : '-'}</td>
+                    <td class="px-4 py-3 text-xs">${i.racks ? `${i.racks.code} (${i.racks.name})` : '-'}</td>
+                    <td class="px-4 py-3 text-xs font-semibold text-amber-300">${i.batches ? i.batches.expired_date : '-'}</td>
+                    <td class="px-4 py-3 font-bold text-white">${i.quantity} ${i.medicines ? i.medicines.unit : ''}</td>
+                    <td class="px-4 py-3 text-xs"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">${i.batches ? i.batches.status : 'ACTIVE'}</span></td>
                 </tr>
             `).join('');
         }
 
-        async function renderRiwayat() {
-            const { data } = await supabaseClient.from('stock_transactions')
-                .select('transaction_no, type, created_at, notes, stock_transaction_items(quantity, unit, medicine_id(name), batch_id(batch_number))')
-                .order('created_at', { ascending: false });
+        // TRANSAKSI
+        async function populateSelectOptions() {
+            if(!supabaseClient) return;
+            const { data: meds } = await supabaseClient.from('medicines').select('id, name, code').eq('is_active', true);
+            const { data: racks } = await supabaseClient.from('racks').select('id, name, code').eq('is_active', true);
 
-            const body = document.getElementById('riwayat-table-body');
-            if (!data || data.length === 0) {
-                body.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Belum ada riwayat transaksi.</td></tr>`;
-                return;
-            }
+            const medOptions = meds ? meds.map(m => `<option value="${m.id}" class="bg-slate-800">${m.code} - ${m.name}</option>`).join('') : '';
+            const rackOptions = racks ? racks.map(r => `<option value="${r.id}" class="bg-slate-800">${r.code} - ${r.name}</option>`).join('') : '';
 
-            body.innerHTML = data.map(t => {
-                const badgeColor = t.type === 'IN' ? 'bg-cyan-500/20 text-cyan-300' : t.type === 'OUT' ? 'bg-rose-500/20 text-rose-300' : 'bg-indigo-500/20 text-indigo-300';
-                const itemsText = (t.stock_transaction_items || []).map(i => `${i.medicine_id?.name || 'Obat'} (Batch ${i.batch_id?.batch_number || '-'}): ${i.quantity} ${i.unit}`).join(', ');
-                return `
-                    <tr class="border-b border-white/5 hover:bg-white/5">
-                        <td class="p-3 font-mono text-blue-400">${t.transaction_no}</td>
-                        <td class="p-3"><span class="px-2 py-0.5 rounded text-xs ${badgeColor}">${t.type}</span></td>
-                        <td class="p-3 text-slate-300">${new Date(t.created_at).toLocaleString('id-ID')}</td>
-                        <td class="p-3 text-slate-400">${t.notes || '-'}</td>
-                        <td class="p-3 text-slate-200 text-xs">${itemsText || '-'}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        async function renderExpiredAlerts() {
-            const { data } = await supabaseClient.from('batches').select('batch_number, expired_date, status, medicine_id(name)').order('expired_date', { ascending: true });
-            const body = document.getElementById('expired-alerts-table-body');
-            if (!data || data.length === 0) {
-                body.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Data batch tidak ditemukan.</td></tr>`;
-                return;
-            }
-
-            const today = new Date();
-            body.innerHTML = data.map(b => {
-                const exp = new Date(b.expired_date);
-                const diffDays = Math.ceil((exp - today) / (1000 * 60 * 60 * 24));
-                const statusBadge = diffDays < 0 ? 'bg-red-500/20 text-red-300' : diffDays <= 30 ? 'bg-orange-500/20 text-orange-300' : 'bg-emerald-500/20 text-emerald-300';
-                return `
-                    <tr class="border-b border-white/5 hover:bg-white/5">
-                        <td class="p-3 font-semibold text-white">${b.medicine_id?.name || '-'}</td>
-                        <td class="p-3 font-mono">${b.batch_number}</td>
-                        <td class="p-3">${b.expired_date}</td>
-                        <td class="p-3"><span class="px-2 py-0.5 rounded text-xs ${statusBadge}">${diffDays < 0 ? 'EXPIRED' : diffDays <= 30 ? 'MENDEKATI' : 'AMAN'}</span></td>
-                        <td class="p-3 font-bold">${diffDays < 0 ? 'Sudah Expired' : diffDays + ' Hari'}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        async function showPublicRackView(rackCode) {
-            document.getElementById('auth-view').classList.add('hidden');
-            document.getElementById('sidebar').classList.add('hidden');
-            document.getElementById('public-rack-view').classList.remove('hidden');
-
-            document.getElementById('public-rack-code').innerText = rackCode;
-
-            const { data: rack } = await supabaseClient.from('racks').select('*').eq('code', rackCode).single();
-            if (rack) {
-                document.getElementById('public-rack-name').innerText = rack.name + (rack.location ? ` (${rack.location})` : '');
-                
-                const { data: items } = await supabaseClient.from('rack_inventory')
-                    .select('quantity, medicine_id(code, name, unit), batch_id(batch_number, expired_date)')
-                    .eq('rack_id', rack.id);
-
-                const body = document.getElementById('public-rack-items-body');
-                if (!items || items.length === 0) {
-                    body.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">Tidak ada stok obat di rak ini.</td></tr>`;
-                } else {
-                    const today = new Date();
-                    body.innerHTML = items.map(i => {
-                        const exp = new Date(i.batch_id?.expired_date);
-                        const isExpired = exp < today;
-                        return `
-                            <tr class="border-b border-white/5">
-                                <td class="p-3 font-mono text-blue-400">${i.medicine_id?.code}</td>
-                                <td class="p-3 font-semibold text-white">${i.medicine_id?.name}</td>
-                                <td class="p-3 font-mono">${i.batch_id?.batch_number}</td>
-                                <td class="p-3">${i.batch_id?.expired_date}</td>
-                                <td class="p-3 text-right font-bold text-emerald-400">${i.quantity} ${i.medicine_id?.unit}</td>
-                                <td class="p-3 text-center">
-                                    <span class="px-2 py-1 rounded-full text-xs ${isExpired ? 'bg-red-500/20 text-red-300' : 'bg-emerald-500/20 text-emerald-300'}">
-                                        ${isExpired ? 'EXPIRED' : 'AMAN'}
-                                    </span>
-                                </td>
-                            </tr>
-                        `;
-                    }).join('');
-                }
-            }
-        }
-
-        function handlePublicEditClick() {
-            window.location.hash = '';
-            checkRoute();
-        }
-
-        // 6. IMPOR & EKSPOR EXCEL & PDF
-        function downloadExcelTemplate() {
-            const templateData = [
-                {
-                    "Kode Obat": "OBT-0001",
-                    "Nama Obat": "Paracetamol 500mg",
-                    "Kategori": "Analgesik",
-                    "Bentuk Sediaan": "Tablet",
-                    "Satuan Stok": "Tablet",
-                    "Batas Stok Minimum": 50,
-                    "Kode Rak": "RAK-001",
-                    "Nomor Batch": "PCT-2026-01",
-                    "Tanggal Kedaluwarsa (YYYY-MM-DD)": "2027-12-31",
-                    "Stok Awal": 100
-                },
-                {
-                    "Kode Obat": "OBT-0002",
-                    "Nama Obat": "Amoxicillin 500mg",
-                    "Kategori": "Antibiotik",
-                    "Bentuk Sediaan": "Kaplet",
-                    "Satuan Stok": "Kaplet",
-                    "Batas Stok Minimum": 30,
-                    "Kode Rak": "RAK-001",
-                    "Nomor Batch": "AMX-2026-01",
-                    "Tanggal Kedaluwarsa (YYYY-MM-DD)": "2027-06-30",
-                    "Stok Awal": 200
-                }
-            ];
-
-            const ws = XLSX.utils.json_to_sheet(templateData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Template Impor");
-            XLSX.writeFile(wb, "Template_Impor_GudangFarmasi.xlsx");
-            showToast('Template Excel resmi berhasil diunduh!', 'success');
-        }
-
-        async function handleExcelImport() {
-            const fileInput = document.getElementById('excel-file-input');
-            if (!fileInput.files || fileInput.files.length === 0) {
-                showToast('Pilih file Excel terlebih dahulu!', 'error');
-                return;
-            }
-
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-
-            reader.onload = async (e) => {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName]);
-
-                    if (rows.length === 0) {
-                        showToast('File Excel kosong!', 'error');
-                        return;
-                    }
-
-                    showToast(`Memproses ${rows.length} baris data...`, 'info');
-
-                    for (const row of rows) {
-                        const code = row["Kode Obat"] || 'OBT-' + Date.now().toString().slice(-4);
-                        const name = row["Nama Obat"];
-                        const category = row["Kategori"] || 'Umum';
-                        const form = row["Bentuk Sediaan"] || 'Tablet';
-                        const unit = row["Satuan Stok"] || 'Pcs';
-                        const minStock = parseInt(row["Batas Stok Minimum"]) || 10;
-                        const rackCode = row["Kode Rak"] || 'RAK-001';
-                        const batchNo = row["Nomor Batch"] || 'BATCH-INIT';
-                        const expDate = row["Tanggal Kedaluwarsa (YYYY-MM-DD)"] || '2027-12-31';
-                        const qty = parseInt(row["Stok Awal"]) || 0;
-
-                        if (!name) continue;
-
-                        let { data: med } = await supabaseClient.from('medicines').select('id').eq('code', code).single();
-                        if (!med) {
-                            const { data: newMed } = await supabaseClient.from('medicines').insert([{
-                                code, name, category, dosage_form: form, unit, min_stock: minStock
-                            }]).select('id').single();
-                            med = newMed;
-                        }
-
-                        let { data: rack } = await supabaseClient.from('racks').select('id').eq('code', rackCode).single();
-                        if (!rack) {
-                            const { data: newRack } = await supabaseClient.from('racks').insert([{
-                                code: rackCode, name: 'Rak ' + rackCode
-                            }]).select('id').single();
-                            rack = newRack;
-                        }
-
-                        if (med && rack && qty > 0) {
-                            await supabaseClient.rpc('fn_process_stock_in', {
-                                p_trans_no: 'TRX-IMP-' + Date.now().toString().slice(-6),
-                                p_medicine_id: med.id,
-                                p_rack_id: rack.id,
-                                p_batch_no: batchNo,
-                                p_expired_date: expDate,
-                                p_qty: qty,
-                                p_doc: 'IMPOR EXCEL',
-                                p_notes: 'Imported from Excel',
-                                p_user_id: currentUser.id
-                            });
-                        }
-                    }
-
-                    showToast('Impor data Excel selesai!', 'success');
-                    fileInput.value = '';
-                    switchTab('batch-stok');
-                } catch (err) {
-                    showToast('Gagal memproses file Excel: ' + err.message, 'error');
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        async function exportDataExcel() {
-            const { data } = await supabaseClient.from('rack_inventory').select('quantity, medicine_id(code, name, unit), batch_id(batch_number, expired_date), rack_id(code, name)');
-            if (!data || data.length === 0) {
-                showToast('Tidak ada data stok untuk diekspor.', 'error');
-                return;
-            }
-
-            const exportRows = data.map(i => ({
-                "Kode Rak": i.rack_id?.code || '',
-                "Nama Rak": i.rack_id?.name || '',
-                "Kode Obat": i.medicine_id?.code || '',
-                "Nama Obat": i.medicine_id?.name || '',
-                "No. Batch": i.batch_id?.batch_number || '',
-                "Tgl Expired": i.batch_id?.expired_date || '',
-                "Jumlah Stok": i.quantity,
-                "Satuan": i.medicine_id?.unit || ''
-            }));
-
-            const ws = XLSX.utils.json_to_sheet(exportRows);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Stok Inventaris");
-            XLSX.writeFile(wb, "Laporan_Stok_GudangFarmasi.xlsx");
-            showToast('Laporan Excel berhasil diunduh!', 'success');
-        }
-
-        async function exportDataPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            const { data } = await supabaseClient.from('rack_inventory').select('quantity, medicine_id(code, name, unit), batch_id(batch_number, expired_date), rack_id(code)');
-
-            doc.setFontSize(16);
-            doc.text("Laporan Inventaris Stok Gudang Farmasi", 14, 15);
-            doc.setFontSize(10);
-            doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')}`, 14, 22);
-
-            const tableData = (data || []).map(i => [
-                i.rack_id?.code || '-',
-                i.medicine_id?.code || '-',
-                i.medicine_id?.name || '-',
-                i.batch_id?.batch_number || '-',
-                i.batch_id?.expired_date || '-',
-                `${i.quantity} ${i.medicine_id?.unit || ''}`
-            ]);
-
-            doc.autoTable({
-                startY: 28,
-                head: [['Kode Rak', 'Kode Obat', 'Nama Obat', 'No. Batch', 'Tgl Expired', 'Stok']],
-                body: tableData
+            ['in-medicine-id', 'out-medicine-id', 'mut-medicine-id'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.innerHTML = medOptions;
             });
 
-            doc.save("Laporan_Stok_GudangFarmasi.pdf");
-            showToast('Laporan PDF berhasil diunduh!', 'success');
-        }
-
-        // 7. FORM DROPDOWNS & TRANSACTIONS
-        async function populateDropdownsStokMasuk() {
-            const [meds, racks] = await Promise.all([
-                supabaseClient.from('medicines').select('id, name, code'),
-                supabaseClient.from('racks').select('id, name, code')
-            ]);
-
-            const medSelect = document.getElementById('in-medicine-id');
-            medSelect.innerHTML = `<option value="">-- Pilih Obat --</option>` + (meds.data || []).map(m => `<option value="${m.id}">${m.code} - ${m.name}</option>`).join('');
-
-            const rackSelect = document.getElementById('in-rack-id');
-            rackSelect.innerHTML = `<option value="">-- Pilih Rak --</option>` + (racks.data || []).map(r => `<option value="${r.id}">${r.code} - ${r.name}</option>`).join('');
-        }
-
-        async function populateDropdownsStokKeluar() {
-            const meds = await supabaseClient.from('medicines').select('id, name, code').eq('is_active', true);
-            const medSelect = document.getElementById('out-medicine-id');
-            medSelect.innerHTML = `<option value="">-- Pilih Obat --</option>` + (meds.data || []).map(m => `<option value="${m.id}">${m.code} - ${m.name}</option>`).join('');
-        }
-
-        async function handleStokMasuk(e) {
-            e.preventDefault();
-            const transNo = 'TRX-IN-' + Date.now().toString().slice(-6);
-            const medicineId = document.getElementById('in-medicine-id').value;
-            const rackId = document.getElementById('in-rack-id').value;
-            const batchNo = document.getElementById('in-batch-no').value.trim();
-            const expiredDate = document.getElementById('in-expired-date').value;
-            const qty = parseInt(document.getElementById('in-qty').value);
-            const doc = document.getElementById('in-doc').value.trim();
-            const notes = document.getElementById('in-notes').value.trim();
-
-            const { error } = await supabaseClient.rpc('fn_process_stock_in', {
-                p_trans_no: transNo,
-                p_medicine_id: medicineId,
-                p_rack_id: rackId,
-                p_batch_no: batchNo,
-                p_expired_date: expiredDate,
-                p_qty: qty,
-                p_doc: doc,
-                p_notes: notes,
-                p_user_id: currentUser.id
+            ['in-rack-id', 'mut-dest-rack-id'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.innerHTML = rackOptions;
             });
 
-            if (error) {
-                showToast('Gagal stok masuk: ' + error.message, 'error');
-            } else {
-                showToast('Stok masuk berhasil dicatat!', 'success');
-                document.getElementById('form-stok-masuk').reset();
-                switchTab('batch-stok');
-            }
+            loadBatchesForMutation();
         }
 
-        async function handleStokKeluar(e) {
-            e.preventDefault();
-            const transNo = 'TRX-OUT-' + Date.now().toString().slice(-6);
-            const medicineId = document.getElementById('out-medicine-id').value;
-            const qty = parseInt(document.getElementById('out-qty').value);
-            const dest = document.getElementById('out-dest').value.trim();
-            const notes = document.getElementById('out-notes').value.trim();
+        async function loadBatchesForMutation() {
+            const medId = document.getElementById('mut-medicine-id').value;
+            if(!medId || !supabaseClient) return;
 
-            const { error } = await supabaseClient.rpc('fn_process_stock_out_fefo', {
-                p_trans_no: transNo,
-                p_medicine_id: medicineId,
-                p_qty: qty,
-                p_dest: dest,
-                p_notes: notes,
-                p_user_id: currentUser.id
-            });
+            const { data } = await supabaseClient.from('rack_inventory').select(`
+                rack_id, batch_id, quantity,
+                racks (code, name),
+                batches (batch_number)
+            `).eq('medicine_id', medId).gt('quantity', 0);
 
-            if (error) {
-                showToast('Gagal stok keluar FEFO: ' + error.message, 'error');
-            } else {
-                showToast('Pengeluaran FEFO berhasil diandalkan!', 'success');
-                document.getElementById('form-stok-keluar').reset();
-                switchTab('batch-stok');
-            }
-        }
-
-        async function populateDropdownsMutasi() {
-            const racks = await supabaseClient.from('racks').select('id, name, code');
-            const srcSelect = document.getElementById('mut-src-rack');
-            const destSelect = document.getElementById('mut-dest-rack');
-            const options = `<option value="">-- Pilih Rak --</option>` + (racks.data || []).map(r => `<option value="${r.id}">${r.code} - ${r.name}</option>`).join('');
-            srcSelect.innerHTML = options;
-            destSelect.innerHTML = options;
-        }
-
-        async function loadRackInventoryOptions() {
-            const srcRackId = document.getElementById('mut-src-rack').value;
-            const itemSelect = document.getElementById('mut-item-select');
-
-            if (!srcRackId) {
-                itemSelect.innerHTML = `<option value="">-- Pilih Rak Asal Terlebih Dahulu --</option>`;
+            const select = document.getElementById('mut-source-batch-rack');
+            if(!data || data.length === 0) {
+                select.innerHTML = `<option value="" class="bg-slate-800">Stok obat tidak tersedia</option>`;
                 return;
             }
 
-            const { data } = await supabaseClient.from('rack_inventory')
-                .select('quantity, medicine_id(id, name), batch_id(id, batch_number, expired_date)')
-                .eq('rack_id', srcRackId)
-                .gt('quantity', 0);
-
-            if (!data || data.length === 0) {
-                itemSelect.innerHTML = `<option value="">-- Rak Asal Kosong --</option>`;
-                return;
-            }
-
-            itemSelect.innerHTML = `<option value="">-- Pilih Barang --</option>` + data.map(i => `
-                <option value="${i.medicine_id.id}|${i.batch_id.id}">
-                    ${i.medicine_id.name} (Batch: ${i.batch_id.batch_number}) - Sisa Stok: ${i.quantity}
-                </option>
+            select.innerHTML = data.map(i => `
+                <option value="${i.batch_id}|${i.rack_id}" class="bg-slate-800">Batch: ${i.batches?.batch_number} - ${i.racks?.code} (Sisa: ${i.quantity})</option>
             `).join('');
         }
 
-        async function handleMutasi(e) {
+        async function handleStockInSubmit(e) {
             e.preventDefault();
-            const transNo = 'TRX-MUT-' + Date.now().toString().slice(-6);
-            const srcRackId = document.getElementById('mut-src-rack').value;
-            const destRackId = document.getElementById('mut-dest-rack').value;
-            const itemVal = document.getElementById('mut-item-select').value;
-            const qty = parseInt(document.getElementById('mut-qty').value);
-            const notes = document.getElementById('mut-notes').value.trim();
-
-            if (srcRackId === destRackId) {
-                showToast('Rak asal dan rak tujuan tidak boleh sama!', 'error');
-                return;
-            }
-
-            if (!itemVal) {
-                showToast('Pilih barang yang akan dipindahkan!', 'error');
-                return;
-            }
-
-            const [medId, batchId] = itemVal.split('|');
-
-            const { error } = await supabaseClient.rpc('fn_process_rack_mutation', {
-                p_trans_no: transNo,
-                p_src_rack_id: srcRackId,
-                p_dest_rack_id: destRackId,
-                p_medicine_id: medId,
-                p_batch_id: batchId,
-                p_qty: qty,
-                p_notes: notes,
-                p_user_id: currentUser.id
+            const { data, error } = await supabaseClient.rpc('fn_process_stock_in', {
+                p_trans_no: document.getElementById('in-trans-no').value.trim(),
+                p_medicine_id: document.getElementById('in-medicine-id').value,
+                p_rack_id: document.getElementById('in-rack-id').value,
+                p_batch_no: document.getElementById('in-batch-no').value.trim(),
+                p_expired_date: document.getElementById('in-expired-date').value,
+                p_qty: parseInt(document.getElementById('in-quantity').value),
+                p_doc: 'Form Masuk',
+                p_notes: document.getElementById('in-notes').value.trim(),
+                p_user_id: currentUser ? currentUser.id : null
             });
 
-            if (error) {
-                showToast('Gagal mutasi: ' + error.message, 'error');
-            } else {
-                showToast('Mutasi stok antar-rak berhasil!', 'success');
-                document.getElementById('form-mutasi').reset();
-                switchTab('batch-stok');
+            if(error) showToast('Gagal: ' + error.message, 'error');
+            else {
+                showToast('Stok masuk berhasil disimpan!', 'success');
+                switchTab('batches');
             }
         }
 
-        async function handleAddMedicine(e) {
-    e.preventDefault();
-    const formVal = document.getElementById('m-form').value.trim() || '-';
-    const payload = {
-        code: document.getElementById('m-code').value.trim(),
-        name: document.getElementById('m-name').value.trim(),
-        category: document.getElementById('m-category').value.trim(),
-        form: formVal,
-        dosage_form: formVal,
-        unit: document.getElementById('m-unit').value.trim(),
-        min_stock: parseInt(document.getElementById('m-min-stock').value)
-    };
-
-    const { error } = await supabaseClient.from('medicines').insert([payload]);
-    if (error) {
-        showToast('Gagal tambah obat: ' + error.message, 'error');
-    } else {
-        showToast('Master obat berhasil ditambahkan!', 'success');
-        closeModal('modal-add-medicine');
-        renderMasterObat();
-    }
-}
-
-        async function handleAddRack(e) {
+        async function handleStockOutSubmit(e) {
             e.preventDefault();
-            const payload = {
-                code: document.getElementById('r-code').value.trim(),
-                name: document.getElementById('r-name').value.trim(),
-                location: document.getElementById('r-location').value.trim()
-            };
+            const { data, error } = await supabaseClient.rpc('fn_process_stock_out_fefo', {
+                p_trans_no: document.getElementById('out-trans-no').value.trim(),
+                p_medicine_id: document.getElementById('out-medicine-id').value,
+                p_total_qty: parseInt(document.getElementById('out-quantity').value),
+                p_doc: 'Form Keluar FEFO',
+                p_notes: document.getElementById('out-notes').value.trim(),
+                p_user_id: currentUser ? currentUser.id : null
+            });
 
-            const { error } = await supabaseClient.from('racks').insert([payload]);
-            if (error) {
-                showToast('Gagal tambah rak: ' + error.message, 'error');
-            } else {
-                showToast('Rak baru berhasil ditambahkan!', 'success');
-                closeModal('modal-add-rack');
-                renderManajemenRak();
+            if(error) showToast('Gagal: ' + error.message, 'error');
+            else {
+                showToast('Stok keluar FEFO berhasil diproses!', 'success');
+                switchTab('batches');
             }
         }
 
-        // UTILITY HELPERS
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        async function handleMutationSubmit(e) {
+            e.preventDefault();
+            const val = document.getElementById('mut-source-batch-rack').value;
+            if(!val) return;
+            const [batchId, sourceRackId] = val.split('|');
 
-        function showToast(msg, type = 'info') {
+            const { data, error } = await supabaseClient.rpc('fn_process_mutation', {
+                p_trans_no: document.getElementById('mut-trans-no').value.trim(),
+                p_medicine_id: document.getElementById('mut-medicine-id').value,
+                p_batch_id: batchId,
+                p_source_rack_id: sourceRackId,
+                p_dest_rack_id: document.getElementById('mut-dest-rack-id').value,
+                p_qty: parseInt(document.getElementById('mut-quantity').value),
+                p_notes: 'Mutasi Rak',
+                p_user_id: currentUser ? currentUser.id : null
+            });
+
+            if(error) showToast('Gagal: ' + error.message, 'error');
+            else {
+                showToast('Mutasi obat berhasil!', 'success');
+                switchTab('batches');
+            }
+        }
+
+        async function loadHistoryData() {
+            if(!supabaseClient) return;
+            const { data } = await supabaseClient.from('stock_transactions').select(`
+                transaction_no, type, transaction_date, notes,
+                stock_transaction_items (quantity, unit, medicines(name))
+            `).order('transaction_date', { ascending: false }).limit(20);
+
+            const tbody = document.getElementById('history-table-body');
+            if(!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-4 text-center text-xs text-slate-400">Belum ada riwayat transaksi.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.map(t => `
+                <tr class="hover:bg-white/5 transition">
+                    <td class="px-4 py-3 font-mono text-cyan-300 text-xs">${t.transaction_no}</td>
+                    <td class="px-4 py-3 text-xs"><span class="px-2 py-0.5 rounded font-bold ${t.type === 'IN' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">${t.type}</span></td>
+                    <td class="px-4 py-3 text-xs text-slate-300">${new Date(t.transaction_date).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-xs text-slate-300">${t.notes || '-'}</td>
+                    <td class="px-4 py-3 text-xs font-medium text-white">${t.stock_transaction_items?.map(i => `${i.medicines?.name}: ${i.quantity} ${i.unit}`).join(', ') || '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadExpiryAlerts() {
+            if(!supabaseClient) return;
+            const { data } = await supabaseClient.from('rack_inventory').select(`
+                quantity,
+                medicines (name, unit),
+                racks (code, name),
+                batches (batch_number, expired_date)
+            `).gt('quantity', 0);
+
+            const tbody = document.getElementById('expiry-alerts-body');
+            if(!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-4 text-center text-xs text-slate-400">Tidak ada peringatan.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.map(i => {
+                const exp = new Date(i.batches?.expired_date);
+                const now = new Date();
+                const diffDays = Math.ceil((exp - now) / (1000 * 60 * 60 * 24));
+                const isExp = diffDays <= 0;
+                const isWarn = diffDays > 0 && diffDays <= 30;
+
+                return `
+                    <tr class="hover:bg-white/5 transition">
+                        <td class="px-4 py-3 font-medium text-white">${i.medicines?.name}</td>
+                        <td class="px-4 py-3 font-mono text-xs text-cyan-300">${i.batches?.batch_number}</td>
+                        <td class="px-4 py-3 text-xs">${i.racks?.code}</td>
+                        <td class="px-4 py-3 text-xs font-semibold">${i.batches?.expired_date}</td>
+                        <td class="px-4 py-3 font-bold text-white">${i.quantity} ${i.medicines?.unit}</td>
+                        <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${isExp ? 'bg-rose-500/20 text-rose-300' : isWarn ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}">${isExp ? 'EXPIRED' : isWarn ? 'WARNING' : 'NORMAL'}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function exportToExcel() {
+            if(!supabaseClient) return;
+            const { data } = await supabaseClient.from('rack_inventory').select(`
+                quantity,
+                medicines (code, name, unit, category),
+                racks (code, name),
+                batches (batch_number, expired_date)
+            `);
+
+            const rows = (data || []).map(i => ({
+                Kode: i.medicines?.code,
+                Nama: i.medicines?.name,
+                Kategori: i.medicines?.category,
+                Batch: i.batches?.batch_number,
+                Rak: i.racks?.code,
+                Expired: i.batches?.expired_date,
+                Stok: i.quantity,
+                Satuan: i.medicines?.unit
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(rows);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Stok Gudang");
+            XLSX.writeFile(workbook, "Laporan_Stok_Gudang.xlsx");
+            showToast('Laporan Excel berhasil diunduh.', 'success');
+        }
+
+        async function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("Laporan Stok Gudang Obat Farmasi", 14, 15);
+            doc.autoTable({
+                html: '#batches-table-body',
+                startY: 20,
+            });
+            doc.save("Laporan_Stok_Gudang.pdf");
+            showToast('Laporan PDF berhasil diunduh.', 'success');
+        }
+
+        function importMedicinesExcel(e) {
+            showToast('Fitur impor data obat massal via Excel siap.', 'info');
+        }
+
+        async function loadPublicRackView(rackCode) {
+            switchTab('public-rack');
+            document.getElementById('pub-rack-code').innerText = rackCode;
+
+            if (!supabaseClient) return;
+
+            const { data, error } = await supabaseClient.rpc('fn_get_public_rack_info', { p_rack_code: rackCode });
+            if(error || !data || data.status === 'error') {
+                showToast('Rak tidak ditemukan!', 'error');
+                return;
+            }
+
+            document.getElementById('pub-rack-name').innerText = data.rack.name;
+            document.getElementById('pub-rack-location').innerText = data.rack.location || 'Tanpa keterangan lokasi';
+
+            const tbody = document.getElementById('pub-rack-items-body');
+            if(data.items.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-4 text-center text-xs text-slate-400">Rak ini saat ini kosong.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.items.map(item => `
+                <tr class="hover:bg-white/5 transition">
+                    <td class="px-4 py-3 font-medium text-white">${item.medicine_name} <span class="text-xs text-slate-400">(${item.dosage || '-'})</span></td>
+                    <td class="px-4 py-3 font-mono text-cyan-300 text-xs">${item.batch_number}</td>
+                    <td class="px-4 py-3 font-semibold text-white">${item.quantity} ${item.unit}</td>
+                    <td class="px-4 py-3 text-xs">${item.expired_date}</td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+                            item.status === 'EXPIRED' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
+                            item.status === 'WARNING' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
+                            'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                        }">${item.status}</span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function triggerAdminEditFromRack() {
+            if(!currentUser) {
+                showToast('Silakan masuk sebagai admin.', 'warning');
+                switchTab('auth');
+            } else {
+                switchTab('racks');
+            }
+        }
+
+        function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const color = type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-rose-600' : 'bg-blue-600';
-            toast.className = `${color} text-white px-4 py-3 rounded-xl shadow-lg text-sm flex items-center justify-between gap-3 transition`;
-            toast.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()">&times;</button>`;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
-        }
+            
+            const bgClass = type === 'error' ? 'bg-rose-500/90 text-white' :
+                            type === 'success' ? 'bg-emerald-500/90 text-white' :
+                            type === 'warning' ? 'bg-amber-500/90 text-white' : 'bg-cyan-500/90 text-white';
 
-        function copyRackLink(code) {
-            const url = `${window.location.origin}${window.location.pathname}#rack/${code}`;
-            navigator.clipboard.writeText(url);
-            showToast('Link QR Rak berhasil disalin!', 'success');
+            toast.className = `px-4 py-3 rounded-xl shadow-xl backdrop-blur-md border border-white/20 text-sm flex items-center space-x-2 transition transform translate-y-2 opacity-0 ${bgClass}`;
+            toast.innerHTML = `<span>${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
         }
     </script>
 </body>
