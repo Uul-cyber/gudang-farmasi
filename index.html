@@ -87,6 +87,18 @@
             border-left: 4px solid #38bdf8;
             font-weight: 600;
         }
+        /* Sidebar tersembunyi secara default, hanya muncul saat login */
+        #sidebar {
+            display: none;
+        }
+        #sidebar.sidebar-visible {
+            display: flex;
+        }
+        @media (min-width: 768px) {
+            #sidebar.sidebar-visible {
+                display: flex;
+            }
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -128,8 +140,8 @@
         <!-- MAIN LAYOUT -->
         <div class="flex-1 flex overflow-hidden">
 
-            <!-- SIDEBAR NAVIGASI ADMIN -->
-            <aside id="sidebar" class="hidden md:flex flex-col w-64 glass-panel border-r border-white/10 p-4 space-y-2 overflow-y-auto">
+            <!-- SIDEBAR NAVIGASI ADMIN (tersembunyi default, muncul saat login) -->
+            <aside id="sidebar" class="flex-col w-64 glass-panel border-r border-white/10 p-4 space-y-2 overflow-y-auto">
                 <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 mb-1">Menu Utama</div>
                 
                 <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/10 transition active-tab" id="tab-btn-dashboard">
@@ -975,13 +987,16 @@
             const headerTitle = document.getElementById('header-warehouse-name');
 
             if (isPublic) {
-                // Sembunyikan seluruh UI admin
-                if (sidebar) sidebar.classList.add('hidden');
+                // ====== MODE PUBLIK (scan QR rak) ======
+                if (sidebar) {
+                    sidebar.classList.add('hidden');
+                    sidebar.classList.remove('sidebar-visible');
+                }
                 if (userMenu) userMenu.classList.add('hidden');
                 if (connectionStatus) connectionStatus.classList.add('hidden');
                 if (headerTitle) headerTitle.innerText = 'Tampilan Publik — Scan QR Rak';
 
-                // Sembunyikan semua view admin termasuk auth & dashboard
+                // Sembunyikan semua view admin
                 const views = ['auth', 'dashboard', 'medicines', 'racks', 'batches', 'stock-in',
                                'stock-out', 'mutation', 'history', 'expiry-alerts', 'import-export', 'settings'];
                 views.forEach(v => {
@@ -989,18 +1004,33 @@
                     if (el) el.classList.add('hidden');
                 });
 
-                // Bersihkan active tab
                 document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active-tab'));
 
-                // Tampilkan view publik rak
                 const pubView = document.getElementById('view-public-rack');
                 if (pubView) pubView.classList.remove('hidden');
             } else {
-                // Mode admin normal
+                // ====== MODE ADMIN ======
                 if (headerTitle) headerTitle.innerText = 'Sistem Manajemen Obat & QR Code FEFO';
                 if (connectionStatus) connectionStatus.classList.remove('hidden');
+
+                // Sembunyikan view publik
                 const pubView = document.getElementById('view-public-rack');
                 if (pubView) pubView.classList.add('hidden');
+
+                // PENTING: sidebar & user-menu HANYA muncul jika sudah login
+                if (currentUser) {
+                    if (sidebar) {
+                        sidebar.classList.remove('hidden');
+                        sidebar.classList.add('sidebar-visible');
+                    }
+                    if (userMenu) userMenu.classList.remove('hidden');
+                } else {
+                    if (sidebar) {
+                        sidebar.classList.add('hidden');
+                        sidebar.classList.remove('sidebar-visible');
+                    }
+                    if (userMenu) userMenu.classList.add('hidden');
+                }
             }
         }
 
@@ -1127,17 +1157,28 @@
         async function handleLogout() {
             if (supabaseClient) await supabaseClient.auth.signOut();
             currentUser = null;
+            isPublicMode = false;
             document.getElementById('user-menu').classList.add('hidden');
-            document.getElementById('sidebar').classList.add('hidden');
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('sidebar-visible');
+            }
             switchTab('auth');
             showToast('Sesi telah diakhiri.', 'info');
         }
 
         function updateUserUI() {
-            if(!currentUser) return;
+            if (!currentUser) return;
             document.getElementById('user-menu').classList.remove('hidden');
-            document.getElementById('sidebar').classList.remove('hidden');
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.add('sidebar-visible');
+            }
             document.getElementById('user-display-name').innerText = currentUser.email.split('@')[0];
+            // Pastikan mode admin (bukan publik) aktif
+            isPublicMode = false;
         }
 
         // ==================== NAVIGASI TAB ====================
@@ -1734,8 +1775,8 @@
 
         // ==================== PUBLIC RAK VIEW ====================
         async function loadPublicRackView(rackCode) {
-            // Aktifkan mode publik
-            applyPublicModeUI(true);
+            // NOTE: applyPublicModeUI(true) TIDAK dipanggil di sini.
+            // Caller (DOMContentLoaded / hashchange) yang bertanggung jawab.
 
             document.getElementById('pub-rack-code').innerText = rackCode;
             document.getElementById('pub-rack-name').innerText = 'Memuat...';
@@ -1746,6 +1787,7 @@
 
             if (!supabaseClient) {
                 showToast('Koneksi Supabase belum siap.', 'error');
+                tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-4 text-center text-xs text-rose-300">Koneksi database belum siap.</td></tr>`;
                 return;
             }
 
@@ -1791,15 +1833,14 @@
         }
 
         function triggerAdminEditFromRack() {
+            // Hapus hash dari URL TANPA memicu hashchange (pakai replaceState)
+            history.replaceState(null, '', window.location.pathname);
+
             if(!currentUser) {
-                showToast('Silakan login sebagai admin untuk mengelola.', 'warning');
-                // Keluar dari mode publik dan tampilkan login
-                window.location.hash = '';
                 applyPublicModeUI(false);
                 switchTab('auth');
+                showToast('Silakan login sebagai admin untuk mengelola.', 'warning');
             } else {
-                // Admin sudah login — tampilkan halaman manajemen rak
-                window.location.hash = '';
                 applyPublicModeUI(false);
                 switchTab('racks');
             }
