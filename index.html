@@ -2742,17 +2742,11 @@ function viewEvidenceDetail(type, id) {
             </div>
             ${e.notes ? `<div class="text-xs"><span class="text-brand-200">Keterangan:</span><br><span class="text-white">${escapeHtml(e.notes)}</span></div>` : ''}
             ${e.file_url ? (
-    (e.file_url.match(/\.(jpg|jpeg|png|gif|webp)$/i) || e.file_url.includes('/image/upload/'))
-    ? `<div><img src="${e.file_url}" class="rounded-xl w-full max-h-64 object-contain bg-black/30" alt="Bukti"></div>`
-    : `<div class="p-4 rounded-xl bg-white/10 border border-white/20 text-center">
-         <i class="fa-solid fa-file-lines text-brand-200 text-3xl mb-2"></i>
-         <p class="text-xs text-brand-100 mb-3">File bukti tersedia</p>
-         <a href="${e.file_url}" target="_blank" class="inline-flex items-center px-4 py-2 rounded-lg bg-brand-500/25 hover:bg-brand-500/40 text-brand-100 border border-brand-400/40 text-xs font-medium">
-           <i class="fa-solid fa-download mr-2"></i>Buka / Unduh File
-         </a>
-       </div>`
-    : ''
-)}
+                (e.file_url.match(/\.(jpg|jpeg|png|gif|webp)$/i) || e.file_url.includes('/image/upload/'))
+                    ? `<div><img src="${e.file_url}" class="rounded-xl w-full max-h-64 object-contain bg-black/30" alt="Bukti"></div>`
+                    : `<div class="p-4 rounded-xl bg-white/10 border border-white/20 text-center"><i class="fa-solid fa-file-lines text-brand-200 text-3xl mb-2"></i><p class="text-xs text-brand-100 mb-3">File bukti tersedia</p><a href="${e.file_url}" target="_blank" class="inline-flex items-center px-4 py-2 rounded-lg bg-brand-500/25 hover:bg-brand-500/40 text-brand-100 border border-brand-400/40 text-xs font-medium"><i class="fa-solid fa-download mr-2"></i>Buka / Unduh File</a></div>`
+                    : ''
+            ) : ''}
             ${e.external_link ? `<div class="text-xs"><a href="${e.external_link}" target="_blank" class="text-brand-200 hover:text-white underline"><i class="fa-solid fa-link mr-1"></i>${escapeHtml(e.external_link)}</a></div>` : ''}
             <div class="flex flex-wrap gap-2 pt-2 border-t border-white/10">
                 ${e.file_url ? `<button onclick="copyToClipboard('${e.file_url}')" class="flex-1 py-2 rounded-lg bg-brand-500/25 hover:bg-brand-500/40 text-brand-100 border border-brand-400/40 text-xs font-medium"><i class="fa-solid fa-copy mr-1"></i>Salin Link Foto</button>` : ''}
