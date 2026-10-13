@@ -5,22 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Bukti Farmasi — Dokumentasi Kegiatan & Bukti SKP</title>
 
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- QRCode.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- SheetJS (Excel) -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <!-- jsPDF + autoTable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <!-- Supabase JS v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- html2canvas (untuk download QR .jpg) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
@@ -29,17 +21,9 @@
                 extend: {
                     colors: {
                         brand: {
-                            50:  '#f0f9ff',
-                            100: '#e0f2fe',
-                            200: '#bae6fd',
-                            300: '#7dd3fc',
-                            400: '#38bdf8',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            800: '#075985',
-                            900: '#0c4a6e',
-                            950: '#082f49'
+                            50:'#f0f9ff',100:'#e0f2fe',200:'#bae6fd',300:'#7dd3fc',
+                            400:'#38bdf8',500:'#0ea5e9',600:'#0284c7',700:'#0369a1',
+                            800:'#075985',900:'#0c4a6e',950:'#082f49'
                         }
                     }
                 }
@@ -59,7 +43,6 @@
             --text-primary: #f8fafc;
             --text-secondary: #bae6fd;
         }
-
         html.dark {
             --bg-gradient-1: #020617;
             --bg-gradient-2: #0c4a6e;
@@ -71,7 +54,6 @@
             --text-primary: #f8fafc;
             --text-secondary: #7dd3fc;
         }
-
         body {
             background: linear-gradient(135deg,
                 var(--bg-gradient-1) 0%,
@@ -84,7 +66,6 @@
             color: var(--text-primary);
             transition: background 0.4s ease, color 0.4s ease;
         }
-
         .glass-panel {
             background: var(--glass-bg);
             backdrop-filter: blur(18px);
@@ -101,41 +82,24 @@
             box-shadow: 0 4px 20px 0 rgba(2, 132, 199, 0.15);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .glass-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px 0 rgba(2, 132, 199, 0.30);
-        }
+        .glass-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px 0 rgba(2, 132, 199, 0.30); }
         .glass-input {
             background: var(--glass-input-bg);
             border: 1px solid rgba(255, 255, 255, 0.28);
             color: #ffffff;
             transition: all 0.2s;
         }
-        .glass-input:focus {
-            border-color: #7dd3fc;
-            outline: none;
-            box-shadow: 0 0 10px rgba(125, 211, 252, 0.55);
-        }
+        .glass-input:focus { border-color: #7dd3fc; outline: none; box-shadow: 0 0 10px rgba(125, 211, 252, 0.55); }
         .glass-input::placeholder { color: rgba(186, 230, 253, 0.55); }
-        .glass-input option {
-            background-color: #0c4a6e;
-            color: #fff;
-        }
+        .glass-input option { background-color: #0c4a6e; color: #fff; }
 
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: rgba(12, 74, 110, 0.4); }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.5); }
 
-        .active-tab {
-            background: rgba(255, 255, 255, 0.22) !important;
-            border-left: 4px solid #7dd3fc;
-            font-weight: 600;
-        }
-        .active-bottom-tab {
-            color: #7dd3fc !important;
-            font-weight: 700;
-        }
+        .active-tab { background: rgba(255, 255, 255, 0.22) !important; border-left: 4px solid #7dd3fc; font-weight: 600; }
+        .active-bottom-tab { color: #7dd3fc !important; font-weight: 700; }
         .active-bottom-tab i { transform: scale(1.15); }
 
         #sidebar { display: none; }
@@ -145,21 +109,16 @@
             position: fixed; inset: 0;
             background: rgba(0, 0, 0, 0.55);
             backdrop-filter: blur(4px);
-            z-index: 55;
-            display: none;
-            opacity: 0;
+            z-index: 55; display: none; opacity: 0;
             transition: opacity 0.3s;
         }
         #sidebar-overlay.active { display: block; opacity: 1; }
 
         @media (max-width: 767px) {
             #sidebar {
-                position: fixed; top: 0; left: 0; bottom: 0;
-                z-index: 60;
-                width: 270px;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-                display: flex !important;
+                position: fixed; top: 0; left: 0; bottom: 0; z-index: 60;
+                width: 270px; transform: translateX(-100%);
+                transition: transform 0.3s ease; display: flex !important;
                 background: rgba(12, 74, 110, 0.98);
                 backdrop-filter: blur(20px);
                 border-right: 1px solid var(--glass-border);
@@ -169,61 +128,39 @@
         }
 
         #bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            z-index: 50;
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
             background: rgba(12, 74, 110, 0.92);
             backdrop-filter: blur(18px);
             border-top: 1px solid var(--glass-border);
             box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
             display: none;
         }
-        @media (max-width: 767px) {
-            #bottom-nav { display: flex; }
-        }
+        @media (max-width: 767px) { #bottom-nav { display: flex; } }
         #bottom-nav button {
-            flex: 1;
-            padding: 8px 4px;
+            flex: 1; padding: 8px 4px;
             color: rgba(186, 230, 253, 0.7);
             font-size: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
+            display: flex; flex-direction: column; align-items: center; gap: 3px;
             transition: all 0.2s;
         }
         #bottom-nav button i { font-size: 18px; transition: transform 0.2s; }
         #bottom-nav button:active { transform: scale(0.95); }
 
-        #toast-container {
-            position: fixed; bottom: 100px; right: 16px;
-            z-index: 100; pointer-events: none;
-        }
-        @media (min-width: 768px) {
-            #toast-container { bottom: 20px; right: 20px; }
-        }
+        #toast-container { position: fixed; bottom: 100px; right: 16px; z-index: 100; pointer-events: none; }
+        @media (min-width: 768px) { #toast-container { bottom: 20px; right: 20px; } }
 
-        .progress-bar {
-            height: 8px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 4px;
-            overflow: hidden;
-        }
+        .progress-bar { height: 8px; background: rgba(255, 255, 255, 0.15); border-radius: 4px; overflow: hidden; }
         .progress-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, #38bdf8, #0284c7);
-            border-radius: 4px;
-            transition: width 0.6s ease;
+            border-radius: 4px; transition: width 0.6s ease;
         }
 
         .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 3px 9px;
-            border-radius: 999px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            display: inline-flex; align-items: center;
+            padding: 3px 9px; border-radius: 999px;
+            font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
         .badge-success { background: rgba(16, 185, 129, 0.20); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.35); }
         .badge-warning { background: rgba(245, 158, 11, 0.20); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.35); }
@@ -233,11 +170,8 @@
 
         .glass-table thead th {
             background: rgba(255, 255, 255, 0.10);
-            color: #bae6fd;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 700;
+            color: #bae6fd; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;
         }
         .glass-table tbody tr { transition: background 0.15s; }
         .glass-table tbody tr:hover { background: rgba(255, 255, 255, 0.06); }
@@ -247,23 +181,17 @@
             position: fixed; inset: 0;
             background: rgba(0, 0, 0, 0.65);
             backdrop-filter: blur(6px);
-            z-index: 80;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-            overflow-y: auto;
+            z-index: 80; display: none;
+            align-items: center; justify-content: center;
+            padding: 16px; overflow-y: auto;
         }
         .modal-backdrop.active { display: flex; }
         .modal-content {
             background: rgba(12, 74, 110, 0.95);
             backdrop-filter: blur(24px);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            width: 100%;
-            max-width: 520px;
-            max-height: 92vh;
-            overflow-y: auto;
+            border-radius: 20px; width: 100%; max-width: 520px;
+            max-height: 92vh; overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             animation: modalIn 0.25s ease;
         }
@@ -280,11 +208,28 @@
 
         .hidden { display: none !important; }
         .cursor-pointer { cursor: pointer; }
-        input[type="checkbox"].accent-brand-400 {
-            accent-color: #38bdf8;
-            width: 16px;
-            height: 16px;
+        input[type="checkbox"].accent-brand-400 { accent-color: #38bdf8; width: 16px; height: 16px; cursor: pointer; }
+
+        .filter-pill {
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.08);
+            color: #e0f2fe;
+            transition: all 0.2s;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-pill:hover { background: rgba(255,255,255,0.18); transform: translateY(-1px); }
+        .filter-pill.active {
+            background: linear-gradient(135deg, #38bdf8, #0284c7);
+            border-color: #7dd3fc;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
         }
     </style>
 </head>
@@ -406,7 +351,7 @@
 
             <div class="pt-3 border-t border-white/10 text-center text-[10px] text-brand-200">
                 <p>© 2026 E-Bukti Farmasi</p>
-                <p>v2.1</p>
+                <p>v2.4</p>
             </div>
         </aside>
 
@@ -618,6 +563,22 @@
                                 Lihat semua <i class="fa-solid fa-arrow-right ml-1"></i>
                             </button>
                         </div>
+
+                        <div class="flex flex-wrap gap-2 mb-3" id="dash-expiry-filter-pills">
+                            <button onclick="setDashExpiryFilter('all')" data-filter="all" class="filter-pill active">
+                                <i class="fa-solid fa-layer-group"></i><span>Semua</span>
+                            </button>
+                            <button onclick="setDashExpiryFilter('6')" data-filter="6" class="filter-pill">
+                                <i class="fa-solid fa-clock"></i><span>6 Bulan</span>
+                            </button>
+                            <button onclick="setDashExpiryFilter('9')" data-filter="9" class="filter-pill">
+                                <i class="fa-solid fa-clock"></i><span>9 Bulan</span>
+                            </button>
+                            <button onclick="setDashExpiryFilter('12')" data-filter="12" class="filter-pill">
+                                <i class="fa-solid fa-clock"></i><span>12 Bulan</span>
+                            </button>
+                        </div>
+
                         <div class="space-y-2 max-h-72 overflow-y-auto pr-1" id="dash-priority-expiry-list">
                             <p class="text-xs text-brand-200 text-center py-4">Memuat data expired...</p>
                         </div>
@@ -760,14 +721,14 @@
                         <p class="text-xs text-brand-100 mt-1">Daftar obat per rak + QR Code publik</p>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <button onclick="downloadExcelTemplate()" class="px-3 py-2.5 rounded-xl bg-emerald-500/25 hover:bg-emerald-500/40 text-emerald-100 border border-emerald-400/40 font-medium text-xs shadow-lg transition flex items-center space-x-2">
+                        <button onclick="downloadRackItemTemplate()" class="px-3 py-2.5 rounded-xl bg-emerald-500/25 hover:bg-emerald-500/40 text-emerald-100 border border-emerald-400/40 font-medium text-xs shadow-lg transition flex items-center space-x-2" title="Download template dari data existing">
                             <i class="fa-solid fa-file-arrow-down"></i>
                             <span class="hidden sm:inline">Template Obat</span>
                         </button>
-                        <label class="px-3 py-2.5 rounded-xl bg-purple-500/25 hover:bg-purple-500/40 text-purple-100 border border-purple-400/40 font-medium text-xs shadow-lg transition flex items-center space-x-2 cursor-pointer">
+                        <label class="px-3 py-2.5 rounded-xl bg-purple-500/25 hover:bg-purple-500/40 text-purple-100 border border-purple-400/40 font-medium text-xs shadow-lg transition flex items-center space-x-2 cursor-pointer" title="Impor akan MENGGANTI semua data lama">
                             <i class="fa-solid fa-file-import"></i>
                             <span class="hidden sm:inline">Impor Obat</span>
-                            <input type="file" accept=".xlsx,.xls" onchange="importRackItemsExcel(event)" class="hidden">
+                            <input type="file" accept=".xlsx,.xls" onchange="confirmImportRackItems(event)" class="hidden">
                         </label>
                         <button onclick="openRackModal()" class="px-3 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-medium text-xs shadow-lg transition flex items-center space-x-2 border border-white/25">
                             <i class="fa-solid fa-plus"></i>
@@ -792,7 +753,6 @@
                         <input type="text" id="rack-items-search" oninput="renderRackItemsTable()" placeholder="Cari nama obat, batch, rak..." class="glass-input px-3 py-2 rounded-xl text-xs w-full sm:w-56">
                     </div>
 
-                    <!-- Toolbar aksi massal -->
                     <div id="rack-bulk-toolbar" class="hidden px-4 py-2.5 border-b border-white/10 bg-brand-500/15 flex items-center justify-between">
                         <span class="text-xs font-semibold text-white">
                             <i class="fa-solid fa-check-double text-brand-200 mr-2"></i>
@@ -845,7 +805,7 @@
                         <p class="text-xs text-brand-100 mt-1">Katalog obat, jenis, dan batas stok minimal</p>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <button onclick="downloadMedicineTemplate()" class="px-3 py-2.5 rounded-xl bg-emerald-500/25 hover:bg-emerald-500/40 text-emerald-100 border border-emerald-400/40 font-medium text-xs shadow-lg transition flex items-center space-x-2" title="Download template berisi data obat yang sudah ada + baris kosong">
+                        <button onclick="downloadMedicineTemplate()" class="px-3 py-2.5 rounded-xl bg-emerald-500/25 hover:bg-emerald-500/40 text-emerald-100 border border-emerald-400/40 font-medium text-xs shadow-lg transition flex items-center space-x-2" title="Download template dari data existing">
                             <i class="fa-solid fa-file-arrow-down"></i>
                             <span class="hidden sm:inline">Template</span>
                         </button>
@@ -855,7 +815,6 @@
                             <input type="file" accept=".xlsx,.xls" onchange="importMedicinesExcel(event)" class="hidden">
                         </label>
 
-                        <!-- Dropdown Ekspor -->
                         <div class="relative">
                             <button onclick="toggleExportMenu(event)" class="px-3 py-2.5 rounded-xl bg-sky-500/25 hover:bg-sky-500/40 text-sky-100 border border-sky-400/40 font-medium text-xs shadow-lg transition flex items-center space-x-2">
                                 <i class="fa-solid fa-file-export"></i>
@@ -885,10 +844,30 @@
                     <div class="p-4 border-b border-white/10">
                         <input type="text" id="med-search" oninput="filterMedicinesTable()" placeholder="Cari kode, nama, atau kategori..." class="glass-input px-4 py-2 rounded-xl text-xs w-full sm:w-64">
                     </div>
+
+                    <!-- Toolbar aksi massal Master Obat -->
+                    <div id="med-bulk-toolbar" class="hidden px-4 py-2.5 border-b border-white/10 bg-brand-500/15 flex items-center justify-between">
+                        <span class="text-xs font-semibold text-white">
+                            <i class="fa-solid fa-check-double text-brand-200 mr-2"></i>
+                            <span id="med-selected-count">0</span> obat dipilih
+                        </span>
+                        <div class="flex gap-2">
+                            <button onclick="clearMedSelection()" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs font-medium">
+                                Batal
+                            </button>
+                            <button onclick="confirmDeleteSelectedMedicines()" class="px-3 py-1.5 rounded-lg bg-red-500/30 hover:bg-red-500/50 text-red-100 border border-red-400/40 text-xs font-semibold">
+                                <i class="fa-solid fa-trash mr-1"></i>Hapus Terpilih
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs md:text-sm text-white glass-table">
                             <thead>
                                 <tr>
+                                    <th class="px-3 py-3 w-10">
+                                        <input type="checkbox" id="med-select-all" onchange="toggleSelectAllMedicines(this.checked)" class="accent-brand-400" title="Pilih semua">
+                                    </th>
                                     <th class="px-3 py-3">Kode</th>
                                     <th class="px-3 py-3">Nama Obat</th>
                                     <th class="px-3 py-3 hidden md:table-cell">Kategori</th>
@@ -898,7 +877,7 @@
                                 </tr>
                             </thead>
                             <tbody id="medicines-table-body" class="divide-y divide-white/10">
-                                <tr><td colspan="6" class="px-4 py-6 text-center text-xs text-brand-200">Memuat data obat...</td></tr>
+                                <tr><td colspan="7" class="px-4 py-6 text-center text-xs text-brand-200">Memuat data obat...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -951,7 +930,34 @@
                         <i class="fa-solid fa-triangle-exclamation text-amber-300"></i>
                         <span>Peringatan Expired</span>
                     </h2>
-                    <p class="text-xs text-brand-100 mt-1">Daftar obat kedaluwarsa atau kurang dari 30 hari</p>
+                    <p class="text-xs text-brand-100 mt-1">Filter berdasarkan rentang waktu mendekati kedaluwarsa</p>
+                </div>
+
+                <div class="glass-panel p-4 rounded-2xl">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div>
+                            <p class="text-xs font-semibold text-brand-100 mb-2">
+                                <i class="fa-solid fa-filter mr-1"></i> Tampilkan obat dengan sisa umur:
+                            </p>
+                            <div class="flex flex-wrap gap-2" id="expiry-filter-pills">
+                                <button onclick="setExpiryFilter('all')" data-filter="all" class="filter-pill active">
+                                    <i class="fa-solid fa-layer-group"></i><span>Semua</span>
+                                </button>
+                                <button onclick="setExpiryFilter('6')" data-filter="6" class="filter-pill">
+                                    <i class="fa-solid fa-clock"></i><span>&le; 6 Bulan</span>
+                                </button>
+                                <button onclick="setExpiryFilter('9')" data-filter="9" class="filter-pill">
+                                    <i class="fa-solid fa-clock"></i><span>&le; 9 Bulan</span>
+                                </button>
+                                <button onclick="setExpiryFilter('12')" data-filter="12" class="filter-pill">
+                                    <i class="fa-solid fa-clock"></i><span>&le; 12 Bulan</span>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-[10px] md:text-xs text-brand-200 italic" id="expiry-filter-info">
+                            Menampilkan semua item yang masih ada stok.
+                        </p>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -968,7 +974,7 @@
                         <h3 class="text-2xl font-bold text-emerald-300" id="exp-stat-safe">0</h3>
                     </div>
                     <div class="glass-card p-4 rounded-2xl border-l-4 border-l-brand-400">
-                        <p class="text-[10px] text-brand-100">Total Item</p>
+                        <p class="text-[10px] text-brand-100">Total Ditampilkan</p>
                         <h3 class="text-2xl font-bold text-white" id="exp-stat-total">0</h3>
                     </div>
                 </div>
@@ -982,12 +988,13 @@
                                     <th class="px-3 py-3">Batch</th>
                                     <th class="px-3 py-3">Rak</th>
                                     <th class="px-3 py-3">Expired</th>
-                                    <th class="px-3 py-3">Sisa</th>
+                                    <th class="px-3 py-3">Sisa Umur</th>
+                                    <th class="px-3 py-3">Sisa Stok</th>
                                     <th class="px-3 py-3">Status</th>
                                 </tr>
                             </thead>
                             <tbody id="expiry-alerts-body" class="divide-y divide-white/10">
-                                <tr><td colspan="6" class="px-4 py-6 text-center text-xs text-brand-200">Memuat peringatan...</td></tr>
+                                <tr><td colspan="7" class="px-4 py-6 text-center text-xs text-brand-200">Memuat peringatan...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -1027,7 +1034,19 @@
                             <i class="fa-solid fa-file-excel text-brand-300"></i>
                             <span>Impor & Ekspor Data</span>
                         </h2>
-                        <p class="text-xs text-brand-100 mt-1">Kelola data Excel untuk obat per rak</p>
+                        <p class="text-xs text-brand-100 mt-1">Kelola data Excel untuk obat per rak (format RS)</p>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-xl space-y-3 border-l-4 border-l-amber-400">
+                        <h3 class="text-sm font-semibold text-amber-200 flex items-center space-x-2">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>Format Template Baru (Format Rumah Sakit)</span>
+                        </h3>
+                        <div class="text-xs text-brand-100 space-y-1">
+                            <p><b>Kolom wajib:</b> Nama Barang, No Batch</p>
+                            <p><b>Kolom opsional:</b> Jenis Obat, Kadaluarsa, Nama Rak, Keterangan</p>
+                            <p><b>Catatan:</b> Import akan <b class="text-red-300">MENGGANTI</b> semua data obat di rak. Data lama akan dihapus agar tidak ada duplikat.</p>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1054,16 +1073,16 @@
                                 <i class="fa-solid fa-upload"></i>
                                 <span>Impor Data Excel</span>
                             </h3>
-                            <p class="text-xs text-brand-100">Format kolom: Nama Obat, Kode Obat, Kode Rak, Batch, Tgl Terima, Penyimpanan, FIFO/FEFO, Expired, Jumlah, Keterangan.</p>
+                            <p class="text-xs text-brand-100">Gunakan template format RS: <b>Nama Barang | Jenis Obat | No Batch | Kadaluarsa | Nama Rak | Keterangan</b></p>
                             <div class="flex flex-col space-y-2 pt-1">
-                                <button onclick="downloadExcelTemplate()" class="py-2.5 px-4 rounded-xl bg-brand-500/25 hover:bg-brand-500/40 text-brand-100 border border-brand-400/40 text-xs font-semibold transition flex items-center justify-center space-x-2">
+                                <button onclick="downloadRackItemTemplate()" class="py-2.5 px-4 rounded-xl bg-brand-500/25 hover:bg-brand-500/40 text-brand-100 border border-brand-400/40 text-xs font-semibold transition flex items-center justify-center space-x-2">
                                     <i class="fa-solid fa-file-arrow-down"></i>
                                     <span>Download Template</span>
                                 </button>
                                 <label class="py-2.5 px-4 rounded-xl bg-purple-500/25 hover:bg-purple-500/40 text-purple-100 border border-purple-400/40 text-xs font-semibold transition flex items-center justify-center space-x-2 cursor-pointer">
                                     <i class="fa-solid fa-file-import"></i>
                                     <span>Pilih File Excel</span>
-                                    <input type="file" accept=".xlsx,.xls" onchange="importRackItemsExcel(event)" class="hidden">
+                                    <input type="file" accept=".xlsx,.xls" onchange="confirmImportRackItems(event)" class="hidden">
                                 </label>
                             </div>
                         </div>
@@ -1463,7 +1482,7 @@
                 </div>
                 <div>
                     <label class="block text-xs text-brand-100 mb-1">Jumlah</label>
-                    <input type="number" id="ri-qty" min="1" required class="w-full glass-input px-3 py-2 rounded-xl text-xs" placeholder="100">
+                    <input type="number" id="ri-qty" min="0" required class="w-full glass-input px-3 py-2 rounded-xl text-xs" placeholder="0">
                 </div>
             </div>
 
@@ -1500,7 +1519,7 @@
     </div>
 </div>
 
-<!-- ==================== MODAL: KONFIRMASI HAPUS ==================== -->
+<!-- ==================== MODAL: KONFIRMASI HAPUS RACK ITEMS ==================== -->
 <div id="modal-confirm-delete" class="modal-backdrop">
     <div class="modal-content p-5 md:p-6 max-w-md">
         <div class="flex items-center space-x-3 mb-4">
@@ -1517,6 +1536,59 @@
             <button onclick="closeModal('modal-confirm-delete')" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-medium">Batal</button>
             <button onclick="executeDeleteSelectedRackItems()" class="px-5 py-2.5 rounded-xl bg-red-500/40 hover:bg-red-500/60 text-red-100 border border-red-400/50 text-xs font-semibold">
                 <i class="fa-solid fa-trash mr-1"></i>Ya, Hapus
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL: KONFIRMASI HAPUS MASTER OBAT ==================== -->
+<div id="modal-confirm-delete-med" class="modal-backdrop">
+    <div class="modal-content p-5 md:p-6 max-w-md">
+        <div class="flex items-center space-x-3 mb-4">
+            <div class="w-12 h-12 rounded-xl bg-red-500/25 text-red-200 flex items-center justify-center text-xl border border-red-400/40">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white">Konfirmasi Hapus Obat</h3>
+                <p class="text-xs text-brand-100">Tindakan ini tidak dapat dibatalkan</p>
+            </div>
+        </div>
+        <div id="confirm-delete-med-content" class="text-sm text-white mb-5 space-y-2"></div>
+        <div class="flex justify-end space-x-2">
+            <button onclick="closeModal('modal-confirm-delete-med')" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-medium">Batal</button>
+            <button onclick="executeDeleteSelectedMedicines()" class="px-5 py-2.5 rounded-xl bg-red-500/40 hover:bg-red-500/60 text-red-100 border border-red-400/50 text-xs font-semibold">
+                <i class="fa-solid fa-trash mr-1"></i>Ya, Hapus
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL: KONFIRMASI IMPORT (REPLACE) ==================== -->
+<div id="modal-confirm-import" class="modal-backdrop">
+    <div class="modal-content p-5 md:p-6 max-w-md">
+        <div class="flex items-center space-x-3 mb-4">
+            <div class="w-12 h-12 rounded-xl bg-amber-500/25 text-amber-200 flex items-center justify-center text-xl border border-amber-400/40">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white">Konfirmasi Import</h3>
+                <p class="text-xs text-brand-100">Baca peringatan dengan hati-hati</p>
+            </div>
+        </div>
+        <div id="confirm-import-content" class="text-sm text-white mb-5 space-y-2">
+            <p>Import akan <b class="text-red-300">MENGHAPUS SEMUA</b> data obat per rak yang ada saat ini, lalu menggantinya dengan data dari file Excel.</p>
+            <p class="text-xs text-brand-200">Data berikut akan hilang:</p>
+            <ul class="text-xs text-brand-100 list-disc list-inside space-y-1">
+                <li>Semua batch obat di rak</li>
+                <li>Nomor batch lama</li>
+                <li>Riwayat stok & tanggal terima lama</li>
+            </ul>
+            <p class="text-xs text-amber-200 mt-2"><i class="fa-solid fa-circle-info mr-1"></i>Pastikan file Excel sudah benar sebelum melanjutkan.</p>
+        </div>
+        <div class="flex justify-end space-x-2">
+            <button onclick="cancelImportRackItems()" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-medium">Batal</button>
+            <button onclick="executeImportRackItems()" class="px-5 py-2.5 rounded-xl bg-amber-500/40 hover:bg-amber-500/60 text-amber-100 border border-amber-400/50 text-xs font-semibold">
+                <i class="fa-solid fa-file-import mr-1"></i>Ya, Import & Ganti
             </button>
         </div>
     </div>
@@ -1567,7 +1639,12 @@
 <!-- ==================== SCRIPT LOGIC ==================== -->
 <script>
 /* ================================================================
-   E-BUKTI FARMASI — JavaScript Logic (v2.1)
+   E-BUKTI FARMASI — JavaScript Logic (v2.4)
+   Fitur baru:
+   - Checkbox + hapus massal di Master Obat (seperti Rak)
+   - Template & import format RS
+   - Import = REPLACE (hapus data lama dulu)
+   - Auto-generate Kode Obat & Kode Rak
    ================================================================ */
 
 const DEFAULT_CONFIG = {
@@ -1594,13 +1671,18 @@ let allRackItems = [];
 let allNotes = [];
 let chartSkpInstance = null;
 
-// Evidence file state
 let evidenceFile = null;
 let evidenceFileUrl = null;
-let evidenceFileKind = null; // 'image' | 'doc'
+let evidenceFileKind = null;
 
-// Rack bulk selection
+// Selection state
 let selectedRackItemIds = new Set();
+let selectedMedicineIds = new Set();
+
+let expiryFilter = 'all';
+let dashExpiryFilter = 'all';
+
+let pendingImportFile = null;
 
 /* ---------- UTILS ---------- */
 function showToast(message, type = 'info') {
@@ -1656,6 +1738,58 @@ function getFileIcon(filename) {
     if (ext === 'txt') return 'fa-file-lines';
     if (['jpg','jpeg','png','gif','webp','bmp','svg'].includes(ext)) return 'fa-file-image';
     return 'fa-file';
+}
+
+function parseDateFlexible(val) {
+    if (!val) return null;
+    if (val instanceof Date) {
+        if (isNaN(val)) return null;
+        return val.toISOString().split('T')[0];
+    }
+    const s = String(val).trim();
+    if (!s) return null;
+    const d = new Date(s);
+    if (!isNaN(d)) return d.toISOString().split('T')[0];
+    const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+    if (m) {
+        let day = parseInt(m[1]), mo = parseInt(m[2]), yr = parseInt(m[3]);
+        if (yr < 100) yr += 2000;
+        const dd = new Date(yr, mo-1, day);
+        if (!isNaN(dd)) return dd.toISOString().split('T')[0];
+    }
+    return null;
+}
+
+function monthsUntil(dateStr) {
+    if (!dateStr) return null;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const exp = new Date(dateStr); exp.setHours(0,0,0,0);
+    if (isNaN(exp)) return null;
+    const diffMs = exp - today;
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+    return diffDays / 30.4375;
+}
+
+function formatRemaining(dateStr) {
+    const m = monthsUntil(dateStr);
+    if (m === null) return '-';
+    if (m < 0) {
+        const absM = Math.abs(m);
+        if (absM < 1) return `${Math.round(absM * 30)} hari lalu`;
+        return `${absM.toFixed(1)} bln lalu`;
+    }
+    if (m < 1) return `${Math.round(m * 30)} hari`;
+    return `${m.toFixed(1)} bln`;
+}
+
+function filterByExpiryMonths(items, filter) {
+    if (filter === 'all') return items;
+    const limit = parseInt(filter);
+    return items.filter(it => {
+        const m = monthsUntil(it.expired_date);
+        if (m === null) return false;
+        return m <= limit;
+    });
 }
 
 /* ================================================================
@@ -1985,13 +2119,9 @@ async function handleLogout() {
    NAVIGASI TAB
    ================================================================ */
 function switchTab(tabName) {
-    if (tabName === 'lainnya') {
-        openModal('modal-lainnya');
-        return;
-    }
+    if (tabName === 'lainnya') { openModal('modal-lainnya'); return; }
 
     activeTab = tabName;
-
     const views = ['auth','beranda','skp','self-assessment','rak','master-obat','riwayat','expired','catatan','impor-ekspor','pengaturan'];
     views.forEach(v => document.getElementById(`view-${v}`)?.classList.add('hidden'));
     document.getElementById(`view-${tabName}`)?.classList.remove('hidden');
@@ -2051,40 +2181,17 @@ async function loadDashboard() {
             .gt('quantity', 0);
 
         let expiredC = 0, warnC = 0;
-        const priorityList = [];
         (allItems || []).forEach(it => {
             const ed = it.expired_date;
             if (!ed) return;
-            if (ed < today) { expiredC++; priorityList.push({ ...it, _state: 'EXPIRED' }); }
-            else if (ed <= in30) { warnC++; priorityList.push({ ...it, _state: 'WARNING' }); }
+            if (ed < today) expiredC++;
+            else if (ed <= in30) warnC++;
         });
 
         document.getElementById('stat-expiring-soon').innerText = warnC;
         document.getElementById('stat-expired-count').innerText = expiredC;
 
-        priorityList.sort((a,b) => new Date(a.expired_date) - new Date(b.expired_date));
-        const top5 = priorityList.slice(0, 5);
-        const container = document.getElementById('dash-priority-expiry-list');
-        if (top5.length === 0) {
-            container.innerHTML = '<p class="text-xs text-brand-200 text-center py-4"><i class="fa-solid fa-check-circle text-emerald-300 mr-1"></i>Tidak ada obat mendekati expired.</p>';
-        } else {
-            container.innerHTML = top5.map(b => {
-                const isExp = b._state === 'EXPIRED';
-                const cls = isExp ? 'bg-red-500/15 border-red-400/30' : 'bg-amber-500/15 border-amber-400/30';
-                const badge = isExp ? 'badge-danger' : 'badge-warning';
-                const txt = isExp ? 'EXPIRED' : 'WARNING';
-                return `<div class="p-3 rounded-xl border ${cls} flex items-center justify-between">
-                    <div class="min-w-0 flex-1">
-                        <div class="text-xs font-bold text-white truncate">${escapeHtml(b.medicines?.name || '-')}</div>
-                        <div class="text-[10px] text-brand-100 font-mono">Batch: ${escapeHtml(b.batches || '-')} • ${escapeHtml(b.racks?.code || '-')}</div>
-                    </div>
-                    <div class="text-right ml-2 shrink-0">
-                        <div class="text-xs font-semibold text-white">${formatDate(b.expired_date)}</div>
-                        <span class="badge ${badge}">${txt}</span>
-                    </div>
-                </div>`;
-            }).join('');
-        }
+        await renderDashboardExpiryList(allItems || []);
 
         const { data: recent } = await supabaseClient.from('skp_evidences')
             .select('title, evidence_date, created_at, skp_activities(name)')
@@ -2124,6 +2231,156 @@ async function loadDashboard() {
     }
 }
 
+async function renderDashboardExpiryList(allItems) {
+    const container = document.getElementById('dash-priority-expiry-list');
+    if (!container) return;
+
+    const today = new Date(); today.setHours(0,0,0,0);
+    const in30 = new Date(Date.now() + 30*24*60*60*1000);
+
+    let list = filterByExpiryMonths(allItems || [], dashExpiryFilter);
+
+    const mapped = list.map(it => {
+        const ed = it.expired_date;
+        const edDate = new Date(ed);
+        let state = 'SAFE';
+        if (edDate < today) state = 'EXPIRED';
+        else if (edDate <= in30) state = 'WARNING';
+        return { ...it, _state: state, _remaining: monthsUntil(ed) };
+    });
+
+    mapped.sort((a, b) => new Date(a.expired_date) - new Date(b.expired_date));
+
+    if (dashExpiryFilter === 'all') {
+        const urgent = mapped.filter(x => x._state !== 'SAFE');
+        const safe = mapped.filter(x => x._state === 'SAFE');
+        mapped.length = 0;
+        mapped.push(...urgent, ...safe);
+    }
+
+    const top = mapped.slice(0, 10);
+
+    if (top.length === 0) {
+        const msg = dashExpiryFilter === 'all'
+            ? 'Tidak ada item obat.'
+            : `Tidak ada obat dengan sisa umur ≤ ${dashExpiryFilter} bulan.`;
+        container.innerHTML = `<p class="text-xs text-brand-200 text-center py-4"><i class="fa-solid fa-check-circle text-emerald-300 mr-1"></i>${msg}</p>`;
+        return;
+    }
+
+    container.innerHTML = top.map(b => {
+        const isExp = b._state === 'EXPIRED';
+        const isWarn = b._state === 'WARNING';
+        const cls = isExp ? 'bg-red-500/15 border-red-400/30'
+                  : isWarn ? 'bg-amber-500/15 border-amber-400/30'
+                  : 'bg-emerald-500/10 border-emerald-400/20';
+        const badge = isExp ? 'badge-danger' : isWarn ? 'badge-warning' : 'badge-success';
+        const txt = isExp ? 'EXPIRED' : isWarn ? 'WARNING' : 'SAFE';
+        const remainText = formatRemaining(b.expired_date);
+        return `<div class="p-3 rounded-xl border ${cls} flex items-center justify-between">
+            <div class="min-w-0 flex-1">
+                <div class="text-xs font-bold text-white truncate">${escapeHtml(b.medicines?.name || '-')}</div>
+                <div class="text-[10px] text-brand-100 font-mono">Batch: ${escapeHtml(b.batches || '-')} • ${escapeHtml(b.racks?.code || '-')}</div>
+            </div>
+            <div class="text-right ml-2 shrink-0">
+                <div class="text-xs font-semibold text-white">${formatDate(b.expired_date)}</div>
+                <div class="text-[10px] text-brand-200 mb-0.5">${remainText}</div>
+                <span class="badge ${badge}">${txt}</span>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function setDashExpiryFilter(filter) {
+    dashExpiryFilter = filter;
+    const pills = document.querySelectorAll('#dash-expiry-filter-pills .filter-pill');
+    pills.forEach(p => {
+        if (p.dataset.filter === filter) p.classList.add('active');
+        else p.classList.remove('active');
+    });
+    loadDashboard();
+}
+
+/* ================================================================
+   EXPIRED VIEW + Filter
+   ================================================================ */
+function setExpiryFilter(filter) {
+    expiryFilter = filter;
+    const pills = document.querySelectorAll('#expiry-filter-pills .filter-pill');
+    pills.forEach(p => {
+        if (p.dataset.filter === filter) p.classList.add('active');
+        else p.classList.remove('active');
+    });
+    const info = document.getElementById('expiry-filter-info');
+    if (info) {
+        if (filter === 'all') info.innerText = 'Menampilkan semua item yang masih ada stok.';
+        else info.innerText = `Menampilkan obat dengan sisa umur ≤ ${filter} bulan (termasuk yang sudah expired).`;
+    }
+    loadExpiredView();
+}
+
+async function loadExpiredView() {
+    if (!supabaseClient) return;
+    const { data } = await supabaseClient.from('rack_items').select(`
+        *,
+        medicines(name, unit, form),
+        racks(code)
+    `).gt('quantity', 0);
+
+    const allData = data || [];
+    const today = new Date(); today.setHours(0,0,0,0);
+    const in30 = new Date(Date.now() + 30*24*60*60*1000);
+
+    const filtered = filterByExpiryMonths(allData, expiryFilter);
+
+    let expiredC = 0, warnC = 0, safeC = 0;
+    filtered.forEach(it => {
+        const ed = it.expired_date;
+        const edDate = new Date(ed);
+        if (edDate < today) expiredC++;
+        else if (edDate <= in30) warnC++;
+        else safeC++;
+    });
+
+    document.getElementById('exp-stat-expired').innerText = expiredC;
+    document.getElementById('exp-stat-warning').innerText = warnC;
+    document.getElementById('exp-stat-safe').innerText = safeC;
+    document.getElementById('exp-stat-total').innerText = filtered.length;
+
+    filtered.sort((a, b) => new Date(a.expired_date) - new Date(b.expired_date));
+
+    const rows = filtered.map(it => {
+        const ed = it.expired_date;
+        const edDate = new Date(ed);
+        let status = 'SAFE', badge = 'badge-success';
+        if (edDate < today) { status = 'EXPIRED'; badge = 'badge-danger'; }
+        else if (edDate <= in30) { status = 'WARNING'; badge = 'badge-warning'; }
+
+        return `<tr>
+            <td class="px-3 py-3 text-xs font-medium">${escapeHtml(it.medicines?.name || '-')}<br><span class="text-[10px] text-brand-200">${escapeHtml(it.medicines?.form || '')}</span></td>
+            <td class="px-3 py-3 text-xs font-mono text-brand-100">${escapeHtml(it.batch_number)}</td>
+            <td class="px-3 py-3 text-xs"><span class="badge badge-info">${escapeHtml(it.racks?.code || '-')}</span></td>
+            <td class="px-3 py-3 text-xs">${formatDate(ed)}</td>
+            <td class="px-3 py-3 text-xs font-semibold ${edDate < today ? 'text-red-300' : edDate <= in30 ? 'text-amber-300' : 'text-emerald-300'}">${formatRemaining(ed)}</td>
+            <td class="px-3 py-3 text-xs font-bold">${it.quantity} ${escapeHtml(it.medicines?.unit || '')}</td>
+            <td class="px-3 py-3"><span class="badge ${badge}">${status}</span></td>
+        </tr>`;
+    });
+
+    const tbody = document.getElementById('expiry-alerts-body');
+    if (!rows.length) {
+        const msg = expiryFilter === 'all'
+            ? 'Tidak ada item obat.'
+            : `Tidak ada obat dengan sisa umur ≤ ${expiryFilter} bulan.`;
+        tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-6 text-center text-xs text-brand-200"><i class="fa-solid fa-check-circle text-emerald-300 mr-1"></i>${msg}</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = rows.join('');
+}
+
+/* ================================================================
+   CHART & PROGRESS
+   ================================================================ */
 async function renderSkpChart() {
     if (!supabaseClient || !currentUser) return;
     const year = new Date().getFullYear();
@@ -2459,8 +2716,7 @@ function openEvidenceModal(type, id = null) {
             document.getElementById('ev-notes').value = e.notes || '';
             if (e.file_url) {
                 evidenceFileUrl = e.file_url;
-                // Preview ringkas
-                const isImg = /\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?|$)/i.test(e.file_url) || e.file_url.includes('/image/upload/');
+                const isImg = /\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?|$)/i.test(e.file_url) || (e.file_url.includes('/image/upload/') && !e.file_url.toLowerCase().endsWith('.pdf'));
                 const prev = document.getElementById('ev-preview');
                 if (isImg) {
                     prev.innerHTML = `<img src="${e.file_url}" class="rounded-xl max-h-40 object-cover border border-white/20" alt="Preview"><p class="text-[10px] text-brand-200 mt-1">File lama — pilih file baru untuk mengganti</p>`;
@@ -2563,7 +2819,6 @@ async function uploadToCloudinary(file, kind = 'image') {
     if (!cloud || !preset) throw new Error('Cloudinary belum dikonfigurasi');
 
     const fd = new FormData();
-
     if (kind === 'image') {
         const compressed = await compressImage(file, 1600, 0.85);
         fd.append('file', compressed);
@@ -2636,7 +2891,6 @@ async function saveEvidence(e) {
             const kindLabel = evidenceFileKind === 'doc' ? 'file' : 'foto';
             showToast(`Mengupload ${kindLabel}...`, 'info');
             payload.file_url = await uploadToCloudinary(evidenceFile, evidenceFileKind || 'image');
-
             const metaTag = `[FILE:${evidenceFile.name}]`;
             payload.notes = payload.notes ? `${metaTag} ${payload.notes}` : metaTag;
         } catch(err) {
@@ -2648,11 +2902,8 @@ async function saveEvidence(e) {
     }
 
     let result;
-    if (id) {
-        result = await supabaseClient.from(table).update(payload).eq('id', id);
-    } else {
-        result = await supabaseClient.from(table).insert(payload);
-    }
+    if (id) result = await supabaseClient.from(table).update(payload).eq('id', id);
+    else result = await supabaseClient.from(table).insert(payload);
 
     if (result.error) {
         showToast('Gagal simpan: ' + result.error.message, 'error');
@@ -2684,11 +2935,19 @@ function renderEvidenceFilePreview(url, notes) {
         if (m) fileName = m[1];
     }
 
-    const isImage = /\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?|$)/i.test(url) || url.includes('/image/upload/');
-    const isPdf = /\.pdf(\?|$)/i.test(url) || (fileName && fileName.toLowerCase().endsWith('.pdf'));
+    const lowerUrl = (url || '').toLowerCase();
+    const lowerName = (fileName || '').toLowerCase();
+    const isPdf = lowerUrl.includes('.pdf') || lowerName.endsWith('.pdf');
+    const isImage = !isPdf && (
+        /\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?|$)/i.test(url) ||
+        (url.includes('/image/upload/') && !url.includes('.pdf'))
+    );
 
     if (isImage) {
-        return `<div><img src="${url}" class="rounded-xl w-full max-h-64 object-contain bg-black/30 border border-white/15" alt="Bukti"></div>`;
+        return `<div>
+            <img src="${url}" class="rounded-xl w-full max-h-64 object-contain bg-black/30 border border-white/15" alt="Bukti"
+                 onerror="this.parentElement.innerHTML='<div class=\\'p-3 rounded-xl bg-red-500/15 border border-red-400/30 text-xs text-red-100\\'><i class=\\'fa-solid fa-triangle-exclamation mr-1\\'></i> Gambar tidak dapat ditampilkan. Gunakan tombol Download File di bawah.</div>'">
+        </div>`;
     }
 
     if (isPdf) {
@@ -2700,13 +2959,10 @@ function renderEvidenceFilePreview(url, notes) {
                     </div>
                     <div class="min-w-0 flex-1">
                         <p class="text-xs font-semibold text-white truncate">${escapeHtml(fileName || 'Dokumen PDF')}</p>
-                        <p class="text-[10px] text-brand-200">File PDF</p>
+                        <p class="text-[10px] text-brand-200">File PDF — gunakan tombol Download File di bawah</p>
                     </div>
-                    <a href="${url}" target="_blank" class="px-3 py-1.5 rounded-lg bg-red-500/30 hover:bg-red-500/50 text-red-100 text-xs font-semibold">
-                        <i class="fa-solid fa-up-right-from-square mr-1"></i>Buka
-                    </a>
                 </div>
-                <iframe src="${url}" class="w-full h-64 rounded-xl border border-white/15 bg-white"></iframe>
+                <div class="text-[10px] text-brand-200 text-center italic">Jika preview tidak muncul, klik tombol Preview atau Download File di bawah.</div>
             </div>
         `;
     }
@@ -2722,9 +2978,6 @@ function renderEvidenceFilePreview(url, notes) {
                 <p class="text-xs font-semibold text-white truncate">${escapeHtml(fileName || 'Dokumen')}</p>
                 <p class="text-[10px] text-brand-200">File ${ext}</p>
             </div>
-            <a href="${url}" target="_blank" download class="px-3 py-1.5 rounded-lg bg-purple-500/30 hover:bg-purple-500/50 text-purple-100 text-xs font-semibold">
-                <i class="fa-solid fa-download mr-1"></i>Unduh
-            </a>
         </div>
     `;
 }
@@ -2737,9 +2990,14 @@ function viewEvidenceDetail(type, id) {
     const categoryName = type === 'skp' ? e.skp_activities?.name : e.self_assessment_values?.name;
     const detail = document.getElementById('evidence-detail-content');
 
-    // Bersihkan prefix [FILE:...] dari notes untuk tampilan
     let displayNotes = e.notes || '';
     displayNotes = displayNotes.replace(/\[FILE:[^\]]+\]\s*/g, '').trim();
+
+    let fileName = null;
+    const m = (e.notes || '').match(/\[FILE:([^\]]+)\]/);
+    if (m) fileName = m[1];
+
+    const hasFile = !!e.file_url;
 
     detail.innerHTML = `
         <div class="space-y-3">
@@ -2756,14 +3014,51 @@ function viewEvidenceDetail(type, id) {
             ${e.file_url ? renderEvidenceFilePreview(e.file_url, e.notes) : ''}
             ${e.external_link ? `<div class="text-xs"><a href="${e.external_link}" target="_blank" class="text-brand-200 hover:text-white underline"><i class="fa-solid fa-link mr-1"></i>${escapeHtml(e.external_link)}</a></div>` : ''}
             <div class="flex flex-wrap gap-2 pt-2 border-t border-white/10">
-                ${e.file_url ? `<button onclick="copyToClipboard('${e.file_url}')" class="flex-1 py-2 rounded-lg bg-brand-500/25 hover:bg-brand-500/40 text-brand-100 border border-brand-400/40 text-xs font-medium"><i class="fa-solid fa-copy mr-1"></i>Salin Link File</button>` : ''}
-                <button onclick="copyToClipboard('${window.location.origin}${window.location.pathname}#bukti/${e.id}')" class="flex-1 py-2 rounded-lg bg-purple-500/25 hover:bg-purple-500/40 text-purple-100 border border-purple-400/40 text-xs font-medium"><i class="fa-solid fa-link mr-1"></i>Salin Link Halaman</button>
+                ${hasFile ? `<button onclick="downloadEvidenceFile('${e.file_url.replace(/'/g, "\\'")}', '${escapeHtml(fileName || 'bukti').replace(/'/g, "\\'")}')" class="flex-1 py-2 rounded-lg bg-emerald-500/25 hover:bg-emerald-500/40 text-emerald-100 border border-emerald-400/40 text-xs font-semibold flex items-center justify-center space-x-1"><i class="fa-solid fa-download"></i><span>Download File</span></button>` : ''}
+                ${hasFile ? `<button onclick="previewEvidenceFile('${e.file_url.replace(/'/g, "\\'")}')" class="flex-1 py-2 rounded-lg bg-purple-500/25 hover:bg-purple-500/40 text-purple-100 border border-purple-400/40 text-xs font-medium"><i class="fa-solid fa-eye mr-1"></i>Preview</button>` : ''}
                 <button onclick="closeModal('modal-evidence-detail')" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs">Tutup</button>
             </div>
         </div>
     `;
 
     openModal('modal-evidence-detail');
+}
+
+function previewEvidenceFile(url) {
+    if (!url) { showToast('Tidak ada file untuk di-preview.', 'warning'); return; }
+    window.open(url, '_blank', 'noopener');
+    showToast('Membuka preview di tab baru...', 'info');
+}
+
+async function downloadEvidenceFile(url, fileName) {
+    try {
+        showToast('Menyiapkan download...', 'info');
+        let downloadUrl = url;
+        if (url.includes('res.cloudinary.com') && url.includes('/upload/') && !url.includes('/fl_attachment/')) {
+            downloadUrl = url.replace('/upload/', '/upload/fl_attachment/');
+        }
+
+        const res = await fetch(downloadUrl, { mode: 'cors' });
+        if (!res.ok) throw new Error('Fetch gagal');
+
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = fileName || 'bukti';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+        showToast('File berhasil diunduh!', 'success');
+    } catch(err) {
+        console.warn('Download fallback:', err);
+        const downloadUrl = url.includes('res.cloudinary.com') && url.includes('/upload/')
+            ? url.replace('/upload/', '/upload/fl_attachment/')
+            : url;
+        window.open(downloadUrl, '_blank');
+        showToast('File dibuka di tab baru.', 'info');
+    }
 }
 
 function copyToClipboard(text) {
@@ -2907,12 +3202,9 @@ function toggleRackItemSelection(id, checked) {
     if (checked) selectedRackItemIds.add(id);
     else selectedRackItemIds.delete(id);
     updateRackBulkToolbar();
-
     const selectAll = document.getElementById('rack-select-all');
     const visibleIds = Array.from(document.querySelectorAll('.rack-item-checkbox')).map(c => c.dataset.id);
-    if (selectAll) {
-        selectAll.checked = visibleIds.length > 0 && visibleIds.every(id => selectedRackItemIds.has(id));
-    }
+    if (selectAll) selectAll.checked = visibleIds.length > 0 && visibleIds.every(id => selectedRackItemIds.has(id));
 }
 
 function toggleSelectAllRackItems(checked) {
@@ -2949,9 +3241,7 @@ function confirmDeleteSelectedRackItems() {
     const n = selectedRackItemIds.size;
     if (n === 0) return;
     const content = document.getElementById('confirm-delete-content');
-    if (content) {
-        content.innerHTML = `Anda akan menghapus <b class="text-red-300">${n} item obat</b> dari rak. Tindakan ini tidak dapat dibatalkan.`;
-    }
+    if (content) content.innerHTML = `Anda akan menghapus <b class="text-red-300">${n} item obat</b> dari rak. Tindakan ini tidak dapat dibatalkan.`;
     openModal('modal-confirm-delete');
 }
 
@@ -2962,10 +3252,7 @@ async function executeDeleteSelectedRackItems() {
     showToast(`Menghapus ${ids.length} item...`, 'info');
 
     const { error } = await supabaseClient.from('rack_items').delete().in('id', ids);
-    if (error) {
-        showToast('Gagal hapus: ' + error.message, 'error');
-        return;
-    }
+    if (error) { showToast('Gagal hapus: ' + error.message, 'error'); return; }
     selectedRackItemIds.clear();
     showToast(`${ids.length} item berhasil dihapus.`, 'success');
     loadRakView();
@@ -3052,7 +3339,7 @@ async function saveRackItem(e) {
         storage_condition: document.getElementById('ri-storage').value,
         method: document.getElementById('ri-method').value,
         expired_date: document.getElementById('ri-expired').value,
-        quantity: parseInt(document.getElementById('ri-qty').value),
+        quantity: parseInt(document.getElementById('ri-qty').value) || 0,
         notes: document.getElementById('ri-notes').value.trim() || null,
         created_by: currentUser.id
     };
@@ -3104,8 +3391,7 @@ function downloadQrJpg() {
     const image = new Image();
     image.onload = () => {
         const c = document.createElement('canvas');
-        c.width = image.width;
-        c.height = image.height;
+        c.width = image.width; c.height = image.height;
         const ctx = c.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, c.width, c.height);
@@ -3136,11 +3422,16 @@ function filterMedicinesTable() {
 
     const tbody = document.getElementById('medicines-table-body');
     if (!filtered.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-6 text-center text-xs text-brand-200">Tidak ada data.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-center text-xs text-brand-200">Tidak ada data.</td></tr>';
+        updateMedBulkToolbar();
         return;
     }
-    tbody.innerHTML = filtered.map(m => `
-        <tr>
+    tbody.innerHTML = filtered.map(m => {
+        const checked = selectedMedicineIds.has(m.id) ? 'checked' : '';
+        return `<tr>
+            <td class="px-3 py-3">
+                <input type="checkbox" class="med-item-checkbox accent-brand-400" data-id="${m.id}" ${checked} onchange="toggleMedSelection('${m.id}', this.checked)">
+            </td>
             <td class="px-3 py-3 font-mono text-xs text-brand-200">${escapeHtml(m.code)}</td>
             <td class="px-3 py-3 text-xs font-medium">${escapeHtml(m.name)}</td>
             <td class="px-3 py-3 text-xs hidden md:table-cell">${escapeHtml(m.category || '-')}</td>
@@ -3150,17 +3441,106 @@ function filterMedicinesTable() {
                 <button onclick="editMedicine('${m.id}')" class="w-8 h-8 rounded-lg bg-white/15 hover:bg-white/25 text-white transition"><i class="fa-solid fa-pen text-xs"></i></button>
                 <button onclick="deleteMedicine('${m.id}')" class="w-8 h-8 rounded-lg bg-red-500/25 hover:bg-red-500/40 text-red-100 transition ml-1"><i class="fa-solid fa-trash text-xs"></i></button>
             </td>
-        </tr>
-    `).join('');
+        </tr>`;
+    }).join('');
+
+    const selectAll = document.getElementById('med-select-all');
+    if (selectAll) {
+        const allIds = filtered.map(f => f.id);
+        selectAll.checked = allIds.length > 0 && allIds.every(id => selectedMedicineIds.has(id));
+    }
+    updateMedBulkToolbar();
+}
+
+/* Selection handlers untuk Master Obat */
+function toggleMedSelection(id, checked) {
+    if (checked) selectedMedicineIds.add(id);
+    else selectedMedicineIds.delete(id);
+    updateMedBulkToolbar();
+    const selectAll = document.getElementById('med-select-all');
+    const visibleIds = Array.from(document.querySelectorAll('.med-item-checkbox')).map(c => c.dataset.id);
+    if (selectAll) selectAll.checked = visibleIds.length > 0 && visibleIds.every(id => selectedMedicineIds.has(id));
+}
+
+function toggleSelectAllMedicines(checked) {
+    const visibleIds = Array.from(document.querySelectorAll('.med-item-checkbox')).map(c => c.dataset.id);
+    if (checked) visibleIds.forEach(id => selectedMedicineIds.add(id));
+    else visibleIds.forEach(id => selectedMedicineIds.delete(id));
+    document.querySelectorAll('.med-item-checkbox').forEach(c => c.checked = checked);
+    updateMedBulkToolbar();
+}
+
+function updateMedBulkToolbar() {
+    const toolbar = document.getElementById('med-bulk-toolbar');
+    const countEl = document.getElementById('med-selected-count');
+    if (!toolbar || !countEl) return;
+    if (selectedMedicineIds.size > 0) {
+        toolbar.classList.remove('hidden');
+        toolbar.classList.add('flex');
+        countEl.innerText = selectedMedicineIds.size;
+    } else {
+        toolbar.classList.add('hidden');
+        toolbar.classList.remove('flex');
+    }
+}
+
+function clearMedSelection() {
+    selectedMedicineIds.clear();
+    document.querySelectorAll('.med-item-checkbox').forEach(c => c.checked = false);
+    const selectAll = document.getElementById('med-select-all');
+    if (selectAll) selectAll.checked = false;
+    updateMedBulkToolbar();
+}
+
+async function confirmDeleteSelectedMedicines() {
+    const n = selectedMedicineIds.size;
+    if (n === 0) return;
+
+    // Cek apakah ada obat yang masih dipakai di rack_items
+    const ids = Array.from(selectedMedicineIds);
+    const { data: usedInRacks } = await supabaseClient.from('rack_items')
+        .select('medicine_id, medicines(name)')
+        .in('medicine_id', ids);
+
+    const usedNames = [...new Set((usedInRacks || []).map(r => r.medicines?.name).filter(Boolean))];
+
+    const content = document.getElementById('confirm-delete-med-content');
+    if (content) {
+        let html = `<p>Anda akan menghapus <b class="text-red-300">${n} obat</b> dari Master Obat.</p>`;
+        if (usedNames.length > 0) {
+            html += `<p class="text-xs text-amber-200 mt-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i>${usedNames.length} obat masih ada di rak (contoh: ${escapeHtml(usedNames.slice(0,3).join(', '))}). Menghapusnya akan <b>ikut menghapus</b> data rak terkait.</p>`;
+        }
+        html += `<p class="text-xs text-brand-200 mt-2">Tindakan ini tidak dapat dibatalkan.</p>`;
+        content.innerHTML = html;
+    }
+    openModal('modal-confirm-delete-med');
+}
+
+async function executeDeleteSelectedMedicines() {
+    const ids = Array.from(selectedMedicineIds);
+    if (ids.length === 0) return;
+    closeModal('modal-confirm-delete-med');
+    showToast(`Menghapus ${ids.length} obat...`, 'info');
+
+    // Hapus rack_items yang terkait dulu (untuk hindari foreign key constraint)
+    await supabaseClient.from('rack_items').delete().in('medicine_id', ids);
+
+    // Hapus medicines
+    const { error } = await supabaseClient.from('medicines').delete().in('id', ids);
+    if (error) {
+        showToast('Gagal hapus: ' + error.message, 'error');
+        return;
+    }
+    selectedMedicineIds.clear();
+    showToast(`${ids.length} obat berhasil dihapus.`, 'success');
+    loadMedicines();
 }
 
 function toggleExportMenu(e) {
     e?.stopPropagation();
     document.getElementById('export-menu').classList.toggle('hidden');
 }
-function closeExportMenu() {
-    document.getElementById('export-menu')?.classList.add('hidden');
-}
+function closeExportMenu() { document.getElementById('export-menu')?.classList.add('hidden'); }
 document.addEventListener('click', e => {
     const menu = document.getElementById('export-menu');
     if (menu && !menu.classList.contains('hidden')) {
@@ -3218,7 +3598,11 @@ function editMedicine(id) {
 }
 
 async function deleteMedicine(id) {
-    if (!confirm('Hapus obat ini?')) return;
+    if (!confirm('Hapus obat ini? Data rak yang terkait juga akan terhapus.')) return;
+
+    // Hapus rack_items terkait dulu
+    await supabaseClient.from('rack_items').delete().eq('medicine_id', id);
+
     const { error } = await supabaseClient.from('medicines').delete().eq('id', id);
     if (error) { showToast('Gagal: ' + error.message, 'error'); return; }
     showToast('Obat dihapus.', 'info');
@@ -3274,54 +3658,6 @@ async function loadHistoryData() {
             <td class="px-3 py-3 text-xs">${escapeHtml(h.title || '-')}</td>
         </tr>`;
     }).join('');
-}
-
-/* ================================================================
-   EXPIRED
-   ================================================================ */
-async function loadExpiredView() {
-    if (!supabaseClient) return;
-    const { data } = await supabaseClient.from('rack_items').select(`
-        *,
-        medicines(name, unit, form),
-        racks(code)
-    `).gt('quantity', 0);
-
-    const today = new Date().toISOString().split('T')[0];
-    const in30 = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
-
-    let expiredC = 0, warnC = 0, safeC = 0;
-
-    const sorted = (data || []).sort((a, b) => new Date(a.expired_date) - new Date(b.expired_date));
-
-    const rows = sorted.map(it => {
-        const ed = it.expired_date;
-        let status = 'NORMAL', badge = 'badge-success';
-        if (ed < today) { status = 'EXPIRED'; badge = 'badge-danger'; expiredC++; }
-        else if (ed <= in30) { status = 'WARNING'; badge = 'badge-warning'; warnC++; }
-        else safeC++;
-
-        return `<tr>
-            <td class="px-3 py-3 text-xs font-medium">${escapeHtml(it.medicines?.name || '-')}<br><span class="text-[10px] text-brand-200">${escapeHtml(it.medicines?.form || '')}</span></td>
-            <td class="px-3 py-3 text-xs font-mono text-brand-100">${escapeHtml(it.batch_number)}</td>
-            <td class="px-3 py-3 text-xs"><span class="badge badge-info">${escapeHtml(it.racks?.code || '-')}</span></td>
-            <td class="px-3 py-3 text-xs">${formatDate(ed)}</td>
-            <td class="px-3 py-3 text-xs font-bold">${it.quantity} ${escapeHtml(it.medicines?.unit || '')}</td>
-            <td class="px-3 py-3"><span class="badge ${badge}">${status}</span></td>
-        </tr>`;
-    });
-
-    document.getElementById('exp-stat-expired').innerText = expiredC;
-    document.getElementById('exp-stat-warning').innerText = warnC;
-    document.getElementById('exp-stat-safe').innerText = safeC;
-    document.getElementById('exp-stat-total').innerText = (data || []).length;
-
-    const tbody = document.getElementById('expiry-alerts-body');
-    if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-6 text-center text-xs text-brand-200">Tidak ada peringatan.</td></tr>';
-        return;
-    }
-    tbody.innerHTML = rows.join('');
 }
 
 /* ================================================================
@@ -3390,33 +3726,28 @@ async function deleteNote(id) {
 }
 
 /* ================================================================
-   IMPOR / EKSPOR
+   IMPOR / EKSPOR (Rak Items) — FORMAT RS
    ================================================================ */
 async function exportToExcel() {
     const { data } = await supabaseClient.from('rack_items').select(`
-        quantity, batch_number, received_date, storage_condition, method, expired_date, notes,
-        medicines(name, code, unit, category, form),
-        racks(code, name)
+        quantity, batch_number, expired_date, notes,
+        medicines(name, category),
+        racks(name)
     `);
     const rows = (data || []).map(i => ({
-        'Nama Obat': i.medicines?.name,
-        'Kode Obat': i.medicines?.code,
-        'Kategori': i.medicines?.category,
-        'Bentuk': i.medicines?.form,
-        'Kode Rak': i.racks?.code,
-        'Nama Rak': i.racks?.name,
-        'Batch': i.batch_number,
-        'Tgl Terima': i.received_date,
-        'Penyimpanan': i.storage_condition,
-        'FIFO/FEFO': i.method,
-        'Expired': i.expired_date,
-        'Jumlah': i.quantity,
-        'Satuan': i.medicines?.unit,
-        'Keterangan': i.notes
+        'Nama Barang': i.medicines?.name || '',
+        'Jenis Obat': i.medicines?.category || '',
+        'No Batch': i.batch_number || '',
+        'Kadaluarsa': i.expired_date || '',
+        'Nama Rak': i.racks?.name || '',
+        'Keterangan': i.notes || ''
     }));
-    const ws = XLSX.utils.json_to_sheet(rows);
+    const ws = XLSX.utils.json_to_sheet(rows, {
+        header: ['Nama Barang', 'Jenis Obat', 'No Batch', 'Kadaluarsa', 'Nama Rak', 'Keterangan']
+    });
+    ws['!cols'] = [{ wch: 30 }, { wch: 20 }, { wch: 15 }, { wch: 14 }, { wch: 20 }, { wch: 30 }];
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Rak Items');
+    XLSX.utils.book_append_sheet(wb, ws, 'Stok Obat');
     XLSX.writeFile(wb, `Laporan_Stok_${new Date().toISOString().split('T')[0]}.xlsx`);
     showToast('Excel diunduh.', 'success');
 }
@@ -3424,33 +3755,30 @@ async function exportToExcel() {
 async function exportToPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'landscape' });
-
     doc.setFontSize(14);
     doc.text('Laporan Stok Obat per Rak', 14, 15);
     doc.setFontSize(10);
     doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 14, 21);
 
     const { data } = await supabaseClient.from('rack_items').select(`
-        quantity, batch_number, expired_date, storage_condition, method,
-        medicines(name, code, unit),
-        racks(code)
+        quantity, batch_number, expired_date, notes,
+        medicines(name, category, unit),
+        racks(name)
     `);
 
     const rows = (data || []).map(i => [
         i.medicines?.name || '-',
-        i.medicines?.code || '-',
-        i.racks?.code || '-',
-        i.batch_number,
-        i.expired_date,
-        i.storage_condition,
-        i.method,
-        `${i.quantity} ${i.medicines?.unit || ''}`
+        i.medicines?.category || '-',
+        i.batch_number || '-',
+        i.expired_date || '-',
+        i.racks?.name || '-',
+        `${i.quantity || 0} ${i.medicines?.unit || ''}`.trim(),
+        i.notes || '-'
     ]);
 
     doc.autoTable({
-        head: [['Nama Obat', 'Kode', 'Rak', 'Batch', 'Expired', 'Penyimpanan', 'FIFO/FEFO', 'Stok']],
-        body: rows,
-        startY: 27,
+        head: [['Nama Barang', 'Jenis Obat', 'No Batch', 'Kadaluarsa', 'Nama Rak', 'Jumlah', 'Keterangan']],
+        body: rows, startY: 27,
         styles: { fontSize: 8 },
         headStyles: { fillColor: [12, 74, 110] }
     });
@@ -3459,104 +3787,215 @@ async function exportToPDF() {
     showToast('PDF diunduh.', 'success');
 }
 
-function downloadExcelTemplate() {
-    const template = [{
-        'Nama Obat': 'Paracetamol 500mg',
-        'Kode Obat': 'OBT-001',
-        'Kategori': 'Analgetik',
-        'Bentuk': 'Tablet',
-        'Kode Rak': 'RAK-A1',
+async function downloadRackItemTemplate() {
+    let existingData = [];
+    try {
+        if (supabaseClient) {
+            const { data } = await supabaseClient.from('rack_items')
+                .select('quantity, batch_number, expired_date, notes, medicines(name, category), racks(name)')
+                .order('created_at', { ascending: false });
+            existingData = data || [];
+        }
+    } catch(err) { console.warn('Gagal ambil data existing:', err); }
+
+    const rows = existingData.map(r => ({
+        'Nama Barang': r.medicines?.name || '',
+        'Jenis Obat': r.medicines?.category || '',
+        'No Batch': r.batch_number || '',
+        'Kadaluarsa': r.expired_date || '',
+        'Nama Rak': r.racks?.name || '',
+        'Keterangan': r.notes || ''
+    }));
+
+    rows.push({
+        'Nama Barang': 'Contoh: Paracetamol 500mg',
+        'Jenis Obat': 'Analgetik',
+        'No Batch': 'BTC-001',
+        'Kadaluarsa': '2027-12-31',
         'Nama Rak': 'Rak Obat Generik',
-        'Batch': 'BTC-001',
-        'Tgl Terima': '2026-01-15',
-        'Penyimpanan': 'Suhu ruang 15-30°C',
-        'FIFO/FEFO': 'FEFO',
-        'Expired': '2027-12-31',
-        'Jumlah': 100,
-        'Satuan': 'Strip',
         'Keterangan': 'Contoh baris — hapus sebelum upload'
-    }];
-    const ws = XLSX.utils.json_to_sheet(template);
+    });
+    rows.push({
+        'Nama Barang': '', 'Jenis Obat': '', 'No Batch': '',
+        'Kadaluarsa': '', 'Nama Rak': '', 'Keterangan': ''
+    });
+
+    const ws = XLSX.utils.json_to_sheet(rows, {
+        header: ['Nama Barang', 'Jenis Obat', 'No Batch', 'Kadaluarsa', 'Nama Rak', 'Keterangan']
+    });
+    ws['!cols'] = [{ wch: 30 }, { wch: 20 }, { wch: 15 }, { wch: 14 }, { wch: 20 }, { wch: 30 }];
+
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Template');
-    XLSX.writeFile(wb, 'Template_Impor_Obat_per_Rak.xlsx');
-    showToast('Template diunduh.', 'success');
+    XLSX.utils.book_append_sheet(wb, ws, 'Template Import');
+    XLSX.writeFile(wb, `Template_Import_Rak_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+    showToast(`Template diunduh (${existingData.length} data existing + baris contoh).`, 'success');
 }
 
-async function importRackItemsExcel(e) {
+function confirmImportRackItems(e) {
     const file = e.target.files[0];
     if (!file) return;
+    pendingImportFile = file;
+    e.target.value = '';
+    openModal('modal-confirm-import');
+}
+
+function cancelImportRackItems() {
+    pendingImportFile = null;
+    closeModal('modal-confirm-import');
+}
+
+async function executeImportRackItems() {
+    if (!pendingImportFile) { closeModal('modal-confirm-import'); return; }
+    const file = pendingImportFile;
+    pendingImportFile = null;
+    closeModal('modal-confirm-import');
+
+    showToast('Membaca file Excel...', 'info');
+
     const reader = new FileReader();
     reader.onload = async ev => {
         try {
             const wb = XLSX.read(ev.target.result, { type: 'array' });
             const ws = wb.Sheets[wb.SheetNames[0]];
-            const rows = XLSX.utils.sheet_to_json(ws);
+            const rows = XLSX.utils.sheet_to_json(ws, { raw: false });
             if (!rows.length) { showToast('File kosong.', 'error'); return; }
 
-            let success = 0, failed = 0;
+            showToast('Menghapus data lama...', 'info');
+
+            const { error: delErr } = await supabaseClient.from('rack_items').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+            if (delErr) {
+                console.error('Gagal hapus rack_items:', delErr);
+                showToast('Gagal hapus data lama: ' + delErr.message, 'error');
+                return;
+            }
+
+            const { data: stillUsed } = await supabaseClient.from('rack_items').select('medicine_id');
+            const usedMedIds = new Set((stillUsed || []).map(r => r.medicine_id));
+            const { data: allMeds } = await supabaseClient.from('medicines').select('id');
+            const orphanIds = (allMeds || []).filter(m => !usedMedIds.has(m.id)).map(m => m.id);
+            if (orphanIds.length > 0) {
+                await supabaseClient.from('medicines').delete().in('id', orphanIds);
+            }
+
+            let success = 0, failed = 0, skipped = 0;
+
+            const medicineCache = {};
+            const rackCache = {};
+
+            const { data: existMeds } = await supabaseClient.from('medicines').select('id, name, code');
+            (existMeds || []).forEach(m => { medicineCache[m.name.toLowerCase()] = { id: m.id, code: m.code }; });
+            const { data: existRacks } = await supabaseClient.from('racks').select('id, name, code');
+            (existRacks || []).forEach(r => { rackCache[r.name.toLowerCase()] = { id: r.id, code: r.code }; });
+
+            let obtCounter = 0;
+            (existMeds || []).forEach(m => {
+                const match = (m.code || '').match(/^OBT-(\d+)$/);
+                if (match) obtCounter = Math.max(obtCounter, parseInt(match[1]));
+            });
+
+            let rakAutoCounter = 0;
+            (existRacks || []).forEach(r => {
+                const match = (r.code || '').match(/^RAK-OTOMATIS-(\d+)$/);
+                if (match) rakAutoCounter = Math.max(rakAutoCounter, parseInt(match[1]));
+            });
 
             for (const r of rows) {
                 try {
-                    let medId = null;
-                    const medName = r['Nama Obat'] || r['nama_obat'];
-                    const medCode = r['Kode Obat'] || r['kode_obat'] || `AUTO-${Date.now()}-${success}`;
-                    if (medName) {
-                        const { data: existing } = await supabaseClient.from('medicines').select('id').eq('code', medCode).maybeSingle();
-                        if (existing) medId = existing.id;
-                        else {
-                            const { data: newMed } = await supabaseClient.from('medicines').insert({
-                                code: medCode, name: medName,
-                                category: r['Kategori'] || null,
-                                form: r['Bentuk'] || null,
-                                unit: r['Satuan'] || null
-                            }).select().single();
-                            medId = newMed?.id;
-                        }
-                    }
-                    if (!medId) { failed++; continue; }
+                    const namaBarang = String(r['Nama Barang'] || r['nama_barang'] || r['Nama Obat'] || r['nama_obat'] || '').trim();
+                    const noBatch = String(r['No Batch'] || r['no_batch'] || r['Batch'] || r['batch'] || '').trim();
 
-                    let rackId = null;
-                    const rackCode = r['Kode Rak'] || r['kode_rak'];
-                    if (rackCode) {
-                        const { data: existing } = await supabaseClient.from('racks').select('id').eq('code', rackCode).maybeSingle();
-                        if (existing) rackId = existing.id;
-                        else {
-                            const { data: newRack } = await supabaseClient.from('racks').insert({
-                                code: rackCode,
-                                name: r['Nama Rak'] || rackCode
-                            }).select().single();
-                            rackId = newRack?.id;
-                        }
-                    }
-                    if (!rackId) { failed++; continue; }
+                    if (!namaBarang || !noBatch) { skipped++; continue; }
 
-                    await supabaseClient.from('rack_items').insert({
-                        medicine_id: medId,
-                        rack_id: rackId,
-                        batch_number: r['Batch'] || 'N/A',
-                        received_date: r['Tgl Terima'] || new Date().toISOString().split('T')[0],
-                        storage_condition: r['Penyimpanan'] || 'Suhu ruang 15-30°C',
-                        method: r['FIFO/FEFO'] || 'FEFO',
-                        expired_date: r['Expired'] || new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0],
-                        quantity: parseInt(r['Jumlah']) || 0,
-                        notes: r['Keterangan'] || null,
+                    const jenisObat = String(r['Jenis Obat'] || r['jenis_obat'] || r['Kategori'] || r['kategori'] || '').trim() || null;
+                    const kadaluarsaRaw = r['Kadaluarsa'] || r['kadaluarsa'] || r['Expired'] || r['expired'] || '';
+                    const kadaluarsa = parseDateFlexible(kadaluarsaRaw) || new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0];
+                    const namaRak = String(r['Nama Rak'] || r['nama_rak'] || '').trim();
+                    const keterangan = String(r['Keterangan'] || r['keterangan'] || r['Notes'] || r['notes'] || '').trim() || null;
+
+                    let medInfo = medicineCache[namaBarang.toLowerCase()];
+                    if (!medInfo) {
+                        obtCounter++;
+                        const newCode = `OBT-${String(obtCounter).padStart(3, '0')}`;
+                        const { data: newMed, error: medErr } = await supabaseClient.from('medicines').insert({
+                            code: newCode,
+                            name: namaBarang,
+                            category: jenisObat,
+                            form: null,
+                            unit: null,
+                            min_stock: 0,
+                            is_active: true
+                        }).select('id, code').single();
+                        if (medErr || !newMed) { console.error('Gagal buat obat:', medErr); failed++; continue; }
+                        medInfo = { id: newMed.id, code: newMed.code };
+                        medicineCache[namaBarang.toLowerCase()] = medInfo;
+                    } else if (jenisObat) {
+                        await supabaseClient.from('medicines').update({ category: jenisObat }).eq('id', medInfo.id);
+                    }
+
+                    let rackInfo = null;
+                    if (namaRak) {
+                        rackInfo = rackCache[namaRak.toLowerCase()];
+                        if (!rackInfo) {
+                            rakAutoCounter++;
+                            const newRackCode = `RAK-OTOMATIS-${rakAutoCounter}`;
+                            const { data: newRack, error: rackErr } = await supabaseClient.from('racks').insert({
+                                code: newRackCode,
+                                name: namaRak,
+                                location_description: null
+                            }).select('id, code').single();
+                            if (rackErr || !newRack) { console.error('Gagal buat rak:', rackErr); failed++; continue; }
+                            rackInfo = { id: newRack.id, code: newRack.code };
+                            rackCache[namaRak.toLowerCase()] = rackInfo;
+                        }
+                    } else {
+                        if (!rackCache['tanpa rak']) {
+                            rakAutoCounter++;
+                            const newRackCode = `RAK-OTOMATIS-${rakAutoCounter}`;
+                            const { data: newRack, error: rackErr } = await supabaseClient.from('racks').insert({
+                                code: newRackCode,
+                                name: 'Tanpa Rak',
+                                location_description: null
+                            }).select('id, code').single();
+                            if (rackErr || !newRack) { console.error('Gagal buat rak default:', rackErr); failed++; continue; }
+                            rackCache['tanpa rak'] = { id: newRack.id, code: newRack.code };
+                        }
+                        rackInfo = rackCache['tanpa rak'];
+                    }
+
+                    const { error: riErr } = await supabaseClient.from('rack_items').insert({
+                        medicine_id: medInfo.id,
+                        rack_id: rackInfo.id,
+                        batch_number: noBatch,
+                        received_date: new Date().toISOString().split('T')[0],
+                        storage_condition: 'Suhu ruang 15-30°C',
+                        method: 'FEFO',
+                        expired_date: kadaluarsa,
+                        quantity: 0,
+                        notes: keterangan,
                         created_by: currentUser.id
                     });
+                    if (riErr) {
+                        console.error('Gagal insert rack_item:', riErr);
+                        failed++;
+                        continue;
+                    }
                     success++;
                 } catch(err) {
-                    console.error(err);
+                    console.error('Error baris:', err);
                     failed++;
                 }
             }
-            showToast(`Import selesai: ${success} sukses, ${failed} gagal`, success > 0 ? 'success' : 'error');
+
+            showToast(`Import selesai: ${success} sukses, ${failed} gagal, ${skipped} kosong dilewati`, success > 0 ? 'success' : 'error');
             loadRakView();
+            loadMedicines();
         } catch(err) {
+            console.error(err);
             showToast('File tidak valid: ' + err.message, 'error');
         }
     };
     reader.readAsArrayBuffer(file);
-    e.target.value = '';
 }
 
 /* ================================================================
@@ -3627,8 +4066,7 @@ async function downloadPublicRackPDF() {
 
     doc.autoTable({
         head: [['Nama Obat', 'Batch', 'Jumlah', 'Expired', 'Status']],
-        body: rows,
-        startY: 40,
+        body: rows, startY: 40,
         styles: { fontSize: 9 },
         headStyles: { fillColor: [12, 74, 110] }
     });
@@ -3653,10 +4091,9 @@ function triggerAdminEditFromRack() {
 }
 
 /* ================================================================
-   TEMPLATE & IMPORT MASTER OBAT (DINAMIS)
+   MASTER OBAT — Template Dinamis & Import (FORMAT RS)
    ================================================================ */
 async function downloadMedicineTemplate() {
-    // Ambil data obat existing dari DB
     let existingData = [];
     try {
         if (supabaseClient) {
@@ -3665,11 +4102,8 @@ async function downloadMedicineTemplate() {
                 .order('code');
             existingData = data || [];
         }
-    } catch(err) {
-        console.warn('Gagal ambil data existing:', err);
-    }
+    } catch(err) { console.warn('Gagal ambil data existing:', err); }
 
-    // Baris data existing
     const rows = existingData.map(m => ({
         'Kode Obat': m.code || '',
         'Nama Obat': m.name || '',
@@ -3679,7 +4113,6 @@ async function downloadMedicineTemplate() {
         'Stok Minimal': m.min_stock ?? ''
     }));
 
-    // Baris contoh + baris kosong
     rows.push({
         'Kode Obat': 'CONTOH-001',
         'Nama Obat': 'Contoh: Paracetamol 500mg',
@@ -3689,29 +4122,20 @@ async function downloadMedicineTemplate() {
         'Stok Minimal': 10
     });
     rows.push({
-        'Kode Obat': '',
-        'Nama Obat': '',
-        'Kategori': '',
-        'Bentuk': '',
-        'Satuan': '',
-        'Stok Minimal': ''
+        'Kode Obat': '', 'Nama Obat': '', 'Kategori': '',
+        'Bentuk': '', 'Satuan': '', 'Stok Minimal': ''
     });
 
     const ws = XLSX.utils.json_to_sheet(rows, {
         header: ['Kode Obat', 'Nama Obat', 'Kategori', 'Bentuk', 'Satuan', 'Stok Minimal']
     });
-
-    ws['!cols'] = [
-        { wch: 15 }, { wch: 30 }, { wch: 20 },
-        { wch: 15 }, { wch: 12 }, { wch: 15 }
-    ];
+    ws['!cols'] = [{ wch: 15 }, { wch: 30 }, { wch: 20 }, { wch: 15 }, { wch: 12 }, { wch: 15 }];
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Master Obat');
     XLSX.writeFile(wb, `Master_Obat_${new Date().toISOString().split('T')[0]}.xlsx`);
 
-    const total = existingData.length;
-    showToast(`Template berisi ${total} data obat existing + baris kosong.`, 'success');
+    showToast(`Template berisi ${existingData.length} data obat existing + baris kosong.`, 'success');
 }
 
 async function importMedicinesExcel(e) {
@@ -3727,7 +4151,6 @@ async function importMedicinesExcel(e) {
             if (!rows.length) { showToast('File kosong.', 'error'); return; }
 
             let success = 0, failed = 0, skipped = 0;
-
             for (const r of rows) {
                 try {
                     const code = String(r['Kode Obat'] || r['kode_obat'] || '').trim();
@@ -3739,8 +4162,7 @@ async function importMedicinesExcel(e) {
                         .from('medicines').select('id').eq('code', code).maybeSingle();
 
                     const payload = {
-                        code: code,
-                        name: name,
+                        code: code, name: name,
                         category: String(r['Kategori'] || r['kategori'] || '').trim() || null,
                         form: String(r['Bentuk'] || r['bentuk'] || '').trim() || null,
                         unit: String(r['Satuan'] || r['satuan'] || '').trim() || null,
@@ -3754,10 +4176,7 @@ async function importMedicinesExcel(e) {
                         await supabaseClient.from('medicines').insert(payload);
                     }
                     success++;
-                } catch(err) {
-                    console.error('Import medicine error:', err);
-                    failed++;
-                }
+                } catch(err) { console.error('Import medicine error:', err); failed++; }
             }
             showToast(`Import selesai: ${success} sukses, ${failed} gagal, ${skipped} kosong dilewati`, success > 0 ? 'success' : 'error');
             loadMedicines();
@@ -3769,36 +4188,23 @@ async function importMedicinesExcel(e) {
     e.target.value = '';
 }
 
-/* ================================================================
-   EXPORT MASTER OBAT
-   ================================================================ */
 async function exportMedicinesExcel() {
     if (!supabaseClient) return;
     const { data } = await supabaseClient.from('medicines')
-        .select('code, name, category, form, unit, min_stock')
-        .order('code');
+        .select('code, name, category, form, unit, min_stock').order('code');
 
     const rows = (data || []).map(m => ({
-        'Kode Obat': m.code,
-        'Nama Obat': m.name,
-        'Kategori': m.category || '',
-        'Bentuk': m.form || '',
-        'Satuan': m.unit || '',
-        'Stok Minimal': m.min_stock ?? ''
+        'Kode Obat': m.code, 'Nama Obat': m.name,
+        'Kategori': m.category || '', 'Bentuk': m.form || '',
+        'Satuan': m.unit || '', 'Stok Minimal': m.min_stock ?? ''
     }));
 
-    if (!rows.length) {
-        showToast('Belum ada data obat untuk diekspor.', 'warning');
-        return;
-    }
+    if (!rows.length) { showToast('Belum ada data obat untuk diekspor.', 'warning'); return; }
 
     const ws = XLSX.utils.json_to_sheet(rows, {
         header: ['Kode Obat', 'Nama Obat', 'Kategori', 'Bentuk', 'Satuan', 'Stok Minimal']
     });
-    ws['!cols'] = [
-        { wch: 15 }, { wch: 30 }, { wch: 20 },
-        { wch: 15 }, { wch: 12 }, { wch: 15 }
-    ];
+    ws['!cols'] = [{ wch: 15 }, { wch: 30 }, { wch: 20 }, { wch: 15 }, { wch: 12 }, { wch: 15 }];
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Master Obat');
@@ -3810,38 +4216,28 @@ async function exportMedicinesPDF() {
     if (!supabaseClient) return;
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-
     doc.setFontSize(14);
     doc.text('Daftar Master Obat', 14, 15);
     doc.setFontSize(10);
     doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 14, 22);
 
     const { data } = await supabaseClient.from('medicines')
-        .select('code, name, category, form, unit, min_stock')
-        .order('code');
+        .select('code, name, category, form, unit, min_stock').order('code');
 
     const rows = (data || []).map(m => [
-        m.code || '-',
-        m.name || '-',
-        m.category || '-',
-        m.form || '-',
-        m.unit || '-',
-        m.min_stock ?? 0
+        m.code || '-', m.name || '-', m.category || '-',
+        m.form || '-', m.unit || '-', m.min_stock ?? 0
     ]);
 
     doc.autoTable({
         head: [['Kode', 'Nama Obat', 'Kategori', 'Bentuk', 'Satuan', 'Stok Min']],
-        body: rows,
-        startY: 28,
+        body: rows, startY: 28,
         styles: { fontSize: 9 },
         headStyles: { fillColor: [12, 74, 110] },
         columnStyles: {
-            0: { cellWidth: 25 },
-            1: { cellWidth: 55 },
-            2: { cellWidth: 30 },
-            3: { cellWidth: 25 },
-            4: { cellWidth: 20 },
-            5: { cellWidth: 20 }
+            0: { cellWidth: 25 }, 1: { cellWidth: 55 },
+            2: { cellWidth: 30 }, 3: { cellWidth: 25 },
+            4: { cellWidth: 20 }, 5: { cellWidth: 20 }
         }
     });
 
