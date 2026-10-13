@@ -5,14 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Bukti Farmasi — Dokumentasi Kegiatan & Bukti SKP</title>
 
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- QRCode.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- SheetJS (Excel) -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- jsPDF + autoTable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <!-- Supabase JS v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- html2canvas (untuk download QR .jpg) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
@@ -272,12 +280,19 @@
 
         .hidden { display: none !important; }
         .cursor-pointer { cursor: pointer; }
+        input[type="checkbox"].accent-brand-400 {
+            accent-color: #38bdf8;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="antialiased">
 
 <div id="app" class="min-h-screen flex flex-col">
 
+    <!-- ==================== HEADER ==================== -->
     <header class="glass-panel sticky top-0 z-40 px-3 md:px-6 py-3 md:py-4 flex items-center justify-between border-b border-white/15">
         <div class="flex items-center space-x-2 md:space-x-3">
             <button id="hamburger-btn" onclick="toggleSidebar()"
@@ -322,6 +337,7 @@
 
     <div class="flex-1 flex overflow-hidden">
 
+        <!-- ==================== SIDEBAR ==================== -->
         <aside id="sidebar" class="flex-col w-64 glass-panel border-r border-white/15 p-4 space-y-1 overflow-y-auto">
             <div class="flex items-center justify-between md:hidden mb-2">
                 <span class="text-xs font-bold text-white uppercase tracking-wider">Menu</span>
@@ -361,7 +377,7 @@
 
             <button onclick="switchTab('riwayat')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white hover:bg-white/10 transition" id="nav-riwayat">
                 <i class="fa-solid fa-clock-rotate-left text-brand-300 w-5"></i>
-                <span>Riwayat Aktivitas</span>
+                <span>Riwayat Transaksi</span>
             </button>
 
             <button onclick="switchTab('expired')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white hover:bg-white/10 transition" id="nav-expired">
@@ -390,14 +406,16 @@
 
             <div class="pt-3 border-t border-white/10 text-center text-[10px] text-brand-200">
                 <p>© 2026 E-Bukti Farmasi</p>
-                <p>v2.0</p>
+                <p>v2.1</p>
             </div>
         </aside>
 
+        <!-- ==================== MAIN ==================== -->
         <main class="flex-1 overflow-y-auto p-3 md:p-8" id="main-content">
 
             <div id="toast-container" class="fixed bottom-24 md:bottom-5 right-4 md:right-5 z-[100] space-y-2 pointer-events-none"></div>
 
+            <!-- ============ VIEW: AUTH ============ -->
             <section id="view-auth" class="max-w-md mx-auto my-6 md:my-12 glass-panel p-6 md:p-8 rounded-2xl shadow-2xl fade-in-up">
                 <div class="text-center mb-6">
                     <div class="w-16 h-16 rounded-2xl bg-brand-400/25 text-brand-200 flex items-center justify-center mx-auto mb-3 text-3xl border border-brand-300/40">
@@ -431,17 +449,15 @@
                 </form>
             </section>
 
+            <!-- ============ VIEW: BERANDA ============ -->
             <section id="view-beranda" class="hidden space-y-5 fade-in-up">
-
                 <div class="glass-panel p-5 md:p-6 rounded-2xl">
                     <div class="flex items-center justify-between">
                         <div>
                             <h2 class="text-lg md:text-2xl font-bold text-white">
                                 Halo, <span id="greet-name">Admin</span> 👋
                             </h2>
-                            <p class="text-xs md:text-sm text-brand-100 mt-1">
-                                Ringkasan kegiatan dan bukti SKP Anda
-                            </p>
+                            <p class="text-xs md:text-sm text-brand-100 mt-1">Ringkasan kegiatan dan bukti SKP Anda</p>
                         </div>
                         <div class="hidden sm:block w-14 h-14 rounded-2xl bg-brand-400/25 border border-brand-300/40 flex items-center justify-center text-brand-100 text-2xl">
                             <i class="fa-solid fa-user-tie"></i>
@@ -450,7 +466,6 @@
                 </div>
 
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-
                     <div onclick="switchTab('skp')" class="glass-card p-4 rounded-2xl cursor-pointer border-l-4 border-l-brand-300">
                         <div class="flex items-start justify-between">
                             <div class="w-10 h-10 rounded-xl bg-brand-400/25 text-brand-100 flex items-center justify-center text-lg">
@@ -550,11 +565,9 @@
                         <h3 class="text-2xl md:text-3xl font-bold text-white" id="stat-catatan">0</h3>
                         <p class="text-[10px] text-brand-200 mt-1">Belum selesai</p>
                     </div>
-
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-5">
-
                     <div class="glass-panel p-5 rounded-2xl lg:col-span-2">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-sm md:text-base font-semibold text-white">
@@ -577,11 +590,9 @@
                             <p class="text-xs text-brand-200 text-center py-4">Memuat progress...</p>
                         </div>
                     </div>
-
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
-
                     <div class="glass-panel p-5 rounded-2xl">
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="text-sm md:text-base font-semibold text-white">
@@ -611,13 +622,11 @@
                             <p class="text-xs text-brand-200 text-center py-4">Memuat data expired...</p>
                         </div>
                     </div>
-
                 </div>
-
             </section>
 
+            <!-- ============ VIEW: SKP ============ -->
             <section id="view-skp" class="hidden space-y-5 fade-in-up">
-
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
                         <h2 class="text-lg md:text-2xl font-bold text-white flex items-center space-x-2">
@@ -671,11 +680,10 @@
                         </table>
                     </div>
                 </div>
-
             </section>
 
+            <!-- ============ VIEW: SELF ASSESSMENT ============ -->
             <section id="view-self-assessment" class="hidden space-y-5 fade-in-up">
-
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
                         <h2 class="text-lg md:text-2xl font-bold text-white flex items-center space-x-2">
@@ -739,11 +747,10 @@
                         </table>
                     </div>
                 </div>
-
             </section>
 
+            <!-- ============ VIEW: RAK ============ -->
             <section id="view-rak" class="hidden space-y-5 fade-in-up">
-
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
                         <h2 class="text-lg md:text-2xl font-bold text-white flex items-center space-x-2">
@@ -762,15 +769,6 @@
                             <span class="hidden sm:inline">Impor Obat</span>
                             <input type="file" accept=".xlsx,.xls" onchange="importRackItemsExcel(event)" class="hidden">
                         </label>
-                        <button onclick="downloadRackTemplate()" class="px-3 py-2.5 rounded-xl bg-emerald-500/25 hover:bg-emerald-500/40 text-emerald-100 border border-emerald-400/40 font-medium text-xs shadow-lg transition flex items-center space-x-2">
-                            <i class="fa-solid fa-file-arrow-down"></i>
-                            <span class="hidden sm:inline">Template Rak</span>
-                        </button>
-                        <label class="px-3 py-2.5 rounded-xl bg-purple-500/25 hover:bg-purple-500/40 text-purple-100 border border-purple-400/40 font-medium text-xs shadow-lg transition flex items-center space-x-2 cursor-pointer">
-                            <i class="fa-solid fa-file-import"></i>
-                            <span class="hidden sm:inline">Impor Rak</span>
-                            <input type="file" accept=".xlsx,.xls" onchange="importRacksExcel(event)" class="hidden">
-                        </label>
                         <button onclick="openRackModal()" class="px-3 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-medium text-xs shadow-lg transition flex items-center space-x-2 border border-white/25">
                             <i class="fa-solid fa-plus"></i>
                             <span class="hidden sm:inline">Tambah Rak</span>
@@ -778,10 +776,6 @@
                         <button onclick="openRackItemModal()" class="px-4 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs md:text-sm shadow-lg transition flex items-center space-x-2">
                             <i class="fa-solid fa-plus"></i>
                             <span>Tambah Obat</span>
-                        </button>
-                        <button onclick="bulkDeleteRacks()" id="btn-bulk-delete-rack" class="hidden px-3 py-2.5 rounded-xl bg-red-500/25 hover:bg-red-500/40 text-red-100 border border-red-400/40 font-medium text-xs shadow-lg transition flex items-center space-x-2">
-                            <i class="fa-solid fa-trash"></i>
-                            <span>Hapus <span id="rack-selected-count">0</span></span>
                         </button>
                     </div>
                 </div>
@@ -797,10 +791,30 @@
                         </h3>
                         <input type="text" id="rack-items-search" oninput="renderRackItemsTable()" placeholder="Cari nama obat, batch, rak..." class="glass-input px-3 py-2 rounded-xl text-xs w-full sm:w-56">
                     </div>
+
+                    <!-- Toolbar aksi massal -->
+                    <div id="rack-bulk-toolbar" class="hidden px-4 py-2.5 border-b border-white/10 bg-brand-500/15 flex items-center justify-between">
+                        <span class="text-xs font-semibold text-white">
+                            <i class="fa-solid fa-check-double text-brand-200 mr-2"></i>
+                            <span id="rack-selected-count">0</span> item dipilih
+                        </span>
+                        <div class="flex gap-2">
+                            <button onclick="clearRackSelection()" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs font-medium">
+                                Batal
+                            </button>
+                            <button onclick="confirmDeleteSelectedRackItems()" class="px-3 py-1.5 rounded-lg bg-red-500/30 hover:bg-red-500/50 text-red-100 border border-red-400/40 text-xs font-semibold">
+                                <i class="fa-solid fa-trash mr-1"></i>Hapus Terpilih
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs md:text-sm text-white glass-table">
                             <thead>
                                 <tr>
+                                    <th class="px-3 py-3 w-10">
+                                        <input type="checkbox" id="rack-select-all" onchange="toggleSelectAllRackItems(this.checked)" class="accent-brand-400" title="Pilih semua">
+                                    </th>
                                     <th class="px-3 py-3">No</th>
                                     <th class="px-3 py-3">Nama Obat</th>
                                     <th class="px-3 py-3 hidden md:table-cell">Kode</th>
@@ -813,16 +827,15 @@
                                 </tr>
                             </thead>
                             <tbody id="rack-items-table-body" class="divide-y divide-white/10">
-                                <tr><td colspan="9" class="px-4 py-6 text-center text-xs text-brand-200">Memuat data...</td></tr>
+                                <tr><td colspan="10" class="px-4 py-6 text-center text-xs text-brand-200">Memuat data...</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-
             </section>
 
+            <!-- ============ VIEW: MASTER OBAT ============ -->
             <section id="view-master-obat" class="hidden space-y-5 fade-in-up">
-
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
                         <h2 class="text-lg md:text-2xl font-bold text-white flex items-center space-x-2">
@@ -832,7 +845,7 @@
                         <p class="text-xs text-brand-100 mt-1">Katalog obat, jenis, dan batas stok minimal</p>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <button onclick="downloadMedicineTemplate()" class="px-3 py-2.5 rounded-xl bg-emerald-500/25 hover:bg-emerald-500/40 text-emerald-100 border border-emerald-400/40 font-medium text-xs shadow-lg transition flex items-center space-x-2">
+                        <button onclick="downloadMedicineTemplate()" class="px-3 py-2.5 rounded-xl bg-emerald-500/25 hover:bg-emerald-500/40 text-emerald-100 border border-emerald-400/40 font-medium text-xs shadow-lg transition flex items-center space-x-2" title="Download template berisi data obat yang sudah ada + baris kosong">
                             <i class="fa-solid fa-file-arrow-down"></i>
                             <span class="hidden sm:inline">Template</span>
                         </button>
@@ -841,6 +854,26 @@
                             <span class="hidden sm:inline">Impor</span>
                             <input type="file" accept=".xlsx,.xls" onchange="importMedicinesExcel(event)" class="hidden">
                         </label>
+
+                        <!-- Dropdown Ekspor -->
+                        <div class="relative">
+                            <button onclick="toggleExportMenu(event)" class="px-3 py-2.5 rounded-xl bg-sky-500/25 hover:bg-sky-500/40 text-sky-100 border border-sky-400/40 font-medium text-xs shadow-lg transition flex items-center space-x-2">
+                                <i class="fa-solid fa-file-export"></i>
+                                <span class="hidden sm:inline">Ekspor</span>
+                                <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                            </button>
+                            <div id="export-menu" class="hidden absolute right-0 mt-2 w-48 glass-panel rounded-xl p-1.5 z-50 border border-white/20 shadow-2xl">
+                                <button onclick="exportMedicinesExcel(); closeExportMenu()" class="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-xs text-white hover:bg-white/15 transition">
+                                    <i class="fa-solid fa-file-excel text-emerald-300 w-4"></i>
+                                    <span>Ekspor Excel (.xlsx)</span>
+                                </button>
+                                <button onclick="exportMedicinesPDF(); closeExportMenu()" class="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-xs text-white hover:bg-white/15 transition">
+                                    <i class="fa-solid fa-file-pdf text-red-300 w-4"></i>
+                                    <span>Ekspor PDF</span>
+                                </button>
+                            </div>
+                        </div>
+
                         <button onclick="openMedicineModal()" class="px-4 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs md:text-sm shadow-lg transition flex items-center space-x-2">
                             <i class="fa-solid fa-plus"></i>
                             <span>Tambah Obat</span>
@@ -849,17 +882,13 @@
                 </div>
 
                 <div class="glass-panel rounded-2xl overflow-hidden">
-                    <div class="p-4 border-b border-white/10 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                    <div class="p-4 border-b border-white/10">
                         <input type="text" id="med-search" oninput="filterMedicinesTable()" placeholder="Cari kode, nama, atau kategori..." class="glass-input px-4 py-2 rounded-xl text-xs w-full sm:w-64">
-                        <button onclick="bulkDeleteMedicines()" id="btn-bulk-delete-med" class="hidden px-3 py-2 rounded-xl bg-red-500/25 hover:bg-red-500/40 text-red-100 border border-red-400/40 text-xs font-semibold transition">
-                            <i class="fa-solid fa-trash mr-1"></i>Hapus <span id="med-selected-count">0</span> Terpilih
-                        </button>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs md:text-sm text-white glass-table">
                             <thead>
                                 <tr>
-                                    <th class="px-3 py-3 w-8"><input type="checkbox" id="med-select-all" onchange="toggleSelectAllMeds(this.checked)" class="accent-brand-400"></th>
                                     <th class="px-3 py-3">Kode</th>
                                     <th class="px-3 py-3">Nama Obat</th>
                                     <th class="px-3 py-3 hidden md:table-cell">Kategori</th>
@@ -869,22 +898,21 @@
                                 </tr>
                             </thead>
                             <tbody id="medicines-table-body" class="divide-y divide-white/10">
-                                <tr><td colspan="7" class="px-4 py-6 text-center text-xs text-brand-200">Memuat data obat...</td></tr>
+                                <tr><td colspan="6" class="px-4 py-6 text-center text-xs text-brand-200">Memuat data obat...</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-
             </section>
 
+            <!-- ============ VIEW: RIWAYAT ============ -->
             <section id="view-riwayat" class="hidden space-y-5 fade-in-up">
-
                 <div>
                     <h2 class="text-lg md:text-2xl font-bold text-white flex items-center space-x-2">
                         <i class="fa-solid fa-clock-rotate-left text-brand-300"></i>
-                        <span>Riwayat Aktivitas</span>
+                        <span>Riwayat Transaksi</span>
                     </h2>
-                    <p class="text-xs text-brand-100 mt-1">Log aktivitas 2 hari terakhir (max 15 baris, otomatis terhapus)</p>
+                    <p class="text-xs text-brand-100 mt-1">Log lengkap aktivitas sistem</p>
                 </div>
 
                 <div class="glass-panel rounded-2xl overflow-hidden">
@@ -914,11 +942,10 @@
                         </table>
                     </div>
                 </div>
-
             </section>
 
+            <!-- ============ VIEW: EXPIRED ============ -->
             <section id="view-expired" class="hidden space-y-5 fade-in-up">
-
                 <div>
                     <h2 class="text-lg md:text-2xl font-bold text-white flex items-center space-x-2">
                         <i class="fa-solid fa-triangle-exclamation text-amber-300"></i>
@@ -965,11 +992,10 @@
                         </table>
                     </div>
                 </div>
-
             </section>
 
+            <!-- ============ VIEW: CATATAN ============ -->
             <section id="view-catatan" class="hidden space-y-5 fade-in-up">
-
                 <div>
                     <h2 class="text-lg md:text-2xl font-bold text-white flex items-center space-x-2">
                         <i class="fa-solid fa-note-sticky text-brand-300"></i>
@@ -991,11 +1017,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="notes-container">
                     <p class="text-xs text-brand-200 col-span-full text-center py-4">Memuat catatan...</p>
                 </div>
-
             </section>
 
+            <!-- ============ VIEW: IMPOR & EKSPOR ============ -->
             <section id="view-impor-ekspor" class="hidden max-w-3xl mx-auto space-y-5 fade-in-up">
-
                 <div class="glass-panel p-6 rounded-2xl space-y-6">
                     <div>
                         <h2 class="text-lg md:text-2xl font-bold text-white flex items-center space-x-2">
@@ -1006,7 +1031,6 @@
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
                         <div class="glass-card p-5 rounded-xl space-y-3">
                             <h3 class="text-sm font-semibold text-brand-200 flex items-center space-x-2">
                                 <i class="fa-solid fa-download"></i>
@@ -1043,14 +1067,12 @@
                                 </label>
                             </div>
                         </div>
-
                     </div>
                 </div>
-
             </section>
 
+            <!-- ============ VIEW: PENGATURAN ============ -->
             <section id="view-pengaturan" class="hidden max-w-2xl mx-auto space-y-5 fade-in-up">
-
                 <div class="glass-panel p-6 rounded-2xl space-y-6">
                     <div>
                         <h2 class="text-lg md:text-2xl font-bold text-white flex items-center space-x-2">
@@ -1131,11 +1153,10 @@
                         </button>
                     </div>
                 </div>
-
             </section>
 
+            <!-- ============ VIEW: PUBLIC RACK ============ -->
             <section id="view-public-rack" class="hidden max-w-3xl mx-auto space-y-5 fade-in-up">
-
                 <div class="glass-panel p-4 rounded-2xl border-l-4 border-l-brand-300 flex items-center space-x-3">
                     <div class="w-10 h-10 rounded-xl bg-brand-400/25 text-brand-200 flex items-center justify-center text-lg">
                         <i class="fa-solid fa-qrcode"></i>
@@ -1183,12 +1204,12 @@
                         </table>
                     </div>
                 </div>
-
             </section>
 
         </main>
     </div>
 
+    <!-- ==================== BOTTOM NAV ==================== -->
     <nav id="bottom-nav">
         <button onclick="switchTab('beranda')" id="bnav-beranda" class="active-bottom-tab">
             <i class="fa-solid fa-house"></i>
@@ -1214,6 +1235,7 @@
 
 </div>
 
+<!-- ==================== MODAL: EVIDENCE ==================== -->
 <div id="modal-evidence" class="modal-backdrop">
     <div class="modal-content p-5 md:p-6">
         <div class="flex items-center justify-between mb-4">
@@ -1249,21 +1271,25 @@
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-brand-100 mb-1">Upload File Bukti (JPG, PDF, XLSX, DOC, dll)</label>
-                <div class="flex gap-2">
-                    <input type="file" id="ev-file" class="hidden" onchange="handleEvidenceFile(event)">
-                    <label for="ev-file" class="flex-1 py-2.5 px-4 rounded-xl bg-brand-500/25 hover:bg-brand-500/40 text-brand-100 border border-brand-400/40 text-xs font-semibold transition flex items-center justify-center space-x-2 cursor-pointer">
+                <label class="block text-xs font-semibold text-brand-100 mb-1">Upload Bukti (Foto / Dokumen)</label>
+                <div class="flex flex-wrap gap-2">
+                    <input type="file" id="ev-file" accept="image/*" class="hidden" onchange="handleEvidenceFile(event, 'image')">
+                    <label for="ev-file" class="flex-1 min-w-[130px] py-2.5 px-4 rounded-xl bg-brand-500/25 hover:bg-brand-500/40 text-brand-100 border border-brand-400/40 text-xs font-semibold transition flex items-center justify-center space-x-2 cursor-pointer">
                         <i class="fa-solid fa-camera"></i>
-                        <span id="ev-file-label">Pilih File</span>
+                        <span id="ev-file-label">Pilih Foto</span>
                     </label>
-                    <button type="button" onclick="clearEvidenceFile()" class="px-3 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs">
+
+                    <input type="file" id="ev-doc" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar,.csv" class="hidden" onchange="handleEvidenceFile(event, 'doc')">
+                    <label for="ev-doc" class="flex-1 min-w-[130px] py-2.5 px-4 rounded-xl bg-purple-500/25 hover:bg-purple-500/40 text-purple-100 border border-purple-400/40 text-xs font-semibold transition flex items-center justify-center space-x-2 cursor-pointer">
+                        <i class="fa-solid fa-paperclip"></i>
+                        <span id="ev-doc-label">Kirim File</span>
+                    </label>
+
+                    <button type="button" onclick="clearEvidenceFile()" class="px-3 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs" title="Hapus file">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
-                <div id="ev-preview" class="hidden mt-2">
-                    <img id="ev-preview-img" class="rounded-xl max-h-40 object-cover" alt="Preview">
-                    <p class="text-[10px] text-brand-200 mt-1" id="ev-file-info"></p>
-                </div>
+                <div id="ev-preview" class="hidden mt-2"></div>
             </div>
 
             <div>
@@ -1286,6 +1312,7 @@
     </div>
 </div>
 
+<!-- ==================== MODAL: DETAIL BUKTI ==================== -->
 <div id="modal-evidence-detail" class="modal-backdrop">
     <div class="modal-content p-5 md:p-6">
         <div class="flex items-center justify-between mb-4">
@@ -1298,6 +1325,7 @@
     </div>
 </div>
 
+<!-- ==================== MODAL: MEDICINE ==================== -->
 <div id="modal-medicine" class="modal-backdrop">
     <div class="modal-content p-5 md:p-6">
         <div class="flex items-center justify-between mb-4">
@@ -1346,6 +1374,7 @@
     </div>
 </div>
 
+<!-- ==================== MODAL: RACK ==================== -->
 <div id="modal-rack" class="modal-backdrop">
     <div class="modal-content p-5 md:p-6">
         <div class="flex items-center justify-between mb-4">
@@ -1376,6 +1405,7 @@
     </div>
 </div>
 
+<!-- ==================== MODAL: RACK ITEM ==================== -->
 <div id="modal-rack-item" class="modal-backdrop">
     <div class="modal-content p-5 md:p-6">
         <div class="flex items-center justify-between mb-4">
@@ -1450,6 +1480,7 @@
     </div>
 </div>
 
+<!-- ==================== MODAL: QR ==================== -->
 <div id="modal-qr" class="modal-backdrop">
     <div class="modal-content p-5 md:p-6 max-w-sm text-center">
         <h3 class="text-lg font-bold text-white mb-3" id="qr-modal-title">QR Code Rak</h3>
@@ -1469,6 +1500,29 @@
     </div>
 </div>
 
+<!-- ==================== MODAL: KONFIRMASI HAPUS ==================== -->
+<div id="modal-confirm-delete" class="modal-backdrop">
+    <div class="modal-content p-5 md:p-6 max-w-md">
+        <div class="flex items-center space-x-3 mb-4">
+            <div class="w-12 h-12 rounded-xl bg-red-500/25 text-red-200 flex items-center justify-center text-xl border border-red-400/40">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white">Konfirmasi Hapus</h3>
+                <p class="text-xs text-brand-100">Tindakan ini tidak dapat dibatalkan</p>
+            </div>
+        </div>
+        <p id="confirm-delete-content" class="text-sm text-white mb-5"></p>
+        <div class="flex justify-end space-x-2">
+            <button onclick="closeModal('modal-confirm-delete')" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-medium">Batal</button>
+            <button onclick="executeDeleteSelectedRackItems()" class="px-5 py-2.5 rounded-xl bg-red-500/40 hover:bg-red-500/60 text-red-100 border border-red-400/50 text-xs font-semibold">
+                <i class="fa-solid fa-trash mr-1"></i>Ya, Hapus
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL: LAINNYA ==================== -->
 <div id="modal-lainnya" class="modal-backdrop">
     <div class="modal-content p-5 md:p-6 max-w-md">
         <div class="flex items-center justify-between mb-4">
@@ -1484,7 +1538,7 @@
             </button>
             <button onclick="switchTab('riwayat');closeModal('modal-lainnya')" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm">
                 <i class="fa-solid fa-clock-rotate-left text-brand-300 w-5"></i>
-                <span>Riwayat Aktivitas</span>
+                <span>Riwayat Transaksi</span>
             </button>
             <button onclick="switchTab('expired');closeModal('modal-lainnya')" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm">
                 <i class="fa-solid fa-triangle-exclamation text-amber-300 w-5"></i>
@@ -1510,7 +1564,12 @@
     </div>
 </div>
 
+<!-- ==================== SCRIPT LOGIC ==================== -->
 <script>
+/* ================================================================
+   E-BUKTI FARMASI — JavaScript Logic (v2.1)
+   ================================================================ */
+
 const DEFAULT_CONFIG = {
     SUPABASE_URL: "https://wbqgbxojjkoolzeoofgz.supabase.co",
     SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicWdieG9qamtvb2x6ZW9vZmd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2Mzk0NjksImV4cCI6MjEwNzIxNTQ2OX0.r_asc_CjWaQpRLM0rviBwSegjFum1Uba_GRm6kPl2xk",
@@ -1535,9 +1594,15 @@ let allRackItems = [];
 let allNotes = [];
 let chartSkpInstance = null;
 
+// Evidence file state
 let evidenceFile = null;
 let evidenceFileUrl = null;
+let evidenceFileKind = null; // 'image' | 'doc'
 
+// Rack bulk selection
+let selectedRackItemIds = new Set();
+
+/* ---------- UTILS ---------- */
 function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
     const colors = {
@@ -1565,6 +1630,7 @@ function showToast(message, type = 'info') {
 
 function openModal(id) { document.getElementById(id)?.classList.add('active'); }
 function closeModal(id) { document.getElementById(id)?.classList.remove('active'); }
+
 function formatDate(d) {
     if (!d) return '-';
     const dt = new Date(d);
@@ -1580,6 +1646,21 @@ function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+function getFileIcon(filename) {
+    const ext = ((filename || '').split('.').pop() || '').toLowerCase();
+    if (ext === 'pdf') return 'fa-file-pdf';
+    if (['doc','docx'].includes(ext)) return 'fa-file-word';
+    if (['xls','xlsx','csv'].includes(ext)) return 'fa-file-excel';
+    if (['ppt','pptx'].includes(ext)) return 'fa-file-powerpoint';
+    if (['zip','rar'].includes(ext)) return 'fa-file-zipper';
+    if (ext === 'txt') return 'fa-file-lines';
+    if (['jpg','jpeg','png','gif','webp','bmp','svg'].includes(ext)) return 'fa-file-image';
+    return 'fa-file';
+}
+
+/* ================================================================
+   THEME
+   ================================================================ */
 function applyTheme(theme) {
     const html = document.documentElement;
     if (theme === 'dark') html.classList.add('dark');
@@ -1616,6 +1697,9 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () 
     if ((localStorage.getItem('THEME') || 'light') === 'auto') applyTheme('auto');
 });
 
+/* ================================================================
+   SIDEBAR
+   ================================================================ */
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('sidebar-open');
     document.getElementById('sidebar-overlay').classList.toggle('active');
@@ -1625,6 +1709,9 @@ function closeSidebar() {
     document.getElementById('sidebar-overlay').classList.remove('active');
 }
 
+/* ================================================================
+   BOOTSTRAP
+   ================================================================ */
 window.addEventListener('DOMContentLoaded', async () => {
     applyTheme(localStorage.getItem('THEME') || 'light');
     await loadCredentials();
@@ -1658,6 +1745,9 @@ window.addEventListener('hashchange', () => {
     }
 });
 
+/* ================================================================
+   CONFIG & SUPABASE
+   ================================================================ */
 async function loadCredentials() {
     let cfg = { ...DEFAULT_CONFIG };
     try {
@@ -1738,6 +1828,9 @@ function importConfigFile(e) {
     reader.readAsText(file);
 }
 
+/* ================================================================
+   PUBLIC MODE UI
+   ================================================================ */
 function applyPublicModeUI(isPublic) {
     const sidebar = document.getElementById('sidebar');
     const userMenu = document.getElementById('user-menu');
@@ -1788,11 +1881,11 @@ async function checkAuthSilent() {
     } catch(e) {}
 }
 
+/* ================================================================
+   AUTH
+   ================================================================ */
 async function checkAuthAndSetup() {
-    if (!supabaseClient) {
-        switchTab('auth');
-        return;
-    }
+    if (!supabaseClient) { switchTab('auth'); return; }
     try {
         const { data: profiles } = await supabaseClient.from('profiles').select('id').limit(1);
 
@@ -1814,9 +1907,7 @@ async function checkAuthAndSetup() {
                 switchTab('auth');
             }
         }
-    } catch(e) {
-        switchTab('auth');
-    }
+    } catch(e) { switchTab('auth'); }
 }
 
 async function loadCurrentProfile() {
@@ -1890,8 +1981,15 @@ async function handleLogout() {
     showToast('Logout berhasil.', 'info');
 }
 
+/* ================================================================
+   NAVIGASI TAB
+   ================================================================ */
 function switchTab(tabName) {
-    if (tabName === 'lainnya') { openModal('modal-lainnya'); return; }
+    if (tabName === 'lainnya') {
+        openModal('modal-lainnya');
+        return;
+    }
+
     activeTab = tabName;
 
     const views = ['auth','beranda','skp','self-assessment','rak','master-obat','riwayat','expired','catatan','impor-ekspor','pengaturan'];
@@ -1917,6 +2015,9 @@ function switchTab(tabName) {
     if (tabName === 'impor-ekspor') populateRackItemSelects();
 }
 
+/* ================================================================
+   DASHBOARD
+   ================================================================ */
 async function loadDashboard() {
     if (!supabaseClient || !currentUser) return;
     try {
@@ -2018,7 +2119,6 @@ async function loadDashboard() {
             .eq('user_id', currentUser.id)
             .gte('created_at', monthStart.toISOString());
         document.getElementById('stat-aktivitas').innerText = actCount || 0;
-
     } catch(e) {
         console.error('Dashboard error:', e);
     }
@@ -2111,6 +2211,9 @@ async function loadNotesCount() {
     document.getElementById('stat-catatan').innerText = count || 0;
 }
 
+/* ================================================================
+   SKP
+   ================================================================ */
 async function loadSkpView() {
     if (!supabaseClient) return;
     await loadSkpActivities();
@@ -2186,21 +2289,26 @@ function renderSkpEvidenceList() {
         tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-xs text-brand-200">Belum ada bukti.</td></tr>';
         return;
     }
-    tbody.innerHTML = filtered.map(e => `
+    tbody.innerHTML = filtered.map(e => {
+        const fileIcon = e.file_url ? `<i class="fa-solid ${getFileIcon(e.file_url)} text-brand-200 ml-1" title="Ada lampiran"></i>` : '';
+        return `
         <tr>
             <td class="px-3 py-3 text-xs whitespace-nowrap">${formatDate(e.evidence_date)}</td>
             <td class="px-3 py-3 text-xs"><span class="badge badge-info">${escapeHtml(e.skp_activities?.name?.split(' ')[0] || '-')}</span></td>
-            <td class="px-3 py-3 text-xs hidden md:table-cell">${escapeHtml(e.title)}</td>
+            <td class="px-3 py-3 text-xs hidden md:table-cell">${escapeHtml(e.title)} ${fileIcon}</td>
             <td class="px-3 py-3 text-xs hidden lg:table-cell text-brand-100">${escapeHtml(e.period || '-')}</td>
             <td class="px-3 py-3 text-right whitespace-nowrap">
                 <button onclick="viewEvidenceDetail('skp','${e.id}')" class="w-8 h-8 rounded-lg bg-brand-400/25 hover:bg-brand-400/40 text-brand-100 transition" title="Detail"><i class="fa-solid fa-eye text-xs"></i></button>
                 <button onclick="editEvidence('skp','${e.id}')" class="w-8 h-8 rounded-lg bg-white/15 hover:bg-white/25 text-white transition ml-1" title="Edit"><i class="fa-solid fa-pen text-xs"></i></button>
                 <button onclick="deleteEvidence('skp','${e.id}')" class="w-8 h-8 rounded-lg bg-red-500/25 hover:bg-red-500/40 text-red-100 transition ml-1" title="Hapus"><i class="fa-solid fa-trash text-xs"></i></button>
             </td>
-        </tr>
-    `).join('');
+        </tr>`;
+    }).join('');
 }
 
+/* ================================================================
+   SELF ASSESSMENT
+   ================================================================ */
 async function loadSaView() {
     if (!supabaseClient) return;
     await loadSaValues();
@@ -2291,21 +2399,26 @@ function renderSaEvidenceList() {
         tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-xs text-brand-200">Belum ada bukti.</td></tr>';
         return;
     }
-    tbody.innerHTML = filtered.map(e => `
+    tbody.innerHTML = filtered.map(e => {
+        const fileIcon = e.file_url ? `<i class="fa-solid ${getFileIcon(e.file_url)} text-brand-200 ml-1" title="Ada lampiran"></i>` : '';
+        return `
         <tr>
             <td class="px-3 py-3 text-xs whitespace-nowrap">${formatDate(e.evidence_date)}</td>
             <td class="px-3 py-3 text-xs"><span class="badge badge-info">${escapeHtml(e.self_assessment_values?.name?.split(' ')[0] || '-')}</span></td>
-            <td class="px-3 py-3 text-xs hidden md:table-cell">${escapeHtml(e.title)}</td>
+            <td class="px-3 py-3 text-xs hidden md:table-cell">${escapeHtml(e.title)} ${fileIcon}</td>
             <td class="px-3 py-3 text-xs hidden lg:table-cell text-brand-100">${escapeHtml(e.period || '-')}</td>
             <td class="px-3 py-3 text-right whitespace-nowrap">
                 <button onclick="viewEvidenceDetail('sa','${e.id}')" class="w-8 h-8 rounded-lg bg-brand-400/25 hover:bg-brand-400/40 text-brand-100 transition" title="Detail"><i class="fa-solid fa-eye text-xs"></i></button>
                 <button onclick="editEvidence('sa','${e.id}')" class="w-8 h-8 rounded-lg bg-white/15 hover:bg-white/25 text-white transition ml-1" title="Edit"><i class="fa-solid fa-pen text-xs"></i></button>
                 <button onclick="deleteEvidence('sa','${e.id}')" class="w-8 h-8 rounded-lg bg-red-500/25 hover:bg-red-500/40 text-red-100 transition ml-1" title="Hapus"><i class="fa-solid fa-trash text-xs"></i></button>
             </td>
-        </tr>
-    `).join('');
+        </tr>`;
+    }).join('');
 }
 
+/* ================================================================
+   EVIDENCE FORM
+   ================================================================ */
 function openEvidenceModal(type, id = null) {
     document.getElementById('ev-type').value = type;
     document.getElementById('ev-id').value = id || '';
@@ -2327,8 +2440,11 @@ function openEvidenceModal(type, id = null) {
     document.getElementById('ev-type').value = type;
     evidenceFile = null;
     evidenceFileUrl = null;
+    evidenceFileKind = null;
     document.getElementById('ev-preview').classList.add('hidden');
-    document.getElementById('ev-file-label').innerText = 'Pilih File';
+    document.getElementById('ev-preview').innerHTML = '';
+    document.getElementById('ev-file-label').innerText = 'Pilih Foto';
+    document.getElementById('ev-doc-label').innerText = 'Kirim File';
     document.getElementById('ev-date').value = new Date().toISOString().split('T')[0];
 
     if (id) {
@@ -2343,9 +2459,18 @@ function openEvidenceModal(type, id = null) {
             document.getElementById('ev-notes').value = e.notes || '';
             if (e.file_url) {
                 evidenceFileUrl = e.file_url;
-                document.getElementById('ev-preview-img').src = e.file_url;
-                document.getElementById('ev-preview').classList.remove('hidden');
-                document.getElementById('ev-file-label').innerText = 'Ganti File';
+                // Preview ringkas
+                const isImg = /\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?|$)/i.test(e.file_url) || e.file_url.includes('/image/upload/');
+                const prev = document.getElementById('ev-preview');
+                if (isImg) {
+                    prev.innerHTML = `<img src="${e.file_url}" class="rounded-xl max-h-40 object-cover border border-white/20" alt="Preview"><p class="text-[10px] text-brand-200 mt-1">File lama — pilih file baru untuk mengganti</p>`;
+                } else {
+                    prev.innerHTML = `<div class="flex items-center space-x-3 p-3 rounded-xl bg-white/5 border border-white/15">
+                        <div class="w-10 h-10 rounded-lg bg-purple-400/25 text-purple-100 flex items-center justify-center text-lg"><i class="fa-solid ${getFileIcon(e.file_url)}"></i></div>
+                        <div class="min-w-0 flex-1"><p class="text-xs font-semibold text-white truncate">${escapeHtml(e.file_url.split('/').pop())}</p><p class="text-[10px] text-brand-200">File lama — pilih file baru untuk mengganti</p></div>
+                    </div>`;
+                }
+                prev.classList.remove('hidden');
             }
         }
     }
@@ -2357,79 +2482,107 @@ function closeEvidenceModal() {
     closeModal('modal-evidence');
     evidenceFile = null;
     evidenceFileUrl = null;
+    evidenceFileKind = null;
 }
 
-function handleEvidenceFile(e) {
+function handleEvidenceFile(e, kind) {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 20 * 1024 * 1024) {
-        showToast('Ukuran file max 20MB.', 'error');
+
+    const maxSize = kind === 'image' ? 10 * 1024 * 1024 : 20 * 1024 * 1024;
+    if (file.size > maxSize) {
+        showToast(`Ukuran file max ${kind === 'image' ? '10' : '20'}MB.`, 'error');
+        e.target.value = '';
         return;
     }
-    evidenceFile = file;
-    const preview = document.getElementById('ev-preview');
-    const img = document.getElementById('ev-preview-img');
-    const info = document.getElementById('ev-file-info');
-    const kb = (file.size / 1024).toFixed(0);
-    const ext = file.name.split('.').pop().toLowerCase();
 
-    if (file.type.startsWith('image/')) {
+    if (kind === 'doc') {
+        const allowed = ['pdf','doc','docx','xls','xlsx','ppt','pptx','txt','zip','rar','csv'];
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (!allowed.includes(ext)) {
+            showToast(`Tipe .${ext} tidak diizinkan.`, 'error');
+            e.target.value = '';
+            return;
+        }
+    }
+
+    evidenceFile = file;
+    evidenceFileKind = kind;
+    evidenceFileUrl = null;
+
+    const preview = document.getElementById('ev-preview');
+    const kb = (file.size / 1024).toFixed(0);
+
+    if (kind === 'image') {
         const reader = new FileReader();
         reader.onload = ev => {
-            img.src = ev.target.result;
-            img.classList.remove('hidden');
+            preview.innerHTML = `
+                <img src="${ev.target.result}" class="rounded-xl max-h-40 object-cover border border-white/20" alt="Preview">
+                <p class="text-[10px] text-brand-200 mt-1">${escapeHtml(file.name)} • ${kb} KB • akan dikompres otomatis</p>
+            `;
             preview.classList.remove('hidden');
-            info.innerText = `${file.name} • ${kb} KB • akan dikompres otomatis`;
         };
         reader.readAsDataURL(file);
-    } else if (ext === 'pdf') {
-        img.classList.add('hidden');
-        preview.classList.remove('hidden');
-        info.innerHTML = `<i class="fa-solid fa-file-pdf text-red-400 mr-1"></i>${file.name} • ${kb} KB • PDF`;
+        document.getElementById('ev-file-label').innerText = 'Ganti Foto';
     } else {
-        img.classList.add('hidden');
+        const icon = getFileIcon(file.name);
+        preview.innerHTML = `
+            <div class="flex items-center space-x-3 p-3 rounded-xl bg-white/5 border border-white/15">
+                <div class="w-10 h-10 rounded-lg bg-purple-400/25 text-purple-100 flex items-center justify-center text-lg">
+                    <i class="fa-solid ${icon}"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <p class="text-xs font-semibold text-white truncate">${escapeHtml(file.name)}</p>
+                    <p class="text-[10px] text-brand-200">${kb} KB • akan diupload apa adanya</p>
+                </div>
+            </div>
+        `;
         preview.classList.remove('hidden');
-        info.innerHTML = `<i class="fa-solid fa-file text-brand-200 mr-1"></i>${file.name} • ${kb} KB • ${ext.toUpperCase()}`;
+        document.getElementById('ev-doc-label').innerText = 'Ganti File';
     }
-    document.getElementById('ev-file-label').innerText = 'Ganti File';
 }
 
 function clearEvidenceFile() {
     evidenceFile = null;
     evidenceFileUrl = null;
-    document.getElementById('ev-file').value = '';
-    document.getElementById('ev-preview').classList.add('hidden');
-    document.getElementById('ev-file-label').innerText = 'Pilih File';
+    evidenceFileKind = null;
+    const imgInput = document.getElementById('ev-file');
+    const docInput = document.getElementById('ev-doc');
+    if (imgInput) imgInput.value = '';
+    if (docInput) docInput.value = '';
+    const prev = document.getElementById('ev-preview');
+    prev.classList.add('hidden');
+    prev.innerHTML = '';
+    document.getElementById('ev-file-label').innerText = 'Pilih Foto';
+    document.getElementById('ev-doc-label').innerText = 'Kirim File';
 }
 
-async function uploadToCloudinary(file) {
+async function uploadToCloudinary(file, kind = 'image') {
     const cloud = window.ACTIVE_CONFIG?.CLOUDINARY_CLOUD_NAME;
     const preset = window.ACTIVE_CONFIG?.CLOUDINARY_UPLOAD_PRESET;
     if (!cloud || !preset) throw new Error('Cloudinary belum dikonfigurasi');
 
-    let uploadFile = file;
-    const isImage = file.type.startsWith('image/');
-
-    if (isImage) {
-        try {
-            uploadFile = await compressImage(file, 1600, 0.85);
-        } catch(e) {
-            uploadFile = file;
-        }
-    }
-
     const fd = new FormData();
-    fd.append('file', uploadFile);
+
+    if (kind === 'image') {
+        const compressed = await compressImage(file, 1600, 0.85);
+        fd.append('file', compressed);
+    } else {
+        fd.append('file', file);
+    }
     fd.append('upload_preset', preset);
 
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloud}/auto/upload`, {
+    const endpoint = kind === 'image' ? 'image' : 'auto';
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloud}/${endpoint}/upload`, {
         method: 'POST',
         body: fd
     });
-    if (!res.ok) throw new Error('Upload gagal');
+    if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`Upload gagal (${res.status}): ${errText.slice(0, 100)}`);
+    }
     const data = await res.json();
-
-    if (isImage) {
+    if (kind === 'image') {
         return data.secure_url.replace('/upload/', '/upload/q_auto,f_auto/');
     }
     return data.secure_url;
@@ -2443,10 +2596,7 @@ function compressImage(file, maxWidth, quality) {
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 let w = img.width, h = img.height;
-                if (w > maxWidth) {
-                    h = Math.round(h * maxWidth / w);
-                    w = maxWidth;
-                }
+                if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
                 canvas.width = w;
                 canvas.height = h;
                 const ctx = canvas.getContext('2d');
@@ -2483,8 +2633,12 @@ async function saveEvidence(e) {
 
     if (evidenceFile) {
         try {
-            showToast('Mengupload file...', 'info');
-            payload.file_url = await uploadToCloudinary(evidenceFile);
+            const kindLabel = evidenceFileKind === 'doc' ? 'file' : 'foto';
+            showToast(`Mengupload ${kindLabel}...`, 'info');
+            payload.file_url = await uploadToCloudinary(evidenceFile, evidenceFileKind || 'image');
+
+            const metaTag = `[FILE:${evidenceFile.name}]`;
+            payload.notes = payload.notes ? `${metaTag} ${payload.notes}` : metaTag;
         } catch(err) {
             showToast('Upload gagal: ' + err.message, 'error');
             return;
@@ -2511,9 +2665,7 @@ async function saveEvidence(e) {
     else loadSaView();
 }
 
-function editEvidence(type, id) {
-    openEvidenceModal(type, id);
-}
+function editEvidence(type, id) { openEvidenceModal(type, id); }
 
 async function deleteEvidence(type, id) {
     if (!confirm('Hapus bukti ini?')) return;
@@ -2525,6 +2677,58 @@ async function deleteEvidence(type, id) {
     else loadSaView();
 }
 
+function renderEvidenceFilePreview(url, notes) {
+    let fileName = null;
+    if (notes) {
+        const m = notes.match(/\[FILE:([^\]]+)\]/);
+        if (m) fileName = m[1];
+    }
+
+    const isImage = /\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?|$)/i.test(url) || url.includes('/image/upload/');
+    const isPdf = /\.pdf(\?|$)/i.test(url) || (fileName && fileName.toLowerCase().endsWith('.pdf'));
+
+    if (isImage) {
+        return `<div><img src="${url}" class="rounded-xl w-full max-h-64 object-contain bg-black/30 border border-white/15" alt="Bukti"></div>`;
+    }
+
+    if (isPdf) {
+        return `
+            <div class="space-y-2">
+                <div class="flex items-center space-x-3 p-3 rounded-xl bg-red-500/15 border border-red-400/30">
+                    <div class="w-10 h-10 rounded-lg bg-red-400/25 text-red-100 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-xs font-semibold text-white truncate">${escapeHtml(fileName || 'Dokumen PDF')}</p>
+                        <p class="text-[10px] text-brand-200">File PDF</p>
+                    </div>
+                    <a href="${url}" target="_blank" class="px-3 py-1.5 rounded-lg bg-red-500/30 hover:bg-red-500/50 text-red-100 text-xs font-semibold">
+                        <i class="fa-solid fa-up-right-from-square mr-1"></i>Buka
+                    </a>
+                </div>
+                <iframe src="${url}" class="w-full h-64 rounded-xl border border-white/15 bg-white"></iframe>
+            </div>
+        `;
+    }
+
+    const icon = getFileIcon(fileName || url);
+    const ext = (fileName || url).split('.').pop().toUpperCase().slice(0, 5);
+    return `
+        <div class="flex items-center space-x-3 p-3 rounded-xl bg-purple-500/15 border border-purple-400/30">
+            <div class="w-10 h-10 rounded-lg bg-purple-400/25 text-purple-100 flex items-center justify-center text-lg">
+                <i class="fa-solid ${icon}"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+                <p class="text-xs font-semibold text-white truncate">${escapeHtml(fileName || 'Dokumen')}</p>
+                <p class="text-[10px] text-brand-200">File ${ext}</p>
+            </div>
+            <a href="${url}" target="_blank" download class="px-3 py-1.5 rounded-lg bg-purple-500/30 hover:bg-purple-500/50 text-purple-100 text-xs font-semibold">
+                <i class="fa-solid fa-download mr-1"></i>Unduh
+            </a>
+        </div>
+    `;
+}
+
 function viewEvidenceDetail(type, id) {
     const arr = type === 'skp' ? skpEvidences : saEvidences;
     const e = arr.find(x => x.id === id);
@@ -2533,10 +2737,9 @@ function viewEvidenceDetail(type, id) {
     const categoryName = type === 'skp' ? e.skp_activities?.name : e.self_assessment_values?.name;
     const detail = document.getElementById('evidence-detail-content');
 
-    const isImageFile = e.file_url && (
-        /\.(jpg|jpeg|png|gif|webp)$/i.test(e.file_url) ||
-        e.file_url.includes('/image/upload/')
-    );
+    // Bersihkan prefix [FILE:...] dari notes untuk tampilan
+    let displayNotes = e.notes || '';
+    displayNotes = displayNotes.replace(/\[FILE:[^\]]+\]\s*/g, '').trim();
 
     detail.innerHTML = `
         <div class="space-y-3">
@@ -2549,19 +2752,8 @@ function viewEvidenceDetail(type, id) {
                 <div><span class="text-brand-200">Kategori:</span><br><span class="text-white font-medium">${escapeHtml(categoryName || '-')}</span></div>
                 <div><span class="text-brand-200">Periode:</span><br><span class="text-white font-medium">${escapeHtml(e.period || '-')}</span></div>
             </div>
-            ${e.notes ? `<div class="text-xs"><span class="text-brand-200">Keterangan:</span><br><span class="text-white">${escapeHtml(e.notes)}</span></div>` : ''}
-            ${e.file_url ? (
-                isImageFile
-                    ? `<div><img src="${e.file_url}" class="rounded-xl w-full max-h-64 object-contain bg-black/30" alt="Bukti"></div>`
-                    : `<div class="p-4 rounded-xl bg-white/10 border border-white/20 text-center">
-                        <i class="fa-solid fa-file-lines text-brand-200 text-3xl mb-2"></i>
-                        <p class="text-xs text-brand-100 mb-3">File bukti tersedia</p>
-                        <a href="${e.file_url}" target="_blank" class="inline-flex items-center px-4 py-2 rounded-lg bg-brand-500/25 hover:bg-brand-500/40 text-brand-100 border border-brand-400/40 text-xs font-medium">
-                            <i class="fa-solid fa-download mr-2"></i>Buka / Unduh File
-                        </a>
-                    </div>`
-                : ''
-            )}
+            ${displayNotes ? `<div class="text-xs"><span class="text-brand-200">Keterangan:</span><br><span class="text-white">${escapeHtml(displayNotes)}</span></div>` : ''}
+            ${e.file_url ? renderEvidenceFilePreview(e.file_url, e.notes) : ''}
             ${e.external_link ? `<div class="text-xs"><a href="${e.external_link}" target="_blank" class="text-brand-200 hover:text-white underline"><i class="fa-solid fa-link mr-1"></i>${escapeHtml(e.external_link)}</a></div>` : ''}
             <div class="flex flex-wrap gap-2 pt-2 border-t border-white/10">
                 ${e.file_url ? `<button onclick="copyToClipboard('${e.file_url}')" class="flex-1 py-2 rounded-lg bg-brand-500/25 hover:bg-brand-500/40 text-brand-100 border border-brand-400/40 text-xs font-medium"><i class="fa-solid fa-copy mr-1"></i>Salin Link File</button>` : ''}
@@ -2603,6 +2795,9 @@ async function populateMonthFilter(selectId, evidences) {
     }).join('');
 }
 
+/* ================================================================
+   RAK
+   ================================================================ */
 async function loadRakView() {
     if (!supabaseClient) return;
     await loadRacks();
@@ -2624,10 +2819,9 @@ function renderRackCards() {
     }
     container.innerHTML = allRacks.map(r => {
         const itemCount = allRackItems.filter(i => i.rack_id === r.id).length;
-        return `<div class="glass-card p-4 rounded-2xl relative">
-            <input type="checkbox" class="rack-checkbox accent-brand-400 absolute top-2 left-2 z-10 w-5 h-5" value="${r.id}" onchange="updateRackBulkBar()">
+        return `<div class="glass-card p-4 rounded-2xl">
             <div class="flex items-start justify-between">
-                <div class="w-10 h-10 rounded-xl bg-brand-400/25 text-brand-100 flex items-center justify-center text-lg ml-6">
+                <div class="w-10 h-10 rounded-xl bg-brand-400/25 text-brand-100 flex items-center justify-center text-lg">
                     <i class="fa-solid fa-warehouse"></i>
                 </div>
                 <span class="text-[10px] px-2 py-0.5 rounded-full bg-brand-400/25 text-brand-100 border border-brand-300/40 font-mono">${escapeHtml(r.code)}</span>
@@ -2643,27 +2837,6 @@ function renderRackCards() {
             </div>
         </div>`;
     }).join('');
-    updateRackBulkBar();
-}
-
-function updateRackBulkBar() {
-    const selected = document.querySelectorAll('.rack-checkbox:checked').length;
-    const btn = document.getElementById('btn-bulk-delete-rack');
-    const cnt = document.getElementById('rack-selected-count');
-    if (btn) {
-        if (selected > 0) { btn.classList.remove('hidden'); cnt.innerText = selected; }
-        else btn.classList.add('hidden');
-    }
-}
-
-async function bulkDeleteRacks() {
-    const ids = [...document.querySelectorAll('.rack-checkbox:checked')].map(cb => cb.value);
-    if (!ids.length) return;
-    if (!confirm(`Hapus ${ids.length} rak terpilih? Semua item di dalamnya juga terhapus.`)) return;
-    const { error } = await supabaseClient.from('racks').delete().in('id', ids);
-    if (error) { showToast('Gagal: ' + error.message, 'error'); return; }
-    showToast(`${ids.length} rak dihapus.`, 'info');
-    loadRakView();
 }
 
 async function loadRackItems() {
@@ -2688,7 +2861,8 @@ function renderRackItemsTable() {
     document.getElementById('rack-items-count').innerText = `(${filtered.length})`;
     const tbody = document.getElementById('rack-items-table-body');
     if (!filtered.length) {
-        tbody.innerHTML = '<tr><td colspan="9" class="px-4 py-6 text-center text-xs text-brand-200">Belum ada data.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" class="px-4 py-6 text-center text-xs text-brand-200">Belum ada data.</td></tr>';
+        updateRackBulkToolbar();
         return;
     }
     const today = new Date().toISOString().split('T')[0];
@@ -2700,7 +2874,12 @@ function renderRackItemsTable() {
         if (ed && ed < today) expBadge = 'badge-danger';
         else if (ed && ed <= in30) expBadge = 'badge-warning';
 
+        const checked = selectedRackItemIds.has(it.id) ? 'checked' : '';
+
         return `<tr>
+            <td class="px-3 py-3">
+                <input type="checkbox" class="rack-item-checkbox accent-brand-400" data-id="${it.id}" ${checked} onchange="toggleRackItemSelection('${it.id}', this.checked)">
+            </td>
             <td class="px-3 py-3 text-xs">${idx+1}</td>
             <td class="px-3 py-3 text-xs font-medium">${escapeHtml(it.medicines?.name || '-')}<br><span class="text-[10px] text-brand-200">${escapeHtml(it.medicines?.form || '')}</span></td>
             <td class="px-3 py-3 text-xs hidden md:table-cell font-mono text-brand-100">${escapeHtml(it.medicines?.code || '-')}</td>
@@ -2715,6 +2894,81 @@ function renderRackItemsTable() {
             </td>
         </tr>`;
     }).join('');
+
+    const selectAll = document.getElementById('rack-select-all');
+    if (selectAll) {
+        const allIds = filtered.map(f => f.id);
+        selectAll.checked = allIds.length > 0 && allIds.every(id => selectedRackItemIds.has(id));
+    }
+    updateRackBulkToolbar();
+}
+
+function toggleRackItemSelection(id, checked) {
+    if (checked) selectedRackItemIds.add(id);
+    else selectedRackItemIds.delete(id);
+    updateRackBulkToolbar();
+
+    const selectAll = document.getElementById('rack-select-all');
+    const visibleIds = Array.from(document.querySelectorAll('.rack-item-checkbox')).map(c => c.dataset.id);
+    if (selectAll) {
+        selectAll.checked = visibleIds.length > 0 && visibleIds.every(id => selectedRackItemIds.has(id));
+    }
+}
+
+function toggleSelectAllRackItems(checked) {
+    const visibleIds = Array.from(document.querySelectorAll('.rack-item-checkbox')).map(c => c.dataset.id);
+    if (checked) visibleIds.forEach(id => selectedRackItemIds.add(id));
+    else visibleIds.forEach(id => selectedRackItemIds.delete(id));
+    document.querySelectorAll('.rack-item-checkbox').forEach(c => c.checked = checked);
+    updateRackBulkToolbar();
+}
+
+function updateRackBulkToolbar() {
+    const toolbar = document.getElementById('rack-bulk-toolbar');
+    const countEl = document.getElementById('rack-selected-count');
+    if (!toolbar || !countEl) return;
+    if (selectedRackItemIds.size > 0) {
+        toolbar.classList.remove('hidden');
+        toolbar.classList.add('flex');
+        countEl.innerText = selectedRackItemIds.size;
+    } else {
+        toolbar.classList.add('hidden');
+        toolbar.classList.remove('flex');
+    }
+}
+
+function clearRackSelection() {
+    selectedRackItemIds.clear();
+    document.querySelectorAll('.rack-item-checkbox').forEach(c => c.checked = false);
+    const selectAll = document.getElementById('rack-select-all');
+    if (selectAll) selectAll.checked = false;
+    updateRackBulkToolbar();
+}
+
+function confirmDeleteSelectedRackItems() {
+    const n = selectedRackItemIds.size;
+    if (n === 0) return;
+    const content = document.getElementById('confirm-delete-content');
+    if (content) {
+        content.innerHTML = `Anda akan menghapus <b class="text-red-300">${n} item obat</b> dari rak. Tindakan ini tidak dapat dibatalkan.`;
+    }
+    openModal('modal-confirm-delete');
+}
+
+async function executeDeleteSelectedRackItems() {
+    const ids = Array.from(selectedRackItemIds);
+    if (ids.length === 0) return;
+    closeModal('modal-confirm-delete');
+    showToast(`Menghapus ${ids.length} item...`, 'info');
+
+    const { error } = await supabaseClient.from('rack_items').delete().in('id', ids);
+    if (error) {
+        showToast('Gagal hapus: ' + error.message, 'error');
+        return;
+    }
+    selectedRackItemIds.clear();
+    showToast(`${ids.length} item berhasil dihapus.`, 'success');
+    loadRakView();
 }
 
 function openRackModal() {
@@ -2821,6 +3075,9 @@ async function deleteRackItem(id) {
     loadRakView();
 }
 
+/* ================================================================
+   QR CODE
+   ================================================================ */
 function showQRModal(code, name) {
     const container = document.getElementById('qrcode-container');
     container.innerHTML = '';
@@ -2863,6 +3120,9 @@ function downloadQrJpg() {
     image.src = src;
 }
 
+/* ================================================================
+   MASTER OBAT
+   ================================================================ */
 async function loadMedicines() {
     const { data } = await supabaseClient.from('medicines').select('*').order('created_at', { ascending: false });
     allMedicines = data || [];
@@ -2876,12 +3136,11 @@ function filterMedicinesTable() {
 
     const tbody = document.getElementById('medicines-table-body');
     if (!filtered.length) {
-        tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-center text-xs text-brand-200">Tidak ada data.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-6 text-center text-xs text-brand-200">Tidak ada data.</td></tr>';
         return;
     }
     tbody.innerHTML = filtered.map(m => `
         <tr>
-            <td class="px-3 py-3"><input type="checkbox" class="med-checkbox accent-brand-400" value="${m.id}" onchange="updateMedBulkBar()"></td>
             <td class="px-3 py-3 font-mono text-xs text-brand-200">${escapeHtml(m.code)}</td>
             <td class="px-3 py-3 text-xs font-medium">${escapeHtml(m.name)}</td>
             <td class="px-3 py-3 text-xs hidden md:table-cell">${escapeHtml(m.category || '-')}</td>
@@ -2893,33 +3152,23 @@ function filterMedicinesTable() {
             </td>
         </tr>
     `).join('');
-    updateMedBulkBar();
 }
 
-function toggleSelectAllMeds(checked) {
-    document.querySelectorAll('.med-checkbox').forEach(cb => cb.checked = checked);
-    updateMedBulkBar();
+function toggleExportMenu(e) {
+    e?.stopPropagation();
+    document.getElementById('export-menu').classList.toggle('hidden');
 }
-
-function updateMedBulkBar() {
-    const selected = document.querySelectorAll('.med-checkbox:checked').length;
-    const btn = document.getElementById('btn-bulk-delete-med');
-    const cnt = document.getElementById('med-selected-count');
-    if (btn) {
-        if (selected > 0) { btn.classList.remove('hidden'); cnt.innerText = selected; }
-        else btn.classList.add('hidden');
+function closeExportMenu() {
+    document.getElementById('export-menu')?.classList.add('hidden');
+}
+document.addEventListener('click', e => {
+    const menu = document.getElementById('export-menu');
+    if (menu && !menu.classList.contains('hidden')) {
+        if (!menu.contains(e.target) && !e.target.closest('button[onclick*="toggleExportMenu"]')) {
+            menu.classList.add('hidden');
+        }
     }
-}
-
-async function bulkDeleteMedicines() {
-    const ids = [...document.querySelectorAll('.med-checkbox:checked')].map(cb => cb.value);
-    if (!ids.length) return;
-    if (!confirm(`Hapus ${ids.length} obat terpilih?`)) return;
-    const { error } = await supabaseClient.from('medicines').delete().in('id', ids);
-    if (error) { showToast('Gagal: ' + error.message, 'error'); return; }
-    showToast(`${ids.length} obat dihapus.`, 'info');
-    loadMedicines();
-}
+});
 
 function openMedicineModal() {
     document.getElementById('med-id').value = '';
@@ -2976,57 +3225,48 @@ async function deleteMedicine(id) {
     loadMedicines();
 }
 
+/* ================================================================
+   RIWAYAT
+   ================================================================ */
 async function loadHistoryData() {
     if (!supabaseClient || !currentUser) return;
     const search = (document.getElementById('hist-search')?.value || '').toLowerCase();
     const filterType = document.getElementById('hist-filter-type')?.value || '';
-    const cutoff = new Date(Date.now() - 2*24*60*60*1000).toISOString();
 
     const items = [];
 
     if (!filterType || filterType === 'SKP') {
         const { data } = await supabaseClient.from('skp_evidences')
             .select('id, title, evidence_date, created_at, notes').eq('user_id', currentUser.id)
-            .gte('created_at', cutoff)
-            .order('created_at', { ascending: false }).limit(15);
+            .order('created_at', { ascending: false }).limit(50);
         (data || []).forEach(d => items.push({ type: 'SKP', ...d, action: 'Upload Bukti SKP' }));
     }
     if (!filterType || filterType === 'SA') {
         const { data } = await supabaseClient.from('self_assessment_evidences')
             .select('id, title, evidence_date, created_at, notes').eq('user_id', currentUser.id)
-            .gte('created_at', cutoff)
-            .order('created_at', { ascending: false }).limit(15);
+            .order('created_at', { ascending: false }).limit(50);
         (data || []).forEach(d => items.push({ type: 'SA', ...d, action: 'Upload Self Assessment' }));
     }
     if (!filterType || filterType === 'RACK') {
         const { data } = await supabaseClient.from('rack_items')
             .select('id, batch_number, received_date, created_at, medicines(name), racks(code)')
-            .gte('created_at', cutoff)
-            .order('created_at', { ascending: false }).limit(15);
+            .order('created_at', { ascending: false }).limit(50);
         (data || []).forEach(d => items.push({ type: 'RACK', ...d, title: `${d.medicines?.name} (${d.racks?.code})`, evidence_date: d.received_date, action: 'Input Obat per Rak' }));
-    }
-    if (!filterType || filterType === 'MED') {
-        const { data } = await supabaseClient.from('medicines')
-            .select('id, name, code, created_at')
-            .gte('created_at', cutoff)
-            .order('created_at', { ascending: false }).limit(15);
-        (data || []).forEach(d => items.push({ type: 'MED', ...d, title: `${d.name} (${d.code})`, evidence_date: d.created_at, action: 'Tambah/Edit Master Obat' }));
     }
 
     let filtered = items;
     if (search) filtered = items.filter(i => `${i.title} ${i.notes || ''}`.toLowerCase().includes(search));
 
     filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    filtered = filtered.slice(0, 15);
 
     const tbody = document.getElementById('history-table-body');
     if (!filtered.length) {
-        tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-6 text-center text-xs text-brand-200">Tidak ada aktivitas dalam 2 hari terakhir.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-6 text-center text-xs text-brand-200">Belum ada riwayat.</td></tr>';
         return;
     }
 
-    tbody.innerHTML = filtered.map(h => {
-        const badge = h.type === 'SKP' ? 'badge-info' : h.type === 'SA' ? 'badge-success' : h.type === 'MED' ? 'badge-warning' : 'badge-neutral';
+    tbody.innerHTML = filtered.slice(0, 100).map(h => {
+        const badge = h.type === 'SKP' ? 'badge-info' : h.type === 'SA' ? 'badge-success' : 'badge-neutral';
         return `<tr>
             <td class="px-3 py-3 text-xs whitespace-nowrap">${formatDateTime(h.created_at)}</td>
             <td class="px-3 py-3"><span class="badge ${badge}">${h.type}</span></td>
@@ -3036,6 +3276,9 @@ async function loadHistoryData() {
     }).join('');
 }
 
+/* ================================================================
+   EXPIRED
+   ================================================================ */
 async function loadExpiredView() {
     if (!supabaseClient) return;
     const { data } = await supabaseClient.from('rack_items').select(`
@@ -3049,7 +3292,9 @@ async function loadExpiredView() {
 
     let expiredC = 0, warnC = 0, safeC = 0;
 
-    const rows = (data || []).map(it => {
+    const sorted = (data || []).sort((a, b) => new Date(a.expired_date) - new Date(b.expired_date));
+
+    const rows = sorted.map(it => {
         const ed = it.expired_date;
         let status = 'NORMAL', badge = 'badge-success';
         if (ed < today) { status = 'EXPIRED'; badge = 'badge-danger'; expiredC++; }
@@ -3066,8 +3311,6 @@ async function loadExpiredView() {
         </tr>`;
     });
 
-    (data || []).sort((a, b) => new Date(a.expired_date) - new Date(b.expired_date));
-
     document.getElementById('exp-stat-expired').innerText = expiredC;
     document.getElementById('exp-stat-warning').innerText = warnC;
     document.getElementById('exp-stat-safe').innerText = safeC;
@@ -3081,6 +3324,9 @@ async function loadExpiredView() {
     tbody.innerHTML = rows.join('');
 }
 
+/* ================================================================
+   CATATAN
+   ================================================================ */
 async function loadNotes() {
     if (!supabaseClient || !currentUser) return;
     const { data } = await supabaseClient.from('quick_notes')
@@ -3143,6 +3389,9 @@ async function deleteNote(id) {
     loadNotesCount();
 }
 
+/* ================================================================
+   IMPOR / EKSPOR
+   ================================================================ */
 async function exportToExcel() {
     const { data } = await supabaseClient.from('rack_items').select(`
         quantity, batch_number, received_date, storage_condition, method, expired_date, notes,
@@ -3210,48 +3459,28 @@ async function exportToPDF() {
     showToast('PDF diunduh.', 'success');
 }
 
-async function downloadExcelTemplate() {
-    let existing = [];
-    if (supabaseClient && currentUser) {
-        const { data } = await supabaseClient.from('rack_items').select(`
-            quantity, batch_number, received_date, storage_condition, method, expired_date, notes,
-            medicines(name, code, category, form, unit),
-            racks(code, name)
-        `);
-        existing = (data || []).map(i => ({
-            'Nama Obat': i.medicines?.name || '',
-            'Kode Obat': i.medicines?.code || '',
-            'Kategori': i.medicines?.category || '',
-            'Bentuk': i.medicines?.form || '',
-            'Kode Rak': i.racks?.code || '',
-            'Nama Rak': i.racks?.name || '',
-            'Batch': i.batch_number || '',
-            'Tgl Terima': i.received_date || '',
-            'Penyimpanan': i.storage_condition || '',
-            'FIFO/FEFO': i.method || '',
-            'Expired': i.expired_date || '',
-            'Jumlah': i.quantity || 0,
-            'Satuan': i.medicines?.unit || '',
-            'Keterangan': i.notes || ''
-        }));
-    }
-
-    const template = existing.length ? [...existing] : [{
-        'Nama Obat': 'Paracetamol 500mg', 'Kode Obat': 'OBT-001', 'Kategori': 'Analgetik',
-        'Bentuk': 'Tablet', 'Kode Rak': 'RAK-A1', 'Nama Rak': 'Rak Obat Generik',
-        'Batch': 'BTC-001', 'Tgl Terima': '2026-01-15', 'Penyimpanan': 'Suhu ruang 15-30°C',
-        'FIFO/FEFO': 'FEFO', 'Expired': '2027-12-31', 'Jumlah': 100, 'Satuan': 'Strip', 'Keterangan': ''
+function downloadExcelTemplate() {
+    const template = [{
+        'Nama Obat': 'Paracetamol 500mg',
+        'Kode Obat': 'OBT-001',
+        'Kategori': 'Analgetik',
+        'Bentuk': 'Tablet',
+        'Kode Rak': 'RAK-A1',
+        'Nama Rak': 'Rak Obat Generik',
+        'Batch': 'BTC-001',
+        'Tgl Terima': '2026-01-15',
+        'Penyimpanan': 'Suhu ruang 15-30°C',
+        'FIFO/FEFO': 'FEFO',
+        'Expired': '2027-12-31',
+        'Jumlah': 100,
+        'Satuan': 'Strip',
+        'Keterangan': 'Contoh baris — hapus sebelum upload'
     }];
-
-    for (let i = 0; i < 3; i++) {
-        template.push({ 'Nama Obat': '', 'Kode Obat': '', 'Kategori': '', 'Bentuk': '', 'Kode Rak': '', 'Nama Rak': '', 'Batch': '', 'Tgl Terima': '', 'Penyimpanan': '', 'FIFO/FEFO': '', 'Expired': '', 'Jumlah': '', 'Satuan': '', 'Keterangan': '' });
-    }
-
     const ws = XLSX.utils.json_to_sheet(template);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Template');
-    XLSX.writeFile(wb, `Template_Impor_Obat_per_Rak_${new Date().toISOString().split('T')[0]}.xlsx`);
-    showToast('Template diunduh (termasuk data existing).', 'success');
+    XLSX.writeFile(wb, 'Template_Impor_Obat_per_Rak.xlsx');
+    showToast('Template diunduh.', 'success');
 }
 
 async function importRackItemsExcel(e) {
@@ -3330,6 +3559,9 @@ async function importRackItemsExcel(e) {
     e.target.value = '';
 }
 
+/* ================================================================
+   PUBLIC RACK VIEW
+   ================================================================ */
 async function loadPublicRackView(rackCode) {
     document.getElementById('pub-rack-code').innerText = rackCode;
     document.getElementById('pub-rack-name').innerText = 'Memuat...';
@@ -3420,37 +3652,66 @@ function triggerAdminEditFromRack() {
     }
 }
 
+/* ================================================================
+   TEMPLATE & IMPORT MASTER OBAT (DINAMIS)
+   ================================================================ */
 async function downloadMedicineTemplate() {
-    let existing = [];
-    if (supabaseClient && currentUser) {
-        const { data } = await supabaseClient.from('medicines').select('*').order('code');
-        existing = (data || []).map(m => ({
-            'Kode Obat': m.code || '',
-            'Nama Obat': m.name || '',
-            'Kategori': m.category || '',
-            'Bentuk': m.form || '',
-            'Satuan': m.unit || '',
-            'Stok Minimal': m.min_stock || 0
-        }));
+    // Ambil data obat existing dari DB
+    let existingData = [];
+    try {
+        if (supabaseClient) {
+            const { data } = await supabaseClient.from('medicines')
+                .select('code, name, category, form, unit, min_stock')
+                .order('code');
+            existingData = data || [];
+        }
+    } catch(err) {
+        console.warn('Gagal ambil data existing:', err);
     }
 
-    const template = existing.length ? [...existing] : [
-        { 'Kode Obat': 'OBT-001', 'Nama Obat': 'Paracetamol 500mg', 'Kategori': 'Analgetik', 'Bentuk': 'Tablet', 'Satuan': 'Strip', 'Stok Minimal': 10 }
-    ];
+    // Baris data existing
+    const rows = existingData.map(m => ({
+        'Kode Obat': m.code || '',
+        'Nama Obat': m.name || '',
+        'Kategori': m.category || '',
+        'Bentuk': m.form || '',
+        'Satuan': m.unit || '',
+        'Stok Minimal': m.min_stock ?? ''
+    }));
 
-    for (let i = 0; i < 3; i++) {
-        template.push({ 'Kode Obat': '', 'Nama Obat': '', 'Kategori': '', 'Bentuk': '', 'Satuan': '', 'Stok Minimal': '' });
-    }
+    // Baris contoh + baris kosong
+    rows.push({
+        'Kode Obat': 'CONTOH-001',
+        'Nama Obat': 'Contoh: Paracetamol 500mg',
+        'Kategori': 'Analgetik',
+        'Bentuk': 'Tablet',
+        'Satuan': 'Strip',
+        'Stok Minimal': 10
+    });
+    rows.push({
+        'Kode Obat': '',
+        'Nama Obat': '',
+        'Kategori': '',
+        'Bentuk': '',
+        'Satuan': '',
+        'Stok Minimal': ''
+    });
 
-    const ws = XLSX.utils.json_to_sheet(template, {
+    const ws = XLSX.utils.json_to_sheet(rows, {
         header: ['Kode Obat', 'Nama Obat', 'Kategori', 'Bentuk', 'Satuan', 'Stok Minimal']
     });
-    ws['!cols'] = [{ wch: 15 }, { wch: 30 }, { wch: 20 }, { wch: 15 }, { wch: 12 }, { wch: 15 }];
+
+    ws['!cols'] = [
+        { wch: 15 }, { wch: 30 }, { wch: 20 },
+        { wch: 15 }, { wch: 12 }, { wch: 15 }
+    ];
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Master Obat');
     XLSX.writeFile(wb, `Master_Obat_${new Date().toISOString().split('T')[0]}.xlsx`);
-    showToast('Template Master Obat diunduh (termasuk data existing).', 'success');
+
+    const total = existingData.length;
+    showToast(`Template berisi ${total} data obat existing + baris kosong.`, 'success');
 }
 
 async function importMedicinesExcel(e) {
@@ -3508,88 +3769,89 @@ async function importMedicinesExcel(e) {
     e.target.value = '';
 }
 
-async function downloadRackTemplate() {
-    let existing = [];
-    if (supabaseClient && currentUser) {
-        const { data } = await supabaseClient.from('racks').select('*').order('code');
-        existing = (data || []).map(r => ({
-            'Kode Rak': r.code || '',
-            'Nama Rak': r.name || '',
-            'Deskripsi Lokasi': r.location_description || ''
-        }));
+/* ================================================================
+   EXPORT MASTER OBAT
+   ================================================================ */
+async function exportMedicinesExcel() {
+    if (!supabaseClient) return;
+    const { data } = await supabaseClient.from('medicines')
+        .select('code, name, category, form, unit, min_stock')
+        .order('code');
+
+    const rows = (data || []).map(m => ({
+        'Kode Obat': m.code,
+        'Nama Obat': m.name,
+        'Kategori': m.category || '',
+        'Bentuk': m.form || '',
+        'Satuan': m.unit || '',
+        'Stok Minimal': m.min_stock ?? ''
+    }));
+
+    if (!rows.length) {
+        showToast('Belum ada data obat untuk diekspor.', 'warning');
+        return;
     }
 
-    const template = existing.length ? [...existing] : [
-        { 'Kode Rak': 'RAK-A1', 'Nama Rak': 'Rak Obat Generik', 'Deskripsi Lokasi': 'Lantai 1, Sektor Barat' }
+    const ws = XLSX.utils.json_to_sheet(rows, {
+        header: ['Kode Obat', 'Nama Obat', 'Kategori', 'Bentuk', 'Satuan', 'Stok Minimal']
+    });
+    ws['!cols'] = [
+        { wch: 15 }, { wch: 30 }, { wch: 20 },
+        { wch: 15 }, { wch: 12 }, { wch: 15 }
     ];
 
-    for (let i = 0; i < 3; i++) {
-        template.push({ 'Kode Rak': '', 'Nama Rak': '', 'Deskripsi Lokasi': '' });
-    }
-
-    const ws = XLSX.utils.json_to_sheet(template, {
-        header: ['Kode Rak', 'Nama Rak', 'Deskripsi Lokasi']
-    });
-    ws['!cols'] = [{ wch: 15 }, { wch: 30 }, { wch: 40 }];
-
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Daftar Rak');
-    XLSX.writeFile(wb, `Daftar_Rak_${new Date().toISOString().split('T')[0]}.xlsx`);
-    showToast('Template Daftar Rak diunduh (termasuk data existing).', 'success');
+    XLSX.utils.book_append_sheet(wb, ws, 'Master Obat');
+    XLSX.writeFile(wb, `Master_Obat_${new Date().toISOString().split('T')[0]}.xlsx`);
+    showToast(`${rows.length} obat diekspor ke Excel.`, 'success');
 }
 
-async function importRacksExcel(e) {
-    const file = e.target.files[0];
-    if (!file) return;
+async function exportMedicinesPDF() {
+    if (!supabaseClient) return;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
 
-    const reader = new FileReader();
-    reader.onload = async ev => {
-        try {
-            const wb = XLSX.read(ev.target.result, { type: 'array' });
-            const ws = wb.Sheets[wb.SheetNames[0]];
-            const rows = XLSX.utils.sheet_to_json(ws);
-            if (!rows.length) { showToast('File kosong.', 'error'); return; }
+    doc.setFontSize(14);
+    doc.text('Daftar Master Obat', 14, 15);
+    doc.setFontSize(10);
+    doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 14, 22);
 
-            let success = 0, failed = 0, skipped = 0;
+    const { data } = await supabaseClient.from('medicines')
+        .select('code, name, category, form, unit, min_stock')
+        .order('code');
 
-            for (const r of rows) {
-                try {
-                    const code = String(r['Kode Rak'] || r['kode_rak'] || '').trim();
-                    const name = String(r['Nama Rak'] || r['nama_rak'] || '').trim();
-                    if (!code && !name) { skipped++; continue; }
-                    if (!code || !name) { failed++; continue; }
+    const rows = (data || []).map(m => [
+        m.code || '-',
+        m.name || '-',
+        m.category || '-',
+        m.form || '-',
+        m.unit || '-',
+        m.min_stock ?? 0
+    ]);
 
-                    const { data: existing } = await supabaseClient
-                        .from('racks').select('id').eq('code', code).maybeSingle();
-
-                    const payload = {
-                        code: code,
-                        name: name,
-                        location_description: String(r['Deskripsi Lokasi'] || r['deskripsi_lokasi'] || '').trim() || null,
-                        is_active: true
-                    };
-
-                    if (existing) {
-                        await supabaseClient.from('racks').update(payload).eq('id', existing.id);
-                    } else {
-                        await supabaseClient.from('racks').insert(payload);
-                    }
-                    success++;
-                } catch(err) {
-                    console.error('Import rack error:', err);
-                    failed++;
-                }
-            }
-            showToast(`Import selesai: ${success} sukses, ${failed} gagal, ${skipped} kosong dilewati`, success > 0 ? 'success' : 'error');
-            loadRakView();
-        } catch(err) {
-            showToast('File tidak valid: ' + err.message, 'error');
+    doc.autoTable({
+        head: [['Kode', 'Nama Obat', 'Kategori', 'Bentuk', 'Satuan', 'Stok Min']],
+        body: rows,
+        startY: 28,
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [12, 74, 110] },
+        columnStyles: {
+            0: { cellWidth: 25 },
+            1: { cellWidth: 55 },
+            2: { cellWidth: 30 },
+            3: { cellWidth: 25 },
+            4: { cellWidth: 20 },
+            5: { cellWidth: 20 }
         }
-    };
-    reader.readAsArrayBuffer(file);
-    e.target.value = '';
+    });
+
+    doc.save(`Master_Obat_${new Date().toISOString().split('T')[0]}.pdf`);
+    showToast('PDF Master Obat diunduh.', 'success');
 }
 
+/* ================================================================
+   INIT
+   ================================================================ */
 window.addEventListener('load', () => {
     if (supabaseClient) {
         supabaseClient.auth.onAuthStateChange((event) => {
@@ -3604,6 +3866,7 @@ window.addEventListener('load', () => {
 document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
         document.querySelectorAll('.modal-backdrop.active').forEach(m => m.classList.remove('active'));
+        closeExportMenu();
     }
 });
 
