@@ -2503,6 +2503,10 @@ function renderSkpActivityCards() {
         </div>
     `).join('');
 }
+function filterSaByValue(valueId) {
+    document.getElementById('sa-filter-value').value = valueId;
+    renderSaEvidenceList();
+}
 
 function filterSkpByActivity(activityId) {
     document.getElementById('skp-filter-activity').value = activityId;
@@ -2999,6 +3003,12 @@ function viewEvidenceDetail(type, id) {
 
     const hasFile = !!e.file_url;
 
+    // Tentukan link untuk "Salin Link" dan "Preview"
+    // Prioritas: file_url (jika ada) → external_link → kosong
+    const linkToCopy = e.file_url || e.external_link || '';
+    const linkLabel = e.file_url ? 'Salin Link File' : (e.external_link ? 'Salin Link Eksternal' : 'Salin Link');
+    const linkIcon = e.file_url ? 'fa-link' : 'fa-external-link';
+
     detail.innerHTML = `
         <div class="space-y-3">
             <div class="flex items-center justify-between">
@@ -3012,10 +3022,14 @@ function viewEvidenceDetail(type, id) {
             </div>
             ${displayNotes ? `<div class="text-xs"><span class="text-brand-200">Keterangan:</span><br><span class="text-white">${escapeHtml(displayNotes)}</span></div>` : ''}
             ${e.file_url ? renderEvidenceFilePreview(e.file_url, e.notes) : ''}
-            ${e.external_link ? `<div class="text-xs"><a href="${e.external_link}" target="_blank" class="text-brand-200 hover:text-white underline"><i class="fa-solid fa-link mr-1"></i>${escapeHtml(e.external_link)}</a></div>` : ''}
+            ${e.external_link && !e.file_url ? `<div class="text-xs"><a href="${e.external_link}" target="_blank" class="text-brand-200 hover:text-white underline break-all"><i class="fa-solid fa-link mr-1"></i>${escapeHtml(e.external_link)}</a></div>` : ''}
+            
             <div class="flex flex-wrap gap-2 pt-2 border-t border-white/10">
-                ${hasFile ? `<button onclick="downloadEvidenceFile('${e.file_url.replace(/'/g, "\\'")}', '${escapeHtml(fileName || 'bukti').replace(/'/g, "\\'")}')" class="flex-1 py-2 rounded-lg bg-emerald-500/25 hover:bg-emerald-500/40 text-emerald-100 border border-emerald-400/40 text-xs font-semibold flex items-center justify-center space-x-1"><i class="fa-solid fa-download"></i><span>Download File</span></button>` : ''}
-                ${hasFile ? `<button onclick="previewEvidenceFile('${e.file_url.replace(/'/g, "\\'")}')" class="flex-1 py-2 rounded-lg bg-purple-500/25 hover:bg-purple-500/40 text-purple-100 border border-purple-400/40 text-xs font-medium"><i class="fa-solid fa-eye mr-1"></i>Preview</button>` : ''}
+                ${hasFile ? `<button onclick="downloadEvidenceFile('${e.file_url.replace(/'/g, "\\'")}', '${escapeHtml(fileName || 'bukti').replace(/'/g, "\\'")}')" class="flex-1 min-w-[120px] py-2 rounded-lg bg-emerald-500/25 hover:bg-emerald-500/40 text-emerald-100 border border-emerald-400/40 text-xs font-semibold flex items-center justify-center space-x-1"><i class="fa-solid fa-download"></i><span>Download File</span></button>` : ''}
+                ${hasFile ? `<button onclick="previewEvidenceFile('${e.file_url.replace(/'/g, "\\'")}')" class="flex-1 min-w-[120px] py-2 rounded-lg bg-purple-500/25 hover:bg-purple-500/40 text-purple-100 border border-purple-400/40 text-xs font-medium"><i class="fa-solid fa-eye mr-1"></i>Preview</button>` : ''}
+                
+                ${linkToCopy ? `<button onclick="copyEvidenceLink('${linkToCopy.replace(/'/g, "\\'")}')" class="flex-1 min-w-[120px] py-2 rounded-lg bg-sky-500/25 hover:bg-sky-500/40 text-sky-100 border border-sky-400/40 text-xs font-medium"><i class="fa-solid ${linkIcon} mr-1"></i>${linkLabel}</button>` : ''}
+                
                 <button onclick="closeModal('modal-evidence-detail')" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs">Tutup</button>
             </div>
         </div>
@@ -3028,6 +3042,14 @@ function previewEvidenceFile(url) {
     if (!url) { showToast('Tidak ada file untuk di-preview.', 'warning'); return; }
     window.open(url, '_blank', 'noopener');
     showToast('Membuka preview di tab baru...', 'info');
+}
+function copyEvidenceLink(url) {
+    if (!url) {
+        showToast('Tidak ada link untuk disalin.', 'warning');
+        return;
+    }
+    // Menggunakan fungsi copyToClipboard yang sudah ada
+    copyToClipboard(url);
 }
 
 async function downloadEvidenceFile(url, fileName) {
