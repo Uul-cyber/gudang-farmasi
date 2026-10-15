@@ -362,7 +362,7 @@
 
             <div class="pt-3 border-t border-white/10 text-center text-[10px] text-brand-200">
                 <p>© 2026 E-Bukti Farmasi</p>
-                <p>v2.5</p>
+                <p>v2.6</p>
             </div>
         </aside>
 
@@ -1586,19 +1586,19 @@
             </div>
         </div>
         <div class="text-sm text-white mb-5 space-y-2">
-            <p>Import akan <b class="text-emerald-300">MENAMBAH</b> data baru dari file Excel. Data lama <b>tidak akan dihapus atau diubah</b>.</p>
+            <p>Import akan <b class="text-emerald-300">MENAMBAH</b> data baru dari file Excel. Data lama <b>tidak akan dihapus</b>.</p>
             <div class="p-3 rounded-xl bg-white/5 border border-white/15 text-xs space-y-1">
                 <p class="font-semibold text-brand-200 mb-1">Aturan Import:</p>
                 <ul class="list-disc list-inside space-y-0.5 text-brand-100">
-                    <li>Obat yang <b>sudah ada</b> (nama sama) → <span class="text-amber-300">di-skip</span></li>
+                    <li>Obat <b>sudah ada</b> (nama sama) → <span class="text-amber-300">di-skip</span></li>
                     <li>Obat <b>baru</b> → ditambahkan ke Master Obat</li>
-                    <li>Rak yang <b>sudah ada</b> → dipakai ulang</li>
+                    <li>Rak <b>sudah ada</b> → dipakai ulang</li>
                     <li>Rak <b>baru</b> → dibuat otomatis</li>
-                    <li>Batch yang <b>sudah ada</b> di rak → <span class="text-amber-300">di-skip</span></li>
-                    <li>No Batch kosong / angka urut → auto-generate (<code class="text-brand-200">AUTO-xxxx</code>)</li>
+                    <li>Batch <b>sudah ada</b> → di-skip</li>
+                    <li>No Batch kosong / angka urut → auto-generate</li>
                 </ul>
             </div>
-            <p class="text-xs text-emerald-200"><i class="fa-solid fa-shield-halved mr-1"></i>Data lama aman. Import bersifat <b>idempotent</b> — bisa dijalankan berkali-kali tanpa duplikat.</p>
+            <p class="text-xs text-emerald-200"><i class="fa-solid fa-shield-halved mr-1"></i>Data lama aman. Import bisa dijalankan berkali-kali tanpa duplikat.</p>
         </div>
         <div class="flex justify-end space-x-2">
             <button onclick="cancelImportRackItems()" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-medium">Batal</button>
@@ -1654,13 +1654,11 @@
 <!-- ==================== SCRIPT LOGIC ==================== -->
 <script>
 /* ================================================================
-   E-BUKTI FARMASI — JavaScript Logic (v2.5)
-   Perubahan utama:
-   - Import APPEND (tidak hapus data lama)
-   - Skip duplikat obat/rak/batch
-   - Auto-generate No Batch kalau kosong / angka urut
-   - parseDateFlexible() handle format ISO datetime
-   - Progress modal + summary modal
+   E-BUKTI FARMASI — JavaScript Logic (v2.6)
+   Perbaikan dari v2.5:
+   - loadDashboard: hapus filter .gt('quantity', 0) → hitung semua item
+   - loadExpiredView: hapus filter .gt('quantity', 0)
+   - Import: robust dengan auto-skip & detail error
    ================================================================ */
 
 const DEFAULT_CONFIG = {
@@ -1755,9 +1753,6 @@ function getFileIcon(filename) {
     return 'fa-file';
 }
 
-/* ================================================================
-   parseDateFlexible — Handle ISO datetime "2028-01-30 00:00:00"
-   ================================================================ */
 function parseDateFlexible(val) {
     if (!val) return null;
 
@@ -1769,13 +1764,13 @@ function parseDateFlexible(val) {
     const s = String(val).trim();
     if (!s) return null;
 
-    // Format ISO: "2028-01-30 00:00:00" atau "2028-01-30T00:00:00"
+    // Format ISO: "2028-01-30 00:00:00"
     const isoMatch = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
     if (isoMatch) {
         return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
     }
 
-    // Format "30/01/2028" atau "30-01-2028"
+    // Format "30/01/2028"
     const dmyMatch = s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
     if (dmyMatch) {
         let day = parseInt(dmyMatch[1]);
@@ -2178,7 +2173,7 @@ function switchTab(tabName) {
 }
 
 /* ================================================================
-   DASHBOARD
+   DASHBOARD — PATCH v2.6: hapus filter quantity > 0
    ================================================================ */
 async function loadDashboard() {
     if (!supabaseClient || !currentUser) return;
@@ -2193,8 +2188,9 @@ async function loadDashboard() {
         const uniqueSa = new Set((saEv || []).map(x => x.value_id));
         document.getElementById('stat-sa').innerText = uniqueSa.size;
 
+        // === PATCH: hapus .gt('quantity', 0) ===
         const { data: racks } = await supabaseClient.from('racks').select('id');
-        const { data: occupied } = await supabaseClient.from('rack_items').select('rack_id').gt('quantity', 0);
+        const { data: occupied } = await supabaseClient.from('rack_items').select('rack_id');
         const totalRacks = (racks || []).length;
         const filledRacks = new Set((occupied || []).map(o => o.rack_id)).size;
         document.getElementById('stat-rak-filled').innerText = filledRacks;
@@ -2208,9 +2204,9 @@ async function loadDashboard() {
         const today = new Date().toISOString().split('T')[0];
         const in30 = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
 
+        // === PATCH: hapus .gt('quantity', 0) ===
         const { data: allItems } = await supabaseClient.from('rack_items')
-            .select('expired_date, quantity, medicines(name), racks(code), batch_number')
-            .gt('quantity', 0);
+            .select('expired_date, quantity, medicines(name), racks(code), batch_number');
 
         let expiredC = 0, warnC = 0;
         (allItems || []).forEach(it => {
@@ -2334,7 +2330,7 @@ function setDashExpiryFilter(filter) {
 }
 
 /* ================================================================
-   EXPIRED VIEW
+   EXPIRED VIEW — PATCH v2.6: hapus filter quantity > 0
    ================================================================ */
 function setExpiryFilter(filter) {
     expiryFilter = filter;
@@ -2353,11 +2349,12 @@ function setExpiryFilter(filter) {
 
 async function loadExpiredView() {
     if (!supabaseClient) return;
+    // === PATCH: hapus .gt('quantity', 0) ===
     const { data } = await supabaseClient.from('rack_items').select(`
         *,
         medicines(name, unit, form),
         racks(code)
-    `).gt('quantity', 0);
+    `);
 
     const allData = data || [];
     const today = new Date(); today.setHours(0,0,0,0);
@@ -2983,15 +2980,13 @@ function renderEvidenceFilePreview(url, notes) {
 
     if (isPdf) {
         return `
-            <div class="space-y-2">
-                <div class="flex items-center space-x-3 p-3 rounded-xl bg-red-500/15 border border-red-400/30">
-                    <div class="w-10 h-10 rounded-lg bg-red-400/25 text-red-100 flex items-center justify-center text-lg">
-                        <i class="fa-solid fa-file-pdf"></i>
-                    </div>
-                    <div class="min-w-0 flex-1">
-                        <p class="text-xs font-semibold text-white truncate">${escapeHtml(fileName || 'Dokumen PDF')}</p>
-                        <p class="text-[10px] text-brand-200">File PDF — gunakan tombol Preview atau Download File</p>
-                    </div>
+            <div class="flex items-center space-x-3 p-3 rounded-xl bg-red-500/15 border border-red-400/30">
+                <div class="w-10 h-10 rounded-lg bg-red-400/25 text-red-100 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <p class="text-xs font-semibold text-white truncate">${escapeHtml(fileName || 'Dokumen PDF')}</p>
+                    <p class="text-[10px] text-brand-200">File PDF — gunakan tombol Preview atau Download File</p>
                 </div>
             </div>
         `;
@@ -3847,10 +3842,6 @@ async function downloadRackItemTemplate() {
         'Nama Rak': 'Rak Obat Generik',
         'Keterangan': 'Contoh baris — hapus sebelum upload'
     });
-    rows.push({
-        'Nama Barang': '', 'Jenis Obat': '', 'No Batch': '',
-        'Kadaluarsa': '', 'Nama Rak': '', 'Keterangan': ''
-    });
 
     const ws = XLSX.utils.json_to_sheet(rows, {
         header: ['Nama Barang', 'Jenis Obat', 'No Batch', 'Kadaluarsa', 'Nama Rak', 'Keterangan']
@@ -3865,7 +3856,7 @@ async function downloadRackItemTemplate() {
 }
 
 /* ================================================================
-   IMPORT RACK ITEMS — MODE APPEND (SKIP DUPLIKAT)
+   IMPORT RACK ITEMS — MODE APPEND v2.6
    ================================================================ */
 function confirmImportRackItems(e) {
     const file = e.target.files[0];
@@ -3901,18 +3892,14 @@ async function executeImportRackItems() {
             }
 
             console.log(`📄 Total baris Excel: ${rows.length}`);
-            console.log('Contoh baris pertama:', rows[0]);
 
-            // ============================================================
-            // STEP 1: Load data existing
-            // ============================================================
             showToast('🔍 Memeriksa data lama...', 'info');
 
             const existingMeds = {};
             const existingRacks = {};
             const existingBatchKeys = new Set();
 
-            // Load medicines existing (paginated)
+            // Load medicines
             let medPage = 0;
             while (true) {
                 const { data, error } = await supabaseClient
@@ -3928,7 +3915,7 @@ async function executeImportRackItems() {
                 medPage++;
             }
 
-            // Load racks existing
+            // Load racks
             let rackPage = 0;
             while (true) {
                 const { data, error } = await supabaseClient
@@ -3944,7 +3931,7 @@ async function executeImportRackItems() {
                 rackPage++;
             }
 
-            // Load rack_items existing (untuk cek batch duplikat)
+            // Load rack_items
             let riPage = 0;
             while (true) {
                 const { data, error } = await supabaseClient
@@ -3963,9 +3950,7 @@ async function executeImportRackItems() {
 
             console.log(`✅ Existing: ${Object.keys(existingMeds).length} obat, ${Object.keys(existingRacks).length} rak, ${existingBatchKeys.size} batch`);
 
-            // ============================================================
-            // STEP 2: Counter untuk kode obat / rak / batch baru
-            // ============================================================
+            // Counter
             let obtCounter = 0;
             Object.values(existingMeds).forEach(m => {
                 const match = (m.code || '').match(/^OBT-(\d+)$/);
@@ -3985,9 +3970,7 @@ async function executeImportRackItems() {
                 if (m) autoBatchCounter = Math.max(autoBatchCounter, parseInt(m[1]));
             });
 
-            // ============================================================
-            // STEP 3: Loop insert
-            // ============================================================
+            // Loop
             let created_medicines = 0;
             let created_racks = 0;
             let inserted_items = 0;
@@ -4006,17 +3989,13 @@ async function executeImportRackItems() {
                 try {
                     updateImportProgress(rowNum, totalRows, `Memproses baris ${rowNum}...`);
 
-                    // --- Baca kolom dengan banyak alias ---
                     const namaBarang = String(
                         r['Nama Barang'] || r['nama_barang'] ||
                         r['Nama Obat'] || r['nama_obat'] ||
                         r['Nama'] || r['nama'] || ''
                     ).trim();
 
-                    if (!namaBarang) {
-                        skipped_empty++;
-                        continue;
-                    }
+                    if (!namaBarang) { skipped_empty++; continue; }
 
                     let noBatchRaw = String(
                         r['No Batch'] || r['no_batch'] ||
@@ -4024,7 +4003,7 @@ async function executeImportRackItems() {
                         r['No. Batch'] || r['Nomor Batch'] || ''
                     ).trim();
 
-                    // Deteksi kalau "noBatch" cuma angka urut (1-9999) → auto-generate
+                    // Deteksi angka urut
                     const isNumericOnly = /^\d+$/.test(noBatchRaw);
                     if (!noBatchRaw || (isNumericOnly && parseInt(noBatchRaw) < 10000)) {
                         autoBatchCounter++;
@@ -4054,7 +4033,7 @@ async function executeImportRackItems() {
                         r['Notes'] || r['notes'] || ''
                     ).trim() || null;
 
-                    // ---------- MEDICINE: cari / buat ----------
+                    // MEDICINE
                     const medKey = namaBarang.toLowerCase();
                     let medInfo = existingMeds[medKey];
 
@@ -4067,9 +4046,9 @@ async function executeImportRackItems() {
                             .insert({
                                 code: newCode,
                                 name: namaBarang,
-                                category: jenisObat,
-                                form: null,
-                                unit: null,
+                                category: jenisObat || '-',
+                                form: '-',
+                                unit: 'Unit',
                                 min_stock: 0,
                                 is_active: true
                             })
@@ -4086,19 +4065,9 @@ async function executeImportRackItems() {
                         created_medicines++;
                     } else {
                         skipped_duplicate_med++;
-                        // Update kategori kalau lama kosong & ada info baru
-                        if (jenisObat) {
-                            try {
-                                await supabaseClient
-                                    .from('medicines')
-                                    .update({ category: jenisObat })
-                                    .eq('id', medInfo.id)
-                                    .is('category', null);
-                            } catch(e) {}
-                        }
                     }
 
-                    // ---------- RACK: cari / buat ----------
+                    // RACK
                     const effectiveRackName = namaRak || 'Tanpa Rak';
                     const rackKey = effectiveRackName.toLowerCase();
                     let rackInfo = existingRacks[rackKey];
@@ -4126,14 +4095,14 @@ async function executeImportRackItems() {
                         created_racks++;
                     }
 
-                    // ---------- Cek duplikat BATCH ----------
+                    // Cek batch duplikat
                     const batchKey = `${medInfo.id}||${noBatchRaw.toLowerCase()}`;
                     if (existingBatchKeys.has(batchKey)) {
                         skipped_duplicate_batch++;
                         continue;
                     }
 
-                    // ---------- INSERT rack_item ----------
+                    // INSERT rack_item
                     const itemPayload = {
                         medicine_id: medInfo.id,
                         rack_id: rackInfo.id,
@@ -4142,7 +4111,7 @@ async function executeImportRackItems() {
                         storage_condition: 'Suhu ruang 15-30°C',
                         method: 'FEFO',
                         expired_date: kadaluarsa,
-                        quantity: 0,
+                        quantity: 1,
                         notes: keterangan
                     };
                     if (currentUser && currentUser.id) {
@@ -4168,9 +4137,6 @@ async function executeImportRackItems() {
                 }
             }
 
-            // ============================================================
-            // STEP 4: Tutup progress & tampilkan hasil
-            // ============================================================
             closeImportProgressModal();
 
             const summary = `
@@ -4437,9 +4403,9 @@ async function importMedicinesExcel(e) {
 
                     const payload = {
                         code: code, name: name,
-                        category: String(r['Kategori'] || r['kategori'] || '').trim() || null,
-                        form: String(r['Bentuk'] || r['bentuk'] || '').trim() || null,
-                        unit: String(r['Satuan'] || r['satuan'] || '').trim() || null,
+                        category: String(r['Kategori'] || r['kategori'] || '').trim() || '-',
+                        form: String(r['Bentuk'] || r['bentuk'] || '').trim() || '-',
+                        unit: String(r['Satuan'] || r['satuan'] || '').trim() || 'Unit',
                         min_stock: parseInt(r['Stok Minimal'] || r['stok_minimal'] || 0) || 0,
                         is_active: true
                     };
