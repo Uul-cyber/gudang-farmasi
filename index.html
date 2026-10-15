@@ -231,6 +231,17 @@
             color: #fff;
             box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
         }
+
+        .import-progress-bar {
+            height: 12px; background: rgba(255,255,255,0.12);
+            border-radius: 999px; overflow: hidden;
+        }
+        .import-progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #10b981);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -351,7 +362,7 @@
 
             <div class="pt-3 border-t border-white/10 text-center text-[10px] text-brand-200">
                 <p>© 2026 E-Bukti Farmasi</p>
-                <p>v2.4</p>
+                <p>v2.5</p>
             </div>
         </aside>
 
@@ -725,7 +736,7 @@
                             <i class="fa-solid fa-file-arrow-down"></i>
                             <span class="hidden sm:inline">Template Obat</span>
                         </button>
-                        <label class="px-3 py-2.5 rounded-xl bg-purple-500/25 hover:bg-purple-500/40 text-purple-100 border border-purple-400/40 font-medium text-xs shadow-lg transition flex items-center space-x-2 cursor-pointer" title="Impor akan MENGGANTI semua data lama">
+                        <label class="px-3 py-2.5 rounded-xl bg-purple-500/25 hover:bg-purple-500/40 text-purple-100 border border-purple-400/40 font-medium text-xs shadow-lg transition flex items-center space-x-2 cursor-pointer" title="Import akan MENAMBAH data baru, data lama tetap aman">
                             <i class="fa-solid fa-file-import"></i>
                             <span class="hidden sm:inline">Impor Obat</span>
                             <input type="file" accept=".xlsx,.xls" onchange="confirmImportRackItems(event)" class="hidden">
@@ -845,7 +856,6 @@
                         <input type="text" id="med-search" oninput="filterMedicinesTable()" placeholder="Cari kode, nama, atau kategori..." class="glass-input px-4 py-2 rounded-xl text-xs w-full sm:w-64">
                     </div>
 
-                    <!-- Toolbar aksi massal Master Obat -->
                     <div id="med-bulk-toolbar" class="hidden px-4 py-2.5 border-b border-white/10 bg-brand-500/15 flex items-center justify-between">
                         <span class="text-xs font-semibold text-white">
                             <i class="fa-solid fa-check-double text-brand-200 mr-2"></i>
@@ -1037,15 +1047,15 @@
                         <p class="text-xs text-brand-100 mt-1">Kelola data Excel untuk obat per rak (format RS)</p>
                     </div>
 
-                    <div class="glass-card p-5 rounded-xl space-y-3 border-l-4 border-l-amber-400">
-                        <h3 class="text-sm font-semibold text-amber-200 flex items-center space-x-2">
+                    <div class="glass-card p-5 rounded-xl space-y-3 border-l-4 border-l-emerald-400">
+                        <h3 class="text-sm font-semibold text-emerald-200 flex items-center space-x-2">
                             <i class="fa-solid fa-circle-info"></i>
-                            <span>Format Template Baru (Format Rumah Sakit)</span>
+                            <span>Format Template (Format Rumah Sakit)</span>
                         </h3>
                         <div class="text-xs text-brand-100 space-y-1">
-                            <p><b>Kolom wajib:</b> Nama Barang, No Batch</p>
-                            <p><b>Kolom opsional:</b> Jenis Obat, Kadaluarsa, Nama Rak, Keterangan</p>
-                            <p><b>Catatan:</b> Import akan <b class="text-red-300">MENGGANTI</b> semua data obat di rak. Data lama akan dihapus agar tidak ada duplikat.</p>
+                            <p><b>Kolom wajib:</b> Nama Barang</p>
+                            <p><b>Kolom opsional:</b> Jenis Obat, No Batch, Kadaluarsa, Nama Rak, Keterangan</p>
+                            <p><b>Catatan:</b> Import bersifat <b class="text-emerald-300">MENAMBAH</b>. Obat/rak/batch yang sudah ada akan di-skip otomatis.</p>
                         </div>
                     </div>
 
@@ -1073,7 +1083,7 @@
                                 <i class="fa-solid fa-upload"></i>
                                 <span>Impor Data Excel</span>
                             </h3>
-                            <p class="text-xs text-brand-100">Gunakan template format RS: <b>Nama Barang | Jenis Obat | No Batch | Kadaluarsa | Nama Rak | Keterangan</b></p>
+                            <p class="text-xs text-brand-100">Format RS: <b>Nama Barang | Jenis Obat | No Batch | Kadaluarsa | Nama Rak | Keterangan</b></p>
                             <div class="flex flex-col space-y-2 pt-1">
                                 <button onclick="downloadRackItemTemplate()" class="py-2.5 px-4 rounded-xl bg-brand-500/25 hover:bg-brand-500/40 text-brand-100 border border-brand-400/40 text-xs font-semibold transition flex items-center justify-center space-x-2">
                                     <i class="fa-solid fa-file-arrow-down"></i>
@@ -1563,32 +1573,37 @@
     </div>
 </div>
 
-<!-- ==================== MODAL: KONFIRMASI IMPORT (REPLACE) ==================== -->
+<!-- ==================== MODAL: KONFIRMASI IMPORT (APPEND) ==================== -->
 <div id="modal-confirm-import" class="modal-backdrop">
     <div class="modal-content p-5 md:p-6 max-w-md">
         <div class="flex items-center space-x-3 mb-4">
-            <div class="w-12 h-12 rounded-xl bg-amber-500/25 text-amber-200 flex items-center justify-center text-xl border border-amber-400/40">
-                <i class="fa-solid fa-triangle-exclamation"></i>
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/25 text-emerald-200 flex items-center justify-center text-xl border border-emerald-400/40">
+                <i class="fa-solid fa-file-circle-plus"></i>
             </div>
             <div>
                 <h3 class="text-lg font-bold text-white">Konfirmasi Import</h3>
-                <p class="text-xs text-brand-100">Baca peringatan dengan hati-hati</p>
+                <p class="text-xs text-brand-100">Data lama tetap aman</p>
             </div>
         </div>
-        <div id="confirm-import-content" class="text-sm text-white mb-5 space-y-2">
-            <p>Import akan <b class="text-red-300">MENGHAPUS SEMUA</b> data obat per rak yang ada saat ini, lalu menggantinya dengan data dari file Excel.</p>
-            <p class="text-xs text-brand-200">Data berikut akan hilang:</p>
-            <ul class="text-xs text-brand-100 list-disc list-inside space-y-1">
-                <li>Semua batch obat di rak</li>
-                <li>Nomor batch lama</li>
-                <li>Riwayat stok & tanggal terima lama</li>
-            </ul>
-            <p class="text-xs text-amber-200 mt-2"><i class="fa-solid fa-circle-info mr-1"></i>Pastikan file Excel sudah benar sebelum melanjutkan.</p>
+        <div class="text-sm text-white mb-5 space-y-2">
+            <p>Import akan <b class="text-emerald-300">MENAMBAH</b> data baru dari file Excel. Data lama <b>tidak akan dihapus atau diubah</b>.</p>
+            <div class="p-3 rounded-xl bg-white/5 border border-white/15 text-xs space-y-1">
+                <p class="font-semibold text-brand-200 mb-1">Aturan Import:</p>
+                <ul class="list-disc list-inside space-y-0.5 text-brand-100">
+                    <li>Obat yang <b>sudah ada</b> (nama sama) → <span class="text-amber-300">di-skip</span></li>
+                    <li>Obat <b>baru</b> → ditambahkan ke Master Obat</li>
+                    <li>Rak yang <b>sudah ada</b> → dipakai ulang</li>
+                    <li>Rak <b>baru</b> → dibuat otomatis</li>
+                    <li>Batch yang <b>sudah ada</b> di rak → <span class="text-amber-300">di-skip</span></li>
+                    <li>No Batch kosong / angka urut → auto-generate (<code class="text-brand-200">AUTO-xxxx</code>)</li>
+                </ul>
+            </div>
+            <p class="text-xs text-emerald-200"><i class="fa-solid fa-shield-halved mr-1"></i>Data lama aman. Import bersifat <b>idempotent</b> — bisa dijalankan berkali-kali tanpa duplikat.</p>
         </div>
         <div class="flex justify-end space-x-2">
             <button onclick="cancelImportRackItems()" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-medium">Batal</button>
-            <button onclick="executeImportRackItems()" class="px-5 py-2.5 rounded-xl bg-amber-500/40 hover:bg-amber-500/60 text-amber-100 border border-amber-400/50 text-xs font-semibold">
-                <i class="fa-solid fa-file-import mr-1"></i>Ya, Import & Ganti
+            <button onclick="executeImportRackItems()" class="px-5 py-2.5 rounded-xl bg-emerald-500/40 hover:bg-emerald-500/60 text-emerald-100 border border-emerald-400/50 text-xs font-semibold">
+                <i class="fa-solid fa-file-import mr-1"></i>Ya, Tambahkan Data
             </button>
         </div>
     </div>
@@ -1639,12 +1654,13 @@
 <!-- ==================== SCRIPT LOGIC ==================== -->
 <script>
 /* ================================================================
-   E-BUKTI FARMASI — JavaScript Logic (v2.4)
-   Fitur baru:
-   - Checkbox + hapus massal di Master Obat (seperti Rak)
-   - Template & import format RS
-   - Import = REPLACE (hapus data lama dulu)
-   - Auto-generate Kode Obat & Kode Rak
+   E-BUKTI FARMASI — JavaScript Logic (v2.5)
+   Perubahan utama:
+   - Import APPEND (tidak hapus data lama)
+   - Skip duplikat obat/rak/batch
+   - Auto-generate No Batch kalau kosong / angka urut
+   - parseDateFlexible() handle format ISO datetime
+   - Progress modal + summary modal
    ================================================================ */
 
 const DEFAULT_CONFIG = {
@@ -1675,7 +1691,6 @@ let evidenceFile = null;
 let evidenceFileUrl = null;
 let evidenceFileKind = null;
 
-// Selection state
 let selectedRackItemIds = new Set();
 let selectedMedicineIds = new Set();
 
@@ -1740,23 +1755,40 @@ function getFileIcon(filename) {
     return 'fa-file';
 }
 
+/* ================================================================
+   parseDateFlexible — Handle ISO datetime "2028-01-30 00:00:00"
+   ================================================================ */
 function parseDateFlexible(val) {
     if (!val) return null;
+
     if (val instanceof Date) {
         if (isNaN(val)) return null;
         return val.toISOString().split('T')[0];
     }
+
     const s = String(val).trim();
     if (!s) return null;
-    const d = new Date(s);
-    if (!isNaN(d)) return d.toISOString().split('T')[0];
-    const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
-    if (m) {
-        let day = parseInt(m[1]), mo = parseInt(m[2]), yr = parseInt(m[3]);
+
+    // Format ISO: "2028-01-30 00:00:00" atau "2028-01-30T00:00:00"
+    const isoMatch = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (isoMatch) {
+        return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
+    }
+
+    // Format "30/01/2028" atau "30-01-2028"
+    const dmyMatch = s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
+    if (dmyMatch) {
+        let day = parseInt(dmyMatch[1]);
+        let mo = parseInt(dmyMatch[2]);
+        let yr = parseInt(dmyMatch[3]);
         if (yr < 100) yr += 2000;
-        const dd = new Date(yr, mo-1, day);
+        const dd = new Date(yr, mo - 1, day);
         if (!isNaN(dd)) return dd.toISOString().split('T')[0];
     }
+
+    const d = new Date(s);
+    if (!isNaN(d)) return d.toISOString().split('T')[0];
+
     return null;
 }
 
@@ -2177,7 +2209,7 @@ async function loadDashboard() {
         const in30 = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
 
         const { data: allItems } = await supabaseClient.from('rack_items')
-            .select('expired_date, quantity, medicines(name), racks(code), batches:batch_number')
+            .select('expired_date, quantity, medicines(name), racks(code), batch_number')
             .gt('quantity', 0);
 
         let expiredC = 0, warnC = 0;
@@ -2280,7 +2312,7 @@ async function renderDashboardExpiryList(allItems) {
         return `<div class="p-3 rounded-xl border ${cls} flex items-center justify-between">
             <div class="min-w-0 flex-1">
                 <div class="text-xs font-bold text-white truncate">${escapeHtml(b.medicines?.name || '-')}</div>
-                <div class="text-[10px] text-brand-100 font-mono">Batch: ${escapeHtml(b.batches || '-')} • ${escapeHtml(b.racks?.code || '-')}</div>
+                <div class="text-[10px] text-brand-100 font-mono">Batch: ${escapeHtml(b.batch_number || '-')} • ${escapeHtml(b.racks?.code || '-')}</div>
             </div>
             <div class="text-right ml-2 shrink-0">
                 <div class="text-xs font-semibold text-white">${formatDate(b.expired_date)}</div>
@@ -2302,7 +2334,7 @@ function setDashExpiryFilter(filter) {
 }
 
 /* ================================================================
-   EXPIRED VIEW + Filter
+   EXPIRED VIEW
    ================================================================ */
 function setExpiryFilter(filter) {
     expiryFilter = filter;
@@ -2502,10 +2534,6 @@ function renderSkpActivityCards() {
             <p class="text-[10px] text-brand-200 mt-1" id="skp-count-${a.id}">0 bukti</p>
         </div>
     `).join('');
-}
-function filterSaByValue(valueId) {
-    document.getElementById('sa-filter-value').value = valueId;
-    renderSaEvidenceList();
 }
 
 function filterSkpByActivity(activityId) {
@@ -2949,8 +2977,7 @@ function renderEvidenceFilePreview(url, notes) {
 
     if (isImage) {
         return `<div>
-            <img src="${url}" class="rounded-xl w-full max-h-64 object-contain bg-black/30 border border-white/15" alt="Bukti"
-                 onerror="this.parentElement.innerHTML='<div class=\\'p-3 rounded-xl bg-red-500/15 border border-red-400/30 text-xs text-red-100\\'><i class=\\'fa-solid fa-triangle-exclamation mr-1\\'></i> Gambar tidak dapat ditampilkan. Gunakan tombol Download File di bawah.</div>'">
+            <img src="${url}" class="rounded-xl w-full max-h-64 object-contain bg-black/30 border border-white/15" alt="Bukti">
         </div>`;
     }
 
@@ -2963,10 +2990,9 @@ function renderEvidenceFilePreview(url, notes) {
                     </div>
                     <div class="min-w-0 flex-1">
                         <p class="text-xs font-semibold text-white truncate">${escapeHtml(fileName || 'Dokumen PDF')}</p>
-                        <p class="text-[10px] text-brand-200">File PDF — gunakan tombol Download File di bawah</p>
+                        <p class="text-[10px] text-brand-200">File PDF — gunakan tombol Preview atau Download File</p>
                     </div>
                 </div>
-                <div class="text-[10px] text-brand-200 text-center italic">Jika preview tidak muncul, klik tombol Preview atau Download File di bawah.</div>
             </div>
         `;
     }
@@ -3003,8 +3029,6 @@ function viewEvidenceDetail(type, id) {
 
     const hasFile = !!e.file_url;
 
-    // Tentukan link untuk "Salin Link" dan "Preview"
-    // Prioritas: file_url (jika ada) → external_link → kosong
     const linkToCopy = e.file_url || e.external_link || '';
     const linkLabel = e.file_url ? 'Salin Link File' : (e.external_link ? 'Salin Link Eksternal' : 'Salin Link');
     const linkIcon = e.file_url ? 'fa-link' : 'fa-external-link';
@@ -3027,9 +3051,7 @@ function viewEvidenceDetail(type, id) {
             <div class="flex flex-wrap gap-2 pt-2 border-t border-white/10">
                 ${hasFile ? `<button onclick="downloadEvidenceFile('${e.file_url.replace(/'/g, "\\'")}', '${escapeHtml(fileName || 'bukti').replace(/'/g, "\\'")}')" class="flex-1 min-w-[120px] py-2 rounded-lg bg-emerald-500/25 hover:bg-emerald-500/40 text-emerald-100 border border-emerald-400/40 text-xs font-semibold flex items-center justify-center space-x-1"><i class="fa-solid fa-download"></i><span>Download File</span></button>` : ''}
                 ${hasFile ? `<button onclick="previewEvidenceFile('${e.file_url.replace(/'/g, "\\'")}')" class="flex-1 min-w-[120px] py-2 rounded-lg bg-purple-500/25 hover:bg-purple-500/40 text-purple-100 border border-purple-400/40 text-xs font-medium"><i class="fa-solid fa-eye mr-1"></i>Preview</button>` : ''}
-                
                 ${linkToCopy ? `<button onclick="copyEvidenceLink('${linkToCopy.replace(/'/g, "\\'")}')" class="flex-1 min-w-[120px] py-2 rounded-lg bg-sky-500/25 hover:bg-sky-500/40 text-sky-100 border border-sky-400/40 text-xs font-medium"><i class="fa-solid ${linkIcon} mr-1"></i>${linkLabel}</button>` : ''}
-                
                 <button onclick="closeModal('modal-evidence-detail')" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs">Tutup</button>
             </div>
         </div>
@@ -3044,11 +3066,7 @@ function previewEvidenceFile(url) {
     showToast('Membuka preview di tab baru...', 'info');
 }
 function copyEvidenceLink(url) {
-    if (!url) {
-        showToast('Tidak ada link untuk disalin.', 'warning');
-        return;
-    }
-    // Menggunakan fungsi copyToClipboard yang sudah ada
+    if (!url) { showToast('Tidak ada link untuk disalin.', 'warning'); return; }
     copyToClipboard(url);
 }
 
@@ -3474,7 +3492,6 @@ function filterMedicinesTable() {
     updateMedBulkToolbar();
 }
 
-/* Selection handlers untuk Master Obat */
 function toggleMedSelection(id, checked) {
     if (checked) selectedMedicineIds.add(id);
     else selectedMedicineIds.delete(id);
@@ -3518,7 +3535,6 @@ async function confirmDeleteSelectedMedicines() {
     const n = selectedMedicineIds.size;
     if (n === 0) return;
 
-    // Cek apakah ada obat yang masih dipakai di rack_items
     const ids = Array.from(selectedMedicineIds);
     const { data: usedInRacks } = await supabaseClient.from('rack_items')
         .select('medicine_id, medicines(name)')
@@ -3544,10 +3560,7 @@ async function executeDeleteSelectedMedicines() {
     closeModal('modal-confirm-delete-med');
     showToast(`Menghapus ${ids.length} obat...`, 'info');
 
-    // Hapus rack_items yang terkait dulu (untuk hindari foreign key constraint)
     await supabaseClient.from('rack_items').delete().in('medicine_id', ids);
-
-    // Hapus medicines
     const { error } = await supabaseClient.from('medicines').delete().in('id', ids);
     if (error) {
         showToast('Gagal hapus: ' + error.message, 'error');
@@ -3621,10 +3634,7 @@ function editMedicine(id) {
 
 async function deleteMedicine(id) {
     if (!confirm('Hapus obat ini? Data rak yang terkait juga akan terhapus.')) return;
-
-    // Hapus rack_items terkait dulu
     await supabaseClient.from('rack_items').delete().eq('medicine_id', id);
-
     const { error } = await supabaseClient.from('medicines').delete().eq('id', id);
     if (error) { showToast('Gagal: ' + error.message, 'error'); return; }
     showToast('Obat dihapus.', 'info');
@@ -3748,7 +3758,7 @@ async function deleteNote(id) {
 }
 
 /* ================================================================
-   IMPOR / EKSPOR (Rak Items) — FORMAT RS
+   EKSPOR
    ================================================================ */
 async function exportToExcel() {
     const { data } = await supabaseClient.from('rack_items').select(`
@@ -3854,6 +3864,9 @@ async function downloadRackItemTemplate() {
     showToast(`Template diunduh (${existingData.length} data existing + baris contoh).`, 'success');
 }
 
+/* ================================================================
+   IMPORT RACK ITEMS — MODE APPEND (SKIP DUPLIKAT)
+   ================================================================ */
 function confirmImportRackItems(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -3873,151 +3886,394 @@ async function executeImportRackItems() {
     pendingImportFile = null;
     closeModal('modal-confirm-import');
 
-    showToast('Membaca file Excel...', 'info');
+    showToast('📖 Membaca file Excel...', 'info');
 
     const reader = new FileReader();
     reader.onload = async ev => {
         try {
             const wb = XLSX.read(ev.target.result, { type: 'array' });
             const ws = wb.Sheets[wb.SheetNames[0]];
-            const rows = XLSX.utils.sheet_to_json(ws, { raw: false });
-            if (!rows.length) { showToast('File kosong.', 'error'); return; }
+            const rows = XLSX.utils.sheet_to_json(ws, { raw: false, defval: '' });
 
-            showToast('Menghapus data lama...', 'info');
-
-            const { error: delErr } = await supabaseClient.from('rack_items').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-            if (delErr) {
-                console.error('Gagal hapus rack_items:', delErr);
-                showToast('Gagal hapus data lama: ' + delErr.message, 'error');
+            if (!rows.length) {
+                showToast('File Excel kosong.', 'error');
                 return;
             }
 
-            const { data: stillUsed } = await supabaseClient.from('rack_items').select('medicine_id');
-            const usedMedIds = new Set((stillUsed || []).map(r => r.medicine_id));
-            const { data: allMeds } = await supabaseClient.from('medicines').select('id');
-            const orphanIds = (allMeds || []).filter(m => !usedMedIds.has(m.id)).map(m => m.id);
-            if (orphanIds.length > 0) {
-                await supabaseClient.from('medicines').delete().in('id', orphanIds);
+            console.log(`📄 Total baris Excel: ${rows.length}`);
+            console.log('Contoh baris pertama:', rows[0]);
+
+            // ============================================================
+            // STEP 1: Load data existing
+            // ============================================================
+            showToast('🔍 Memeriksa data lama...', 'info');
+
+            const existingMeds = {};
+            const existingRacks = {};
+            const existingBatchKeys = new Set();
+
+            // Load medicines existing (paginated)
+            let medPage = 0;
+            while (true) {
+                const { data, error } = await supabaseClient
+                    .from('medicines')
+                    .select('id, code, name')
+                    .range(medPage * 1000, (medPage + 1) * 1000 - 1);
+                if (error) { console.error('Load medicines error:', error); break; }
+                if (!data || data.length === 0) break;
+                data.forEach(m => {
+                    existingMeds[(m.name || '').toLowerCase().trim()] = m;
+                });
+                if (data.length < 1000) break;
+                medPage++;
             }
 
-            let success = 0, failed = 0, skipped = 0;
+            // Load racks existing
+            let rackPage = 0;
+            while (true) {
+                const { data, error } = await supabaseClient
+                    .from('racks')
+                    .select('id, code, name')
+                    .range(rackPage * 1000, (rackPage + 1) * 1000 - 1);
+                if (error) { console.error('Load racks error:', error); break; }
+                if (!data || data.length === 0) break;
+                data.forEach(r => {
+                    existingRacks[(r.name || '').toLowerCase().trim()] = r;
+                });
+                if (data.length < 1000) break;
+                rackPage++;
+            }
 
-            const medicineCache = {};
-            const rackCache = {};
+            // Load rack_items existing (untuk cek batch duplikat)
+            let riPage = 0;
+            while (true) {
+                const { data, error } = await supabaseClient
+                    .from('rack_items')
+                    .select('id, medicine_id, rack_id, batch_number')
+                    .range(riPage * 1000, (riPage + 1) * 1000 - 1);
+                if (error) { console.error('Load rack_items error:', error); break; }
+                if (!data || data.length === 0) break;
+                data.forEach(ri => {
+                    const key = `${ri.medicine_id}||${(ri.batch_number || '').toLowerCase().trim()}`;
+                    existingBatchKeys.add(key);
+                });
+                if (data.length < 1000) break;
+                riPage++;
+            }
 
-            const { data: existMeds } = await supabaseClient.from('medicines').select('id, name, code');
-            (existMeds || []).forEach(m => { medicineCache[m.name.toLowerCase()] = { id: m.id, code: m.code }; });
-            const { data: existRacks } = await supabaseClient.from('racks').select('id, name, code');
-            (existRacks || []).forEach(r => { rackCache[r.name.toLowerCase()] = { id: r.id, code: r.code }; });
+            console.log(`✅ Existing: ${Object.keys(existingMeds).length} obat, ${Object.keys(existingRacks).length} rak, ${existingBatchKeys.size} batch`);
 
+            // ============================================================
+            // STEP 2: Counter untuk kode obat / rak / batch baru
+            // ============================================================
             let obtCounter = 0;
-            (existMeds || []).forEach(m => {
+            Object.values(existingMeds).forEach(m => {
                 const match = (m.code || '').match(/^OBT-(\d+)$/);
                 if (match) obtCounter = Math.max(obtCounter, parseInt(match[1]));
             });
 
-            let rakAutoCounter = 0;
-            (existRacks || []).forEach(r => {
+            let rakCounter = 0;
+            Object.values(existingRacks).forEach(r => {
                 const match = (r.code || '').match(/^RAK-OTOMATIS-(\d+)$/);
-                if (match) rakAutoCounter = Math.max(rakAutoCounter, parseInt(match[1]));
+                if (match) rakCounter = Math.max(rakCounter, parseInt(match[1]));
             });
 
-            for (const r of rows) {
+            let autoBatchCounter = 0;
+            existingBatchKeys.forEach(k => {
+                const batch = k.split('||')[1] || '';
+                const m = batch.match(/^auto-(\d+)$/);
+                if (m) autoBatchCounter = Math.max(autoBatchCounter, parseInt(m[1]));
+            });
+
+            // ============================================================
+            // STEP 3: Loop insert
+            // ============================================================
+            let created_medicines = 0;
+            let created_racks = 0;
+            let inserted_items = 0;
+            let skipped_duplicate_med = 0;
+            let skipped_duplicate_batch = 0;
+            let skipped_empty = 0;
+            let failed = 0;
+
+            const totalRows = rows.length;
+            openImportProgressModal(totalRows);
+
+            for (let i = 0; i < rows.length; i++) {
+                const r = rows[i];
+                const rowNum = i + 1;
+
                 try {
-                    const namaBarang = String(r['Nama Barang'] || r['nama_barang'] || r['Nama Obat'] || r['nama_obat'] || '').trim();
-                    const noBatch = String(r['No Batch'] || r['no_batch'] || r['Batch'] || r['batch'] || '').trim();
+                    updateImportProgress(rowNum, totalRows, `Memproses baris ${rowNum}...`);
 
-                    if (!namaBarang || !noBatch) { skipped++; continue; }
+                    // --- Baca kolom dengan banyak alias ---
+                    const namaBarang = String(
+                        r['Nama Barang'] || r['nama_barang'] ||
+                        r['Nama Obat'] || r['nama_obat'] ||
+                        r['Nama'] || r['nama'] || ''
+                    ).trim();
 
-                    const jenisObat = String(r['Jenis Obat'] || r['jenis_obat'] || r['Kategori'] || r['kategori'] || '').trim() || null;
-                    const kadaluarsaRaw = r['Kadaluarsa'] || r['kadaluarsa'] || r['Expired'] || r['expired'] || '';
-                    const kadaluarsa = parseDateFlexible(kadaluarsaRaw) || new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0];
-                    const namaRak = String(r['Nama Rak'] || r['nama_rak'] || '').trim();
-                    const keterangan = String(r['Keterangan'] || r['keterangan'] || r['Notes'] || r['notes'] || '').trim() || null;
+                    if (!namaBarang) {
+                        skipped_empty++;
+                        continue;
+                    }
 
-                    let medInfo = medicineCache[namaBarang.toLowerCase()];
+                    let noBatchRaw = String(
+                        r['No Batch'] || r['no_batch'] ||
+                        r['Batch'] || r['batch'] ||
+                        r['No. Batch'] || r['Nomor Batch'] || ''
+                    ).trim();
+
+                    // Deteksi kalau "noBatch" cuma angka urut (1-9999) → auto-generate
+                    const isNumericOnly = /^\d+$/.test(noBatchRaw);
+                    if (!noBatchRaw || (isNumericOnly && parseInt(noBatchRaw) < 10000)) {
+                        autoBatchCounter++;
+                        noBatchRaw = `AUTO-${String(autoBatchCounter).padStart(4, '0')}`;
+                    }
+
+                    const jenisObat = String(
+                        r['Jenis Obat'] || r['jenis_obat'] ||
+                        r['Kategori'] || r['kategori'] || ''
+                    ).trim() || null;
+
+                    const kadaluarsaRaw =
+                        r['Kadaluarsa'] || r['kadaluarsa'] ||
+                        r['Expired'] || r['expired'] ||
+                        r['Kedaluwarsa'] || r['kedaluwarsa'] || '';
+
+                    const kadaluarsa = parseDateFlexible(kadaluarsaRaw)
+                        || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+                    const namaRak = String(
+                        r['Nama Rak'] || r['nama_rak'] ||
+                        r['Rak'] || r['rak'] || ''
+                    ).trim();
+
+                    const keterangan = String(
+                        r['Keterangan'] || r['keterangan'] ||
+                        r['Notes'] || r['notes'] || ''
+                    ).trim() || null;
+
+                    // ---------- MEDICINE: cari / buat ----------
+                    const medKey = namaBarang.toLowerCase();
+                    let medInfo = existingMeds[medKey];
+
                     if (!medInfo) {
                         obtCounter++;
                         const newCode = `OBT-${String(obtCounter).padStart(3, '0')}`;
-                        const { data: newMed, error: medErr } = await supabaseClient.from('medicines').insert({
-                            code: newCode,
-                            name: namaBarang,
-                            category: jenisObat,
-                            form: null,
-                            unit: null,
-                            min_stock: 0,
-                            is_active: true
-                        }).select('id, code').single();
-                        if (medErr || !newMed) { console.error('Gagal buat obat:', medErr); failed++; continue; }
-                        medInfo = { id: newMed.id, code: newMed.code };
-                        medicineCache[namaBarang.toLowerCase()] = medInfo;
-                    } else if (jenisObat) {
-                        await supabaseClient.from('medicines').update({ category: jenisObat }).eq('id', medInfo.id);
-                    }
 
-                    let rackInfo = null;
-                    if (namaRak) {
-                        rackInfo = rackCache[namaRak.toLowerCase()];
-                        if (!rackInfo) {
-                            rakAutoCounter++;
-                            const newRackCode = `RAK-OTOMATIS-${rakAutoCounter}`;
-                            const { data: newRack, error: rackErr } = await supabaseClient.from('racks').insert({
-                                code: newRackCode,
-                                name: namaRak,
-                                location_description: null
-                            }).select('id, code').single();
-                            if (rackErr || !newRack) { console.error('Gagal buat rak:', rackErr); failed++; continue; }
-                            rackInfo = { id: newRack.id, code: newRack.code };
-                            rackCache[namaRak.toLowerCase()] = rackInfo;
+                        const { data: newMed, error: medErr } = await supabaseClient
+                            .from('medicines')
+                            .insert({
+                                code: newCode,
+                                name: namaBarang,
+                                category: jenisObat,
+                                form: null,
+                                unit: null,
+                                min_stock: 0,
+                                is_active: true
+                            })
+                            .select('id, code, name')
+                            .single();
+
+                        if (medErr || !newMed) {
+                            console.error(`❌ Baris ${rowNum}: gagal buat obat "${namaBarang}"`, medErr);
+                            failed++;
+                            continue;
                         }
+                        medInfo = newMed;
+                        existingMeds[medKey] = newMed;
+                        created_medicines++;
                     } else {
-                        if (!rackCache['tanpa rak']) {
-                            rakAutoCounter++;
-                            const newRackCode = `RAK-OTOMATIS-${rakAutoCounter}`;
-                            const { data: newRack, error: rackErr } = await supabaseClient.from('racks').insert({
-                                code: newRackCode,
-                                name: 'Tanpa Rak',
-                                location_description: null
-                            }).select('id, code').single();
-                            if (rackErr || !newRack) { console.error('Gagal buat rak default:', rackErr); failed++; continue; }
-                            rackCache['tanpa rak'] = { id: newRack.id, code: newRack.code };
+                        skipped_duplicate_med++;
+                        // Update kategori kalau lama kosong & ada info baru
+                        if (jenisObat) {
+                            try {
+                                await supabaseClient
+                                    .from('medicines')
+                                    .update({ category: jenisObat })
+                                    .eq('id', medInfo.id)
+                                    .is('category', null);
+                            } catch(e) {}
                         }
-                        rackInfo = rackCache['tanpa rak'];
                     }
 
-                    const { error: riErr } = await supabaseClient.from('rack_items').insert({
+                    // ---------- RACK: cari / buat ----------
+                    const effectiveRackName = namaRak || 'Tanpa Rak';
+                    const rackKey = effectiveRackName.toLowerCase();
+                    let rackInfo = existingRacks[rackKey];
+
+                    if (!rackInfo) {
+                        rakCounter++;
+                        const newRackCode = `RAK-OTOMATIS-${rakCounter}`;
+                        const { data: newRack, error: rackErr } = await supabaseClient
+                            .from('racks')
+                            .insert({
+                                code: newRackCode,
+                                name: effectiveRackName,
+                                location_description: null
+                            })
+                            .select('id, code, name')
+                            .single();
+
+                        if (rackErr || !newRack) {
+                            console.error(`❌ Baris ${rowNum}: gagal buat rak "${effectiveRackName}"`, rackErr);
+                            failed++;
+                            continue;
+                        }
+                        rackInfo = newRack;
+                        existingRacks[rackKey] = newRack;
+                        created_racks++;
+                    }
+
+                    // ---------- Cek duplikat BATCH ----------
+                    const batchKey = `${medInfo.id}||${noBatchRaw.toLowerCase()}`;
+                    if (existingBatchKeys.has(batchKey)) {
+                        skipped_duplicate_batch++;
+                        continue;
+                    }
+
+                    // ---------- INSERT rack_item ----------
+                    const itemPayload = {
                         medicine_id: medInfo.id,
                         rack_id: rackInfo.id,
-                        batch_number: noBatch,
+                        batch_number: noBatchRaw,
                         received_date: new Date().toISOString().split('T')[0],
                         storage_condition: 'Suhu ruang 15-30°C',
                         method: 'FEFO',
                         expired_date: kadaluarsa,
                         quantity: 0,
-                        notes: keterangan,
-                        created_by: currentUser.id
-                    });
+                        notes: keterangan
+                    };
+                    if (currentUser && currentUser.id) {
+                        itemPayload.created_by = currentUser.id;
+                    }
+
+                    const { error: riErr } = await supabaseClient
+                        .from('rack_items')
+                        .insert(itemPayload);
+
                     if (riErr) {
-                        console.error('Gagal insert rack_item:', riErr);
+                        console.error(`❌ Baris ${rowNum}: gagal insert rack_item`, riErr);
                         failed++;
                         continue;
                     }
-                    success++;
-                } catch(err) {
-                    console.error('Error baris:', err);
+
+                    existingBatchKeys.add(batchKey);
+                    inserted_items++;
+
+                } catch (err) {
+                    console.error(`❌ Baris ${rowNum} error:`, err);
                     failed++;
                 }
             }
 
-            showToast(`Import selesai: ${success} sukses, ${failed} gagal, ${skipped} kosong dilewati`, success > 0 ? 'success' : 'error');
-            loadRakView();
-            loadMedicines();
-        } catch(err) {
-            console.error(err);
+            // ============================================================
+            // STEP 4: Tutup progress & tampilkan hasil
+            // ============================================================
+            closeImportProgressModal();
+
+            const summary = `
+                <div class="text-left space-y-1.5">
+                    <p class="text-emerald-300 font-semibold">✅ Import selesai!</p>
+                    <p>📥 <b>${inserted_items}</b> item ditambahkan ke rak</p>
+                    <p>💊 <b>${created_medicines}</b> obat baru dibuat</p>
+                    <p>🗄️ <b>${created_racks}</b> rak baru dibuat</p>
+                    <hr class="border-white/10 my-1.5">
+                    <p class="text-amber-200 text-xs">⏭️ Skip obat duplikat: <b>${skipped_duplicate_med}</b></p>
+                    <p class="text-amber-200 text-xs">⏭️ Skip batch duplikat: <b>${skipped_duplicate_batch}</b></p>
+                    <p class="text-brand-200 text-xs">⏭️ Skip baris kosong: <b>${skipped_empty}</b></p>
+                    ${failed > 0 ? `<p class="text-red-300 text-xs">❌ Gagal: <b>${failed}</b> (lihat Console F12 untuk detail)</p>` : ''}
+                </div>
+            `;
+            showImportSummaryModal(summary);
+
+            if (typeof loadRakView === 'function') loadRakView();
+            if (typeof loadMedicines === 'function') loadMedicines();
+            if (typeof loadDashboard === 'function') loadDashboard();
+
+        } catch (err) {
+            console.error('Import fatal error:', err);
+            closeImportProgressModal();
             showToast('File tidak valid: ' + err.message, 'error');
         }
     };
     reader.readAsArrayBuffer(file);
+}
+
+/* ================================================================
+   IMPORT PROGRESS MODAL
+   ================================================================ */
+function openImportProgressModal(totalRows) {
+    let modal = document.getElementById('import-progress-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'import-progress-modal';
+        modal.className = 'modal-backdrop active';
+        modal.innerHTML = `
+            <div class="modal-content p-5 md:p-6 max-w-md text-center">
+                <div class="w-14 h-14 rounded-2xl bg-brand-400/25 text-brand-200 flex items-center justify-center mx-auto mb-3 text-2xl border border-brand-300/40">
+                    <i class="fa-solid fa-file-import animate-pulse"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-1">Mengimpor Data...</h3>
+                <p class="text-xs text-brand-100 mb-4" id="import-progress-text">Memproses baris...</p>
+                <div class="import-progress-bar mb-2">
+                    <div class="import-progress-bar-fill" id="import-progress-fill"></div>
+                </div>
+                <p class="text-xs text-brand-200" id="import-progress-counter">0 / ${totalRows}</p>
+                <p class="text-[10px] text-brand-200 mt-3 italic">Jangan tutup tab ini sampai proses selesai.</p>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    } else {
+        modal.classList.add('active');
+    }
+    updateImportProgress(0, totalRows, 'Memulai...');
+}
+
+function updateImportProgress(current, total, message) {
+    const fill = document.getElementById('import-progress-fill');
+    const counter = document.getElementById('import-progress-counter');
+    const text = document.getElementById('import-progress-text');
+    if (fill) fill.style.width = `${Math.round((current / total) * 100)}%`;
+    if (counter) counter.innerText = `${current} / ${total}`;
+    if (text && message) text.innerText = message;
+}
+
+function closeImportProgressModal() {
+    const modal = document.getElementById('import-progress-modal');
+    if (modal) modal.classList.remove('active');
+}
+
+function showImportSummaryModal(htmlContent) {
+    let modal = document.getElementById('import-summary-modal');
+    if (modal) modal.remove();
+
+    modal = document.createElement('div');
+    modal.id = 'import-summary-modal';
+    modal.className = 'modal-backdrop active';
+    modal.innerHTML = `
+        <div class="modal-content p-5 md:p-6 max-w-md">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-12 h-12 rounded-xl bg-emerald-500/25 text-emerald-200 flex items-center justify-center text-xl border border-emerald-400/40">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white">Hasil Import</h3>
+                    <p class="text-xs text-brand-100">Data berhasil diproses</p>
+                </div>
+            </div>
+            <div class="text-sm text-white mb-5 p-3 rounded-xl bg-white/5 border border-white/15">
+                ${htmlContent}
+            </div>
+            <div class="flex justify-end">
+                <button onclick="document.getElementById('import-summary-modal').remove()" class="px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold">
+                    <i class="fa-solid fa-check mr-1"></i>Tutup
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
 }
 
 /* ================================================================
@@ -4113,7 +4369,7 @@ function triggerAdminEditFromRack() {
 }
 
 /* ================================================================
-   MASTER OBAT — Template Dinamis & Import (FORMAT RS)
+   MASTER OBAT — Template & Import
    ================================================================ */
 async function downloadMedicineTemplate() {
     let existingData = [];
@@ -4142,10 +4398,6 @@ async function downloadMedicineTemplate() {
         'Bentuk': 'Tablet',
         'Satuan': 'Strip',
         'Stok Minimal': 10
-    });
-    rows.push({
-        'Kode Obat': '', 'Nama Obat': '', 'Kategori': '',
-        'Bentuk': '', 'Satuan': '', 'Stok Minimal': ''
     });
 
     const ws = XLSX.utils.json_to_sheet(rows, {
